@@ -10,3 +10,5 @@ umask 022
  alias ll='ls $LS_OPTIONS -l'
  alias l='ls $LS_OPTIONS -lA'
  alias diff='colordiff'
+ alias gimme='sudo apt-get install'
+ alias remove='sudo apt-get remove'
