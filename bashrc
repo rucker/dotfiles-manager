@@ -13,3 +13,4 @@ umask 022
  alias grep='grep --color=auto'
  alias gimme='sudo apt-get install'
  alias remove='sudo apt-get remove'
+ alias pbcopy='xclip -selection c'
