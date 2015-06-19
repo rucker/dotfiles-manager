@@ -1,20 +1,14 @@
 #!/bin/bash
 # ~/.bash_profile: executed by bash(1) for non-login shells.
-if [ -f ./tokens ]; then
-	source ./tokens
-fi
-export PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
+
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-umask 022
 
-export LS_OPTIONS='-h --color=auto --group-directories-first'
+sourceFile=$(readlink -f ${BASH_SOURCE})
+dir=${sourceFile%/*/*}
+
+if [ -e $dir/imports ]; then
+  source $dir/imports
+fi
 eval `dircolors`
-alias ls='ls $LS_OPTIONS'
-alias ll='ls $LS_OPTIONS -l'
-alias l='ls $LS_OPTIONS -lA'
- 
-alias diff='colordiff'
-alias grep='grep --color=auto'
-alias pbcopy='xclip -selection c'
 alias htop='sudo htop'
