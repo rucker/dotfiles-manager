@@ -4,8 +4,12 @@
 
 import platform
 import os
+import sys
 
 sysName = platform.system()
+homeDir = os.path.expanduser('~') + '/'
+destDir = os.path.dirname(os.path.abspath(__file__)) + '/'
+os.chdir(destDir)
 os.remove('bashrc')
 bashrc = open('bashrc','a')
 bashrc.write("#!/bin/bash\n")
@@ -20,21 +24,32 @@ def writeSection(fileName, allowComments):
     else:
       bashrc.write(line)
 
+def createSymlink(name):
+  target = destDir + name
+  link = homeDir + '.' + name
+  if os.path.islink(link):
+    os.remove(link)
+  os.symlink(target, link)
+
 if sysName == 'Linux':
   bashrc.write("# ~/.bashrc: executed by bash(1) for non-login shells.\n")
   if os.path.isfile('bash_private'):
     writeSection('bash_private',False)
   writeSection('bash_common',False)
   writeSection('bash_linux',True)
+  createSymlink('bashrc')
 elif sysName == 'Darwin':
   bashrc.write("# ~/.bash_profile: executed by bash(1) for lon-login shells.\n")
-  writeSection('bash_mac',True)
   if os.path.isfile('bash_private'):
     writeSection('bash_private',False)
   writeSection('bash_common',False)
+  writeSection('bash_mac',True)
+  createSymlink('bash_profile')
 else:
   print "System not supported!"
   bashrc.close()
   exit(1)
+
+createSymlink('vimrc')
 bashrc.close()
 
