@@ -1,11 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-
-sourceFile=$(readlink -f ${BASH_SOURCE})
-dir=${sourceFile%/*/*}
-
-if [ -e $dir/imports ]; then
-  source $dir/imports
-fi
 eval `dircolors`
 alias gimme='sudo apt-get install'
 alias remove='sudo apt-get remove'
