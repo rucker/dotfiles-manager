@@ -9,22 +9,25 @@ sysName = platform.system()
 os.remove('bashrc')
 bashrc = open('bashrc','a')
 
-def writeSection(fileName):
+def writeSection(fileName, allowComments):
   f = open(fileName,'r')
   for line in f:
-    if not line.startswith('#'):
+    if line.startswith('#'):
+      if allowComments:
+        bashrc.write(line)
+    else:
       bashrc.write(line)
 
-writeSection('bash_common')
-if os.path.isfile('bash_private'):
-  writeSection('bash_private')
 if sysName == 'Linux':
-  writeSection('bash_linux')
+  writeSection('bash_linux',True)
 elif sysName == 'Darwin':
-  writeSection('bash_mac')
+  writeSection('bash_mac',True)
 else:
   print "System not supported!"
   bashrc.close()
   exit(1)
+if os.path.isfile('bash_private'):
+  writeSection('bash_private',False)
+writeSection('bash_common',False)
 bashrc.close()
 
