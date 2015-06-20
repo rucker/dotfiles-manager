@@ -12,7 +12,8 @@ bashrc = open('bashrc','a')
 def writeSection(fileName):
   f = open(fileName,'r')
   for line in f:
-    bashrc.write(line)
+    if not line.startswith('#'):
+      bashrc.write(line)
 
 writeSection('bash_common')
 if os.path.isfile('bash_private'):
