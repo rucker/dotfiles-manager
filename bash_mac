@@ -1,14 +1,4 @@
-#!/bin/bash
-# ~/.bash_profile: executed by bash(1) for non-login shells.
-
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-
-sourceFile=$(readlink -f ${BASH_SOURCE})
-dir=${sourceFile%/*/*}
-
-if [ -e $dir/imports ]; then
-  source $dir/imports
-fi
 eval `dircolors`
 alias htop='sudo htop'
