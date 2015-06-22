@@ -75,5 +75,6 @@ class DotfilesInstaller:
       self.createSymlink('vimrc','.vimrc')
       bashrc.close()
 
-installer = DotfilesInstaller()
-installer.install()
+if __name__ == '__main__':
+  installer = DotfilesInstaller()
+  installer.install()
