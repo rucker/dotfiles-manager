@@ -1,5 +1,4 @@
 #!/usr/bin/python
-#  install_dotfiles
 #  This script will build platform-specific dotfiles and create the appropriate symlinks in ~
 
 import platform
