@@ -54,21 +54,25 @@ def createSymlink(targetName, linkName)	:
   os.symlink(target, link)
   print "Link created."
 
-init()
-if sysName == 'Linux':
-  bashrc.write("# ~/.bashrc: executed by bash(1) for non-login shells.\n")
-  if os.path.isfile('bash_private'):
-    writeSection('bash_private',False)
-  writeSection('bash_common',False)
-  writeSection('bash_linux',True)
-  createSymlink('bashrc','.bashrc')
-elif sysName == 'Darwin':
-  bashrc.write("# ~/.bash_profile: executed by bash(1) for lon-login shells.\n")
-  if os.path.isfile('bash_private'):
-    writeSection('bash_private',False)
-  writeSection('bash_common',False)
-  writeSection('bash_mac',True)
-  createSymlink('bashrc','.bash_profile')
+def install():
+  if sysName == 'Linux':
+    bashrc.write("# ~/.bashrc: executed by bash(1) for non-login shells.\n")
+    if os.path.isfile('bash_private'):
+      writeSection('bash_private',False)
+    writeSection('bash_common',False)
+    writeSection('bash_linux',True)
+    createSymlink('bashrc','.bashrc')
+  elif sysName == 'Darwin':
+    bashrc.write("# ~/.bash_profile: executed by bash(1) for lon-login shells.\n")
+    if os.path.isfile('bash_private'):
+      writeSection('bash_private',False)
+    writeSection('bash_common',False)
+    writeSection('bash_mac',True)
+    createSymlink('bashrc','.bash_profile')
 
-createSymlink('vimrc','.vimrc')
-bashrc.close()
+  createSymlink('vimrc','.vimrc')
+  bashrc.close()
+
+init()
+if __name__ == '__main__':
+  install()
