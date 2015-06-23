@@ -53,7 +53,7 @@ class DotfilesTest(unittest.TestCase):
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
   bashPrivateMock = io.StringIO(u'some_token=some_value\n')
-  def testWhenBashPrivateFileExistItsContentAreWrittenToBashrc(self):
+  def testWhenBashPrivateFileExistsItsContentsAreWrittenToBashrc(self):
     dotfilesinstaller.writeSection(self.bashPrivateMock, False)
     foundExpectedResult = False
     mock = self.bashPrivateMock.getvalue()
