@@ -6,10 +6,12 @@ import dotfilesinstaller
 import platform
 import sys
 import os
+import io
 
 class DotfilesTest(unittest.TestCase):
   def setUp(self):
     dotfilesinstaller.init()
+    dotfilesinstaller.cleanUp()
 
   @mock.patch('platform.system', mock.MagicMock(return_value='Darwin'))
   def testWhenSystemIsDarwinInstallerIdentifiesSystemAsDarwin(self):
@@ -49,6 +51,16 @@ class DotfilesTest(unittest.TestCase):
     dotfilesinstaller.writeFileHeader()
     with open('bashrc','r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
+
+  bashPrivateMock = io.StringIO(u'some_token=some_value\n')
+  def testWhenBashPrivateFileExistItsContentAreWrittenToBashrc(self):
+    dotfilesinstaller.writeSection(self.bashPrivateMock, False)
+    foundExpectedResult = False
+    mock = self.bashPrivateMock.getvalue()
+    with open('bashrc','r') as bashrc:
+      result = bashrc.read()
+    self.assertTrue(result in mock)
+
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)
