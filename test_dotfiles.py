@@ -52,11 +52,11 @@ class DotfilesTest(unittest.TestCase):
     with open('bashrc','r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
-  bashPrivateMock = io.StringIO(u'some_token=some_value\n')
-  def testWhenBashPrivateFileExistsItsContentsAreWrittenToBashrc(self):
-    dotfilesinstaller.writeSection(self.bashPrivateMock, False)
+  inputFileMock = io.StringIO(u'some_token=some_value\n')
+  def testBashInputFileContentsAreWrittenToBashrc(self):
+    dotfilesinstaller.writeSection(self.inputFileMock, False)
     foundExpectedResult = False
-    mock = self.bashPrivateMock.getvalue()
+    mock = self.inputFileMock.getvalue()
     with open('bashrc','r') as bashrc:
       result = bashrc.read()
     self.assertTrue(result in mock)
