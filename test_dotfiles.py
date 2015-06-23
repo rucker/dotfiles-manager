@@ -45,5 +45,10 @@ class DotfilesTest(unittest.TestCase):
     except OSError:
       self.fail("Tried to delete nonexistent file!")
 
+  def testBashrcFileStartsWithShebang(self):
+    dotfilesinstaller.writeFileHeader()
+    with open('bashrc','r') as bashrc:
+      self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
+
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)
