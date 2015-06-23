@@ -61,6 +61,16 @@ class DotfilesTest(unittest.TestCase):
       result = bashrc.read()
     self.assertTrue(result in mock)
 
+  def testWhenSymlinkDoesNotExistitGetsCreated(self):
+    with open('bar','a') as bar:
+      dotfilesinstaller.createSymlink('bar', 'foo')
+    createdSymlink = dotfilesinstaller.homeDir + 'foo'
+    try:
+      os.stat(createdSymlink)
+    except OSError:
+      self.fail('Symlink ' + createdSymlink + ' not created!')
+    os.remove(createdSymlink)
+    os.remove('bar')
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)
