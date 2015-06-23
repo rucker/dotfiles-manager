@@ -12,5 +12,10 @@ class DotfilesTest(unittest.TestCase):
     dotfilesinstaller.identifySystem()
     assert(sys.stdout.getvalue().strip().endswith('Darwin'))
 
+  @mock.patch('platform.system', mock.MagicMock(return_value='Linux'))
+  def testWhenSystemIsLinuxInstallerIdentifiesSystemAsLinux(self):
+    dotfilesinstaller.identifySystem()
+    assert(sys.stdout.getvalue().strip().endswith('Linux'))
+
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)
