@@ -22,7 +22,7 @@ class DotfilesTest(unittest.TestCase):
     assert(sys.stdout.getvalue().strip().endswith('Linux'))
 
   @mock.patch('platform.system', mock.MagicMock(return_value='Windows'))
-  def testWhenSystemIsWindowsInstallerIdentifiesSystemAsWindowsAndExits(self):
+  def testWhenSystemIsWindowsInstallerIdentifiesSystemAsWindowsAndExitsWithCode1(self):
     with self.assertRaises(SystemExit) as cm:
       dotfilesinstaller.identifySystem()
       assert(sys.stdout.getvalue().strip().endswith('not supported!'))
