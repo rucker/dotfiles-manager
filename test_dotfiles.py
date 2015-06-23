@@ -37,5 +37,13 @@ class DotfilesTest(unittest.TestCase):
     assert(sys.stdout.getvalue().strip().endswith('bashrc'))
     self.assertFalse(os.path.isfile('bashrc'))
 
+  def testWhenBashrcDoesNotExistInstallerWillNotAttemptDeletion(self):
+    if os.path.isfile('bashrc'):
+      os.remove('bashrc')
+    try:
+      dotfilesinstaller.cleanUp()
+    except OSError:
+      self.fail("Tried to delete nonexistent file!")
+
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)
