@@ -61,7 +61,7 @@ class DotfilesTest(unittest.TestCase):
       result = bashrc.read()
     self.assertTrue(result in mock)
 
-  def testWhenSymlinkDoesNotExistitGetsCreated(self):
+  def testWhenSymlinkIsBrokenOrDoesNotExistitGetsCreated(self):
     with open('bar','a') as bar:
       dotfilesinstaller.createSymlink('bar', 'foo')
     createdSymlink = dotfilesinstaller.homeDir + 'foo'
