@@ -12,13 +12,16 @@ import time
 class DotfilesTest(unittest.TestCase):
   symlinkTarget = 'bar'
   createdSymlink = ''
-  bashrcFile = 'bashrc'
-  bashrcDotFile = '.bashrc'
+  bashOutputFile = ''
+  bashOutputDotFile = ''
   inputFileMock = io.StringIO(u'some_token=some_value\n')
 
   def setUp(self):
     dotfilesinstaller.init()
+    dotfilesinstaller.identifySystem()
     dotfilesinstaller.cleanUp()
+    self.bashOutputFile = dotfilesinstaller.bashOutputFile
+    self.bashOutputDotFile = '.' + self.bashOutputFile
 
   def tearDown(self):
     self.createdSymlink = dotfilesinstaller.homeDir + 'foo'
@@ -26,13 +29,27 @@ class DotfilesTest(unittest.TestCase):
       os.remove(self.createdSymlink)
     if os.path.isfile(self.symlinkTarget):
       os.remove(self.symlinkTarget)
-    if os.path.isfile(self.bashrcFile):
-      os.remove(self.bashrcFile)
+    dotfilesinstaller.cleanUp()
 
   @mock.patch('platform.system', mock.MagicMock(return_value='Darwin'))
   def testWhenSystemIsDarwinInstallerIdentifiesSystemAsDarwin(self):
     dotfilesinstaller.identifySystem()
     assert(sys.stdout.getvalue().strip().endswith('Darwin'))
+
+  @mock.patch('platform.system', mock.MagicMock(return_value='Darwin'))
+  def testWhenSystemIsDarwinInstallerWillWriteToBashProfile(self):
+    dotfilesinstaller.install()
+    assert(os.path.isfile('bash_profile'))
+    assert(os.path.isfile('.bash_profile'))
+    assert(not os.path.isfile('.bashrc'))
+
+  @mock.patch('platform.system', mock.MagicMock(return_value='Linux'))
+  def testWhenSystemIsLinuxInstallerWillWriteToBashrc(self):
+    dotfilesinstaller.identifySystem()
+    dotfilesinstaller.install()
+    assert(os.path.isfile('bashrc'))
+    assert(os.path.isfile('.bashrc'))
+    assert(not os.path.isfile('.bash_profile'))
 
   @mock.patch('platform.system', mock.MagicMock(return_value='Linux'))
   def testWhenSystemIsLinuxInstallerIdentifiesSystemAsLinux(self):
@@ -46,20 +63,23 @@ class DotfilesTest(unittest.TestCase):
       assert(sys.stdout.getvalue().strip().endswith('not supported!'))
       assertEqual(cm.exception.code, 1)
 
-  def testWhenBashrcExistsInstallerWillDeleteIt(self):
-    with open(self.bashrcFile,'a') as bashrc:
+  def testWhenBashOutputFileExistsInstallerWillDeleteIt(self):
+    dotfilesinstaller.init()
+    dotfilesinstaller.identifySystem()
+    self.bashOutputFile = dotfilesinstaller.bashOutputFile
+    with open(self.bashOutputFile,'a') as bashrc:
       bashrc.write('Test file...')
-    with open(self.bashrcDotFile,'a') as bashrc:
+    with open(self.bashOutputDotFile,'a') as bashrc:
       bashrc.write('Test file...')
     dotfilesinstaller.cleanUp()
-    assert("Removing " + self.bashrcFile in sys.stdout.getvalue().strip())
-    self.assertFalse(os.path.isfile(self.bashrcFile))
-    assert("Removing " + self.bashrcDotFile in sys.stdout.getvalue().strip())
-    self.assertFalse(os.path.isfile(self.bashrcDotFile))
+    assert("Removing " + self.bashOutputFile in sys.stdout.getvalue().strip())
+    self.assertFalse(os.path.isfile(self.bashOutputFile))
+    assert("Removing " + self.bashOutputDotFile in sys.stdout.getvalue().strip())
+    self.assertFalse(os.path.isfile(self.bashOutputDotFile))
 
   def testWhenBashrcDoesNotExistInstallerWillNotAttemptDeletion(self):
-    if os.path.isfile(self.bashrcFile):
-      os.remove(self.bashrcFile)
+    if os.path.isfile(self.bashOutputFile):
+      os.remove(self.bashOutputFile)
     try:
       dotfilesinstaller.cleanUp()
     except OSError:
@@ -67,14 +87,14 @@ class DotfilesTest(unittest.TestCase):
 
   def testBashrcFileStartsWithShebang(self):
     dotfilesinstaller.addBashrcFileHeader()
-    with open(self.bashrcFile,'r') as bashrc:
+    with open(self.bashOutputFile,'r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
   def testBashInputFileContentsAreWrittenToBashrc(self):
     dotfilesinstaller.addInputFileContents(self.inputFileMock, False, False)
     foundExpectedResult = False
     mock = self.inputFileMock.getvalue()
-    with open(self.bashrcFile,'r') as bashrc:
+    with open(self.bashOutputFile,'r') as bashrc:
       result = bashrc.read()
     self.assertTrue(result in mock)
 
@@ -92,7 +112,7 @@ class DotfilesTest(unittest.TestCase):
 
   def testWhenSymlinkExistsButIsBrokenItGetsDeletedAndReCreated(self):
     dotfilesinstaller.createSymlink(self.symlinkTarget, 'foo')
-    dotfilesinstaller.createSymlink(self.bashrcFile, 'foo')
+    dotfilesinstaller.createSymlink(self.bashOutputFile, 'foo')
     assert("Link is broken." in sys.stdout.getvalue().strip())
     assert("Link created." in sys.stdout.getvalue().strip())
 
@@ -104,7 +124,7 @@ class DotfilesTest(unittest.TestCase):
   def testBashrcDoesNotContainBashPrivateTokens(self):
     with open('bash_private','r') as bashPrivate:
       dotfilesinstaller.install()
-      with open(self.bashrcFile,'r') as bashrc:
+      with open(self.bashOutputFile,'r') as bashrc:
         assert(bashPrivate.read() not in bashrc.read())
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
