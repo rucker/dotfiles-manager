@@ -13,6 +13,7 @@ class DotfilesTest(unittest.TestCase):
   symlinkTarget = 'bar'
   createdSymlink = ''
   bashrcFile = 'bashrc'
+  bashrcDotFile = '.bashrc'
   inputFileMock = io.StringIO(u'some_token=some_value\n')
 
   def setUp(self):
@@ -46,13 +47,15 @@ class DotfilesTest(unittest.TestCase):
       assertEqual(cm.exception.code, 1)
 
   def testWhenBashrcExistsInstallerWillDeleteIt(self):
-    if not os.path.isfile(self.bashrcFile):
-      testbashrc = open(self.bashrcFile,'w')
-      testbashrc.write('Test file...')
-      testbashrc.close()
+    with open(self.bashrcFile,'a') as bashrc:
+      bashrc.write('Test file...')
+    with open(self.bashrcDotFile,'a') as bashrc:
+      bashrc.write('Test file...')
     dotfilesinstaller.cleanUp()
-    assert(sys.stdout.getvalue().strip().endswith(self.bashrcFile))
+    assert("Removing " + self.bashrcFile in sys.stdout.getvalue().strip())
     self.assertFalse(os.path.isfile(self.bashrcFile))
+    assert("Removing " + self.bashrcDotFile in sys.stdout.getvalue().strip())
+    self.assertFalse(os.path.isfile(self.bashrcDotFile))
 
   def testWhenBashrcDoesNotExistInstallerWillNotAttemptDeletion(self):
     if os.path.isfile(self.bashrcFile):
@@ -63,12 +66,12 @@ class DotfilesTest(unittest.TestCase):
       self.fail("Tried to delete nonexistent file!")
 
   def testBashrcFileStartsWithShebang(self):
-    dotfilesinstaller.writeFileHeader()
+    dotfilesinstaller.addBashrcFileHeader()
     with open(self.bashrcFile,'r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
   def testBashInputFileContentsAreWrittenToBashrc(self):
-    dotfilesinstaller.writeSection(self.inputFileMock, False)
+    dotfilesinstaller.addInputFileContents(self.inputFileMock, False, False)
     foundExpectedResult = False
     mock = self.inputFileMock.getvalue()
     with open(self.bashrcFile,'r') as bashrc:
@@ -97,6 +100,12 @@ class DotfilesTest(unittest.TestCase):
     self.setUpSymlink()
     dotfilesinstaller.createSymlink('bar', 'foo')
     assert("Link is valid." in sys.stdout.getvalue().strip())
+
+  def testBashrcDoesNotContainBashPrivateTokens(self):
+    with open('bash_private','r') as bashPrivate:
+      dotfilesinstaller.install()
+      with open(self.bashrcFile,'r') as bashrc:
+        assert(bashPrivate.read() not in bashrc.read())
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)
