@@ -50,7 +50,7 @@ def handleBashrcFileWrite(contents, isPrivateFile):
     with open(bashOutputFile,'a') as bashrc:
       bashrc.write(contents.getvalue())
 
-def addBashrcFileHeader():
+def addBashOutputFileHeader():
   print "Writing " + bashOutputFile + " file header..."
   with io.StringIO() as bashrc:
     bashrc.write(unicode("#!/bin/bash\n"))
@@ -118,5 +118,5 @@ if __name__ == '__main__':
   init()
   identifySystem()
   cleanUp()
-  addBashrcFileHeader()
+  addBashOutputFileHeader()
   install()

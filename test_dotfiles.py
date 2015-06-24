@@ -67,8 +67,8 @@ class DotfilesTest(unittest.TestCase):
       if e.errno == 2:
         self.fail("Tried to delete nonexistent file!")
 
-  def testBashrcFileStartsWithShebang(self):
-    dotfilesinstaller.addBashrcFileHeader()
+  def testBashOutputFileStartsWithShebang(self):
+    dotfilesinstaller.addBashOutputFileHeader()
     with open(self.macBashOutputFile,'r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
