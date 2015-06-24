@@ -1,3 +1,4 @@
 *.swp
 *.pyc
 bash_private
+.bashrc
