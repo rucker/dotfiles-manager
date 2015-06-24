@@ -63,8 +63,9 @@ class DotfilesTest(unittest.TestCase):
       os.remove(self.macBashOutputFile)
     try:
       dotfilesinstaller.cleanUp()
-    except OSError:
-      self.fail("Tried to delete nonexistent file!")
+    except OSError, e:
+      if e.errno == 2:
+        self.fail("Tried to delete nonexistent file!")
 
   def testBashrcFileStartsWithShebang(self):
     dotfilesinstaller.addBashrcFileHeader()
