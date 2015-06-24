@@ -5,11 +5,6 @@ import platform
 import os
 import io
 import sys
-sysName = ''
-homeDir = ''
-destDir = ''
-bashOutputFile = ''
-bashOutputDotFile = ''
 
 def init():
   global homeDir
