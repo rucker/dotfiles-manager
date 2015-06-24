@@ -16,8 +16,10 @@ def init():
 
 def identifySystem():
   global sysName
-  global bashOutputFile
-  global bashOutputDotFile
+  global macBashOutputFile
+  global macBashOutputDotFile
+  global linuxBashOutputFile
+  global linuxBashOutputDotFile
 
   sysName = platform.system()
   if sysName != 'Linux' and sysName != 'Darwin':
@@ -25,28 +27,27 @@ def identifySystem():
     exit(1)
   else:
     print "System identified as " + sysName
-  if sysName == 'Linux':
-    bashOutputFile = 'bashrc'
-  else:
-    bashOutputFile = 'bash_profile'
-  bashOutputDotFile = '.' + bashOutputFile
+    linuxBashOutputFile = 'bashrc'
+    linuxBashOutputDotFile = '.' + linuxBashOutputFile
+    macBashOutputFile = 'bash_profile'
+    macBashOutputDotFile = '.' + macBashOutputFile
 
 def cleanUp():
   print "Cleaning up output files in " + destDir + " ..."
-  for file in [bashOutputFile,bashOutputDotFile]:
+  for file in [macBashOutputFile,macBashOutputDotFile]:
     if os.path.isfile(file):
       print "\tRemoving " + file
       os.remove(file)
 
 def handleBashrcFileWrite(contents, isPrivateFile):
-  with open(bashOutputDotFile,'a') as bashrc:
+  with open(macBashOutputDotFile,'a') as bashrc:
     bashrc.write(contents.getvalue())
   if not isPrivateFile:
-    with open(bashOutputFile,'a') as bashrc:
+    with open(macBashOutputFile,'a') as bashrc:
       bashrc.write(contents.getvalue())
 
 def addBashOutputFileHeader():
-  print "Writing " + bashOutputFile + " file header..."
+  print "Writing " + macBashOutputFile + " file header..."
   with io.StringIO() as bashrc:
     bashrc.write(unicode("#!/bin/bash\n"))
     if sysName == 'Linux':
@@ -104,7 +105,7 @@ def install():
     with open('bash_mac','r') as bashMac:
       addInputFileContents(bashMac,True,False)
 
-  createSymlink(bashOutputDotFile, bashOutputDotFile)
+  createSymlink(macBashOutputDotFile, macBashOutputDotFile)
   createSymlink('vimrc','.vimrc')
 
   print "Done."
