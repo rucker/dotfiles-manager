@@ -76,7 +76,6 @@ class DotfilesTest(unittest.TestCase):
     self.assertTrue(result in mock)
 
   def setUpSymlink(self):
-    global createdSymlink
     with open(self.symlinkTarget,'a') as bar:
       dotfilesinstaller.createSymlink(self.symlinkTarget, 'foo')
     self.createdSymlink = dotfilesinstaller.homeDir + 'foo'
