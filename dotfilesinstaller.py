@@ -8,6 +8,9 @@ import sys
 sysName = ''
 homeDir = ''
 destDir = ''
+bashOutputFile = ''
+bashOutputDotFile = ''
+
 def init():
   global homeDir
   global destDir
@@ -18,29 +21,37 @@ def init():
 
 def identifySystem():
   global sysName
+  global bashOutputFile
+  global bashOutputDotFile
+
   sysName = platform.system()
   if sysName != 'Linux' and sysName != 'Darwin':
     print "System not supported!"
     exit(1)
   else:
     print "System identified as " + sysName
+  if sysName == 'Linux':
+    bashOutputFile = 'bashrc'
+  else:
+    bashOutputFile = 'bash_profile'
+  bashOutputDotFile = '.' + bashOutputFile
 
 def cleanUp():
-  print "Cleaning up files in " + destDir + " ..."
-  for file in ['bashrc','.bashrc']:
+  print "Cleaning up output files in " + destDir + " ..."
+  for file in [bashOutputFile,bashOutputDotFile]:
     if os.path.isfile(file):
       print "\tRemoving " + file
       os.remove(file)
 
 def handleBashrcFileWrite(contents, isPrivateFile):
-  with open('.bashrc','a') as bashrc:
+  with open(bashOutputDotFile,'a') as bashrc:
     bashrc.write(contents.getvalue())
   if not isPrivateFile:
-    with open('bashrc','a') as bashrc:
+    with open(bashOutputFile,'a') as bashrc:
       bashrc.write(contents.getvalue())
 
 def addBashrcFileHeader():
-  print "Writing bashrc file header..."
+  print "Writing " + bashOutputFile + " file header..."
   with io.StringIO() as bashrc:
     bashrc.write(unicode("#!/bin/bash\n"))
     if sysName == 'Linux':
@@ -51,7 +62,8 @@ def addBashrcFileHeader():
     handleBashrcFileWrite(bashrc, False)
 
 def addInputFileContents(inputFile, allowComments, isPrivateFile):
-  print "\t" + inputFile.name
+  if hasattr(inputFile, 'name'):
+    print "\t" + inputFile.name
   with io.StringIO() as bashrc:
     for line in inputFile:
       if line.startswith('#'):
@@ -93,12 +105,11 @@ def install():
   if sysName == 'Linux':
     with open('bash_linux','r') as bashLinux:
       addInputFileContents(bashLinux,True,False)
-      createSymlink('.bashrc','.bashrc')
   elif sysName == 'Darwin':
     with open('bash_mac','r') as bashMac:
       addInputFileContents(bashMac,True,False)
-      createSymlink('.bashrc','.bash_profile')
 
+  createSymlink(bashOutputDotFile, bashOutputDotFile)
   createSymlink('vimrc','.vimrc')
 
   print "Done."
