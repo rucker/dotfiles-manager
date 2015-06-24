@@ -104,7 +104,7 @@ class DotfilesTest(unittest.TestCase):
     dotfilesinstaller.createSymlink('bar', 'foo')
     assert("Link is valid." in sys.stdout.getvalue().strip())
 
-  def testBashrcDoesNotContainBashPrivateTokens(self):
+  def testBashOutputFileDoesNotContainBashPrivateTokens(self):
     with open('bash_private','r') as bashPrivate:
       dotfilesinstaller.install()
       with open(self.macBashOutputFile,'r') as bashrc:
