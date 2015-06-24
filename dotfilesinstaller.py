@@ -53,10 +53,22 @@ def writeSection(file, allowComments):
 def createSymlink(targetName, linkName)	:
   target = destDir + targetName
   link = homeDir + linkName
-  print "Creating symlink: " + link + " -> " + target
+  print "Symlink " + link + " -> " + target
   if os.path.islink(link):
-    print "Link exists. Removing..."
-    os.remove(link)
+    print "Link exists. Checking..."
+    try:
+      os.stat(link)
+    except OSError, e:
+      if e.errno == 2:
+        print "Link is broken. Removing..."
+        os.remove(link)
+      else:
+        raise
+    else:
+      print "Link is valid."
+      return
+  else:
+    print "Symlink does not exist. Creating..."
   os.symlink(target, link)
   print "Link created."
 
