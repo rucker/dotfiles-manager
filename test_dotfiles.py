@@ -10,16 +10,12 @@ import io
 import time
 
 class DotfilesTest(unittest.TestCase):
-  symlinkTarget = 'bar'
-  createdSymlink = ''
-  macBashOutputFile = ''
-  macBashOutputDotFile = ''
-  inputFileMock = io.StringIO(u'some_token=some_value\n')
 
   def setUp(self):
     dotfilesinstaller.init()
     dotfilesinstaller.identifySystem()
     dotfilesinstaller.cleanUp()
+    self.symlinkTarget = 'bar'
     self.macBashOutputFile = dotfilesinstaller.bashOutputFile
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
 
@@ -76,6 +72,7 @@ class DotfilesTest(unittest.TestCase):
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
   def testBashInputFileContentsAreWrittenToBashrc(self):
+    self.inputFileMock = io.StringIO(u'some_token=some_value\n')
     dotfilesinstaller.addInputFileContents(self.inputFileMock, False, False)
     foundExpectedResult = False
     mock = self.inputFileMock.getvalue()
