@@ -99,7 +99,7 @@ def install():
       addInputFileContents(bashMac,True,False)
       createSymlink('.bashrc','.bash_profile')
 
-  createSymlink('.vimrc','.vimrc')
+  createSymlink('vimrc','.vimrc')
 
   print "Done."
 
