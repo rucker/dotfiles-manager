@@ -72,7 +72,7 @@ class DotfilesTest(unittest.TestCase):
     with open(self.macBashOutputFile,'r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
-  def testBashInputFileContentsAreWrittenToBashrc(self):
+  def testBashInputFileContentsAreWrittenToOutputFile(self):
     self.inputFileMock = io.StringIO(u'some_token=some_value\n')
     dotfilesinstaller.addInputFileContents(self.inputFileMock, False, False)
     foundExpectedResult = False
