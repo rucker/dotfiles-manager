@@ -114,9 +114,12 @@ def install():
 
   print "Done."
 
-if __name__ == '__main__':
+def main():
   init()
   identifySystem()
   cleanUp()
   addBashOutputFileHeader()
   install()
+
+if __name__ == '__main__':
+  main()
