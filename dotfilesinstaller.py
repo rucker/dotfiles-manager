@@ -60,20 +60,14 @@ def handleBashOutputFileWrite(inputFile, contents):
         outputFiles = [linuxBashOutputDotFile]
       elif sysName == 'Darwin':
         outputFiles = [macBashOutputDotFile]
-    for file in outputFiles:
-      with open(file,'a') as outputFile:
-	outputFile.write(contents.getvalue())
   else:
     if inputFile == bashLinux:
-      with open(linuxBashOutputDotFile,'a') as bashrc:
-	bashrc.write(contents.getvalue())
-      with open(linuxBashOutputFile,'a') as bashrc:
-	bashrc.write(contents.getvalue())
+      outputFiles = [linuxBashOutputFile, linuxBashOutputDotFile]
     else:
-      with open(macBashOutputDotFile,'a') as bashrc:
-	bashrc.write(contents.getvalue())
-      with open(macBashOutputFile,'a') as bashrc:
-	bashrc.write(contents.getvalue())
+      outputFiles = [macBashOutputFile, macBashOutputDotFile]
+  for file in outputFiles:
+    with open(file,'a') as outputFile:
+      outputFile.write(contents.getvalue())
 
 def addBashOutputFileHeader():
   print "Writing " + linuxBashOutputFile + " file header..."
