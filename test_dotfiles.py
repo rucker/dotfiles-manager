@@ -16,8 +16,10 @@ class DotfilesTest(unittest.TestCase):
     dotfilesinstaller.identifySystem()
     dotfilesinstaller.cleanUp()
     self.symlinkTarget = 'bar'
-    self.macBashOutputFile = dotfilesinstaller.bashOutputFile
+    self.macBashOutputFile = dotfilesinstaller.macBashOutputFile
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
+    self.linuxBashOutputFile = dotfilesinstaller.linuxBashOutputFile
+    self.linuxBashOutputDotFile = '.' + self.linuxBashOutputFile
 
   def tearDown(self):
     self.createdSymlink = dotfilesinstaller.homeDir + 'foo'
@@ -47,16 +49,15 @@ class DotfilesTest(unittest.TestCase):
   def testInstallerWillDeleteExistingOutputFiles(self):
     dotfilesinstaller.init()
     dotfilesinstaller.identifySystem()
-    self.macBashOutputFile = dotfilesinstaller.bashOutputFile
-    with open(self.macBashOutputFile,'a') as bashrc:
-      bashrc.write('Test file...')
-    with open(self.macBashOutputDotFile,'a') as bashrc:
-      bashrc.write('Test file...')
+    self.macBashOutputFile = dotfilesinstaller.macBashOutputFile
+    for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
+      with open(file,'a') as bash:
+        bash.write('Test file...')
     dotfilesinstaller.cleanUp()
-    assert("Removing " + self.macBashOutputFile in sys.stdout.getvalue().strip())
-    self.assertFalse(os.path.isfile(self.macBashOutputFile))
-    assert("Removing " + self.macBashOutputDotFile in sys.stdout.getvalue().strip())
-    self.assertFalse(os.path.isfile(self.macBashOutputDotFile))
+
+    for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
+      assert("Removing " + file in sys.stdout.getvalue().strip())
+      self.assertFalse(os.path.isfile(file))
 
   def testWhenOutputFilesDoNotExistInstallerWillNotAttemptDeletion(self):
     if os.path.isfile(self.macBashOutputFile):
@@ -109,6 +110,20 @@ class DotfilesTest(unittest.TestCase):
       dotfilesinstaller.install()
       with open(self.macBashOutputFile,'r') as bashrc:
         assert(bashPrivate.read() not in bashrc.read())
+
+  def testAllOutputFilesExistAfterInstallation(self):
+    dotfilesinstaller.main()
+    for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
+      if not os.path.isfile(file):
+	self.fail("Did not find expected output file: "  + file)
+
+  def testLinuxTokensNotInMacBashOutputFile(self):
+    dotfilesinstaller.main()
+    with open(self.macBashOutputFile,'r') as macBashOutput:
+      with open('bash_linux','r') as bashLinux:
+        linuxContents = bashLinux.read()
+        macContents = macBashOutput.read()
+        assert(linuxContents not in macContents)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)
