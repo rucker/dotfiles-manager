@@ -25,3 +25,6 @@ Contains any elements specific to Mac OS X.
 
 ## Assumptions
 For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
+
+## TO DO
+Add explanation of bashrc vs .bashrc, etc.
