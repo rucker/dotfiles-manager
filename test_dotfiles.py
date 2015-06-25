@@ -75,7 +75,7 @@ class DotfilesTest(unittest.TestCase):
 
   def testBashInputFileContentsAreWrittenToOutputFile(self):
     self.inputFileMock = io.StringIO(u'some_token=some_value\n')
-    dotfilesinstaller.addInputFileContents(self.inputFileMock, False, False)
+    dotfilesinstaller.addInputFileContents(self.inputFileMock, False)
     foundExpectedResult = False
     mock = self.inputFileMock.getvalue()
     with open(self.macBashOutputFile,'r') as bashrc:
@@ -106,6 +106,9 @@ class DotfilesTest(unittest.TestCase):
     assert("Link is valid." in sys.stdout.getvalue().strip())
 
   def testBashOutputFileDoesNotContainBashPrivateTokens(self):
+    if not os.path.isfile('bash_private'):
+      with open('bash_private','w') as bashPrivate:
+        bashPrivate.write('foo=bar')
     with open('bash_private','r') as bashPrivate:
       dotfilesinstaller.install()
       with open(self.macBashOutputFile,'r') as bashrc:
