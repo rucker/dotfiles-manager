@@ -44,11 +44,9 @@ def cleanUp():
       os.remove(file)
 
 def handleBashrcFileWrite(inputFile, contents, isPrivateFile):
-  print "Handling write for input section: " 
   print inputFile
   if hasattr(inputFile, 'name'):
       if inputFile.name != bashLinux and inputFile.name != bashMac:
-	print "This file is != bashLinux and != bashMac"
 	with open(macBashOutputDotFile,'a') as bashrc:
 	  bashrc.write(contents.getvalue())
 	with open(linuxBashOutputDotFile,'a') as bashrc:
