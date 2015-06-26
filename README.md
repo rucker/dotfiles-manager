@@ -23,6 +23,9 @@ Contains any elements specific to Linux.
 ### bash_mac
 Contains any elements specific to Mac OS X.
 
+## Testing
+A suite of unit tests is included in test_dotfiles.py. To run this, the <code>mock</code> package is required. Fetch it from PyPi using pip, i.e. <code>$ pip install mock</code>
+
 ## Assumptions
 For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 
