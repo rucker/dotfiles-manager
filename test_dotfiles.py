@@ -2,7 +2,7 @@
 
 import unittest
 import mock
-import dotfilesinstaller
+import dotfiles
 import platform
 import sys
 import os
@@ -12,48 +12,48 @@ import time
 class DotfilesTest(unittest.TestCase):
 
   def setUp(self):
-    dotfilesinstaller.init()
-    dotfilesinstaller.identifySystem()
-    dotfilesinstaller.cleanUp()
+    dotfiles.init()
+    dotfiles.identifySystem()
+    dotfiles.cleanUp()
     self.symlinkTarget = 'bar'
-    self.macBashOutputFile = dotfilesinstaller.macBashOutputFile
+    self.macBashOutputFile = dotfiles.macBashOutputFile
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
-    self.linuxBashOutputFile = dotfilesinstaller.linuxBashOutputFile
+    self.linuxBashOutputFile = dotfiles.linuxBashOutputFile
     self.linuxBashOutputDotFile = '.' + self.linuxBashOutputFile
 
   def tearDown(self):
-    self.createdSymlink = dotfilesinstaller.homeDir + 'foo'
+    self.createdSymlink = dotfiles.homeDir + 'foo'
     if os.path.islink(self.createdSymlink):
       os.remove(self.createdSymlink)
     if os.path.isfile(self.symlinkTarget):
       os.remove(self.symlinkTarget)
-    dotfilesinstaller.cleanUp()
+    dotfiles.cleanUp()
 
   @mock.patch('platform.system', mock.MagicMock(return_value='Darwin'))
   def testWhenSystemIsDarwinInstallerIdentifiesSystemAsDarwin(self):
-    dotfilesinstaller.identifySystem()
+    dotfiles.identifySystem()
     assert(sys.stdout.getvalue().strip().endswith('Darwin'))
 
   @mock.patch('platform.system', mock.MagicMock(return_value='Linux'))
   def testWhenSystemIsLinuxInstallerIdentifiesSystemAsLinux(self):
-    dotfilesinstaller.identifySystem()
+    dotfiles.identifySystem()
     assert(sys.stdout.getvalue().strip().endswith('Linux'))
 
   @mock.patch('platform.system', mock.MagicMock(return_value='Windows'))
   def testWhenSystemIsWindowsInstallerIdentifiesSystemAsWindowsAndExitsWithCode1(self):
     with self.assertRaises(SystemExit) as cm:
-      dotfilesinstaller.identifySystem()
+      dotfiles.identifySystem()
       assert(sys.stdout.getvalue().strip().endswith('not supported!'))
       assertEqual(cm.exception.code, 1)
 
   def testInstallerWillDeleteExistingOutputFiles(self):
-    dotfilesinstaller.init()
-    dotfilesinstaller.identifySystem()
-    self.macBashOutputFile = dotfilesinstaller.macBashOutputFile
+    dotfiles.init()
+    dotfiles.identifySystem()
+    self.macBashOutputFile = dotfiles.macBashOutputFile
     for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
       with open(file,'a') as bash:
         bash.write('Test file...')
-    dotfilesinstaller.cleanUp()
+    dotfiles.cleanUp()
 
     for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
       assert("Removing " + file in sys.stdout.getvalue().strip())
@@ -63,19 +63,19 @@ class DotfilesTest(unittest.TestCase):
     if os.path.isfile(self.macBashOutputFile):
       os.remove(self.macBashOutputFile)
     try:
-      dotfilesinstaller.cleanUp()
+      dotfiles.cleanUp()
     except OSError, e:
       if e.errno == 2:
         self.fail("Tried to delete nonexistent file!")
 
   def testBashOutputFileStartsWithShebang(self):
-    dotfilesinstaller.addBashOutputFileHeader()
+    dotfiles.addBashOutputFileHeader()
     with open(self.macBashOutputFile,'r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
   def testBashInputFileContentsAreWrittenToOutputFile(self):
     self.inputFileMock = io.StringIO(u'some_token=some_value\n')
-    dotfilesinstaller.addInputFileContents(self.inputFileMock, False)
+    dotfiles.addInputFileContents(self.inputFileMock, False)
     foundExpectedResult = False
     mock = self.inputFileMock.getvalue()
     with open(self.macBashOutputFile,'r') as bashrc:
@@ -84,8 +84,8 @@ class DotfilesTest(unittest.TestCase):
 
   def setUpSymlink(self):
     with open(self.symlinkTarget,'a') as bar:
-      dotfilesinstaller.createSymlink(self.symlinkTarget, 'foo')
-    self.createdSymlink = dotfilesinstaller.homeDir + 'foo'
+      dotfiles.createSymlink(self.symlinkTarget, 'foo')
+    self.createdSymlink = dotfiles.homeDir + 'foo'
 
   def testWhenSymlinkDoesNotExistItGetsCreated(self):
     self.setUpSymlink()
@@ -95,14 +95,14 @@ class DotfilesTest(unittest.TestCase):
       self.fail("Symlink " + self.createdSymlink + " not created!")
 
   def testWhenSymlinkExistsButIsBrokenItGetsDeletedAndReCreated(self):
-    dotfilesinstaller.createSymlink(self.symlinkTarget, 'foo')
-    dotfilesinstaller.createSymlink(self.macBashOutputFile, 'foo')
+    dotfiles.createSymlink(self.symlinkTarget, 'foo')
+    dotfiles.createSymlink(self.macBashOutputFile, 'foo')
     assert("Link is broken." in sys.stdout.getvalue().strip())
     assert("Link created." in sys.stdout.getvalue().strip())
 
   def testWhenSymlinkExistsAndIsValidItDoesNotGetDeleted(self):
     self.setUpSymlink()
-    dotfilesinstaller.createSymlink('bar', 'foo')
+    dotfiles.createSymlink('bar', 'foo')
     assert("Link is valid." in sys.stdout.getvalue().strip())
 
   def testBashOutputFileDoesNotContainBashPrivateTokens(self):
@@ -110,18 +110,18 @@ class DotfilesTest(unittest.TestCase):
       with open('bash_private','w') as bashPrivate:
         bashPrivate.write('foo=bar')
     with open('bash_private','r') as bashPrivate:
-      dotfilesinstaller.install()
+      dotfiles.install()
       with open(self.macBashOutputFile,'r') as bashrc:
         assert(bashPrivate.read() not in bashrc.read())
 
   def testAllOutputFilesExistAfterInstallation(self):
-    dotfilesinstaller.main()
+    dotfiles.main()
     for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
       if not os.path.isfile(file):
 	self.fail("Did not find expected output file: "  + file)
 
   def testLinuxTokensNotInMacBashOutputFile(self):
-    dotfilesinstaller.main()
+    dotfiles.main()
     with open(self.macBashOutputFile,'r') as macBashOutput:
       with open('bash_linux','r') as bashLinux:
         linuxContents = bashLinux.read()
