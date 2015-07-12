@@ -32,3 +32,4 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 ## TO DO
 -Add explanation of bashrc vs .bashrc, etc.
 -Move some files to a subdirectory to keep things tidy.
+-Unit tests: the input files should be mocked.
