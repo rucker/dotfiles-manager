@@ -12,7 +12,6 @@ alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
 alias diff='colordiff'
 alias grep='grep --color=auto'
-alias pbcopy='xclip -selection c'
 alias dmesg='dmesg -T'
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
