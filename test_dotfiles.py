@@ -106,13 +106,31 @@ class DotfilesTest(unittest.TestCase):
     assert("Link is valid." in sys.stdout.getvalue().strip())
 
   def testBashOutputFileDoesNotContainBashPrivateTokens(self):
+    dummyFile = False
+    dummyLine = False
+    # Set up bash_private file if it doesn't exist or is empty
+    # FIXME: This should be done with mocking.
     if not os.path.isfile('bash_private'):
       with open('bash_private','w') as bashPrivate:
         bashPrivate.write('foo=bar')
+        dummyFile = True
+    elif os.path.getsize('bash_private') == 0:
+      with open('bash_private','w') as bashPrivate:
+        bashPrivate.write('foo=bar')
+        dummyLine = True
+    dotfiles.install()
     with open('bash_private','r') as bashPrivate:
-      dotfiles.install()
       with open(self.macBashOutputFile,'r') as bashrc:
-        assert(bashPrivate.read() not in bashrc.read())
+        for line in bashPrivate:
+          if line.strip():
+            assert(line not in bashrc.read())
+    # Clean up bash_private if we created/modified it for this test
+    if dummyFile:
+      os.remove('bash_private')
+    elif dummyLine:
+      with open('bash_private', 'w') as bashPrivate:
+        bashPrivate.seek(0)
+        bashPrivate.truncate()
 
   def testAllOutputFilesExistAfterInstallation(self):
     dotfiles.main()
