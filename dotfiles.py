@@ -123,7 +123,10 @@ def install():
   with open('bash_mac','r') as bashMac:
       addInputFileContents(bashMac,True)
 
-  createSymlink(macBashOutputDotFile, macBashOutputDotFile)
+  if sysName == 'Linux':
+    createSymlink(linuxBashOutputDotFile, linuxBashOutputDotFile)
+  else:
+    createSymlink(macBashOutputDotFile, macBashOutputDotFile)
   createSymlink('vimrc','.vimrc')
 
   print "Done."
