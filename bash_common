@@ -1,7 +1,7 @@
 #!/bin/bash
 # Use this file for aliases that are common across platforms.
 
-export PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
+export PS1="\[\033[G\]\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
 umask 022
 
 export LS_OPTIONS='-h --color=auto --group-directories-first'
