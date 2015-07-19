@@ -1,5 +1,4 @@
 # dotfiles
-
 These are my dotfiles. There are many like them, but these are mine.
 
 ## Background
@@ -29,7 +28,10 @@ A suite of unit tests is included in test_dotfiles.py. To run this, the <code>mo
 ## Assumptions
 For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 
+## FAQ
+Q: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
+A: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts (which are what gets symlinked to from ~) do contain those private tokens.
+
 ## TO DO
--Add explanation of bashrc vs .bashrc, etc.
 -Move some files to a subdirectory to keep things tidy.
 -Unit tests: the input files should be mocked.
