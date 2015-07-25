@@ -16,6 +16,7 @@ def init():
 
 def identifySystem():
   global sysName
+  global inputFilesDir
   global macBashOutputFile
   global macBashOutputDotFile
   global linuxBashOutputFile
@@ -30,15 +31,16 @@ def identifySystem():
     print "System not supported!"
     exit(1)
   else:
+    inputFilesDir = 'inputfiles/'
     print "System identified as " + sysName
     linuxBashOutputFile = 'bashrc'
     linuxBashOutputDotFile = '.' + linuxBashOutputFile
     macBashOutputFile = 'bash_profile'
     macBashOutputDotFile = '.' + macBashOutputFile
-    bashLinux = 'bash_linux'
-    bashMac = 'bash_mac'
-    bashCommon = 'bash_common'
-    bashPrivate = 'bash_private'
+    bashLinux = inputFilesDir + 'bash_linux'
+    bashMac = inputFilesDir + 'bash_mac'
+    bashCommon = inputFilesDir + 'bash_common'
+    bashPrivate = inputFilesDir + 'bash_private'
 
 def cleanUp():
   print "Cleaning up output files in " + destDir + " ..."
@@ -113,14 +115,14 @@ def createSymlink(targetName, linkName)	:
 
 def install():
   print "Compiling sections..."
-  with open('bash_common','r') as bashCommon:
+  with open(inputFilesDir + 'bash_common','r') as bashCommon:
       addInputFileContents(bashCommon,False)
-  if os.path.isfile('bash_private'):
-    with open('bash_private','r') as bashPrivate:
+  if os.path.isfile(inputFilesDir + 'bash_private'):
+    with open(inputFilesDir + 'bash_private','r') as bashPrivate:
       addInputFileContents(bashPrivate,False)
-  with open('bash_linux','r') as bashLinux:
+  with open(inputFilesDir + 'bash_linux','r') as bashLinux:
       addInputFileContents(bashLinux,True)
-  with open('bash_mac','r') as bashMac:
+  with open(inputFilesDir + 'bash_mac','r') as bashMac:
       addInputFileContents(bashMac,True)
 
   if sysName == 'Linux':

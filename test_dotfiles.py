@@ -26,8 +26,9 @@ class DotfilesTest(unittest.TestCase):
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
     self.linuxBashOutputFile = dotfiles.linuxBashOutputFile
     self.linuxBashOutputDotFile = '.' + self.linuxBashOutputFile
-    self.bashLinux = 'bash_linux'
-    self.bashPrivate = 'bash_private'
+    self.inputFilesDir = 'inputfiles/'
+    self.bashLinux = self.inputFilesDir + 'bash_linux'
+    self.bashPrivate = self.inputFilesDir + 'bash_private'
 
   def tearDown(self):
     self.createdSymlink = dotfiles.homeDir + 'foo'
@@ -121,7 +122,7 @@ class DotfilesTest(unittest.TestCase):
   def testLinuxTokensNotInMacBashOutputFile(self):
     dotfiles.main()
     with open(self.macBashOutputFile,'r') as macBashOutput:
-      with open('bash_linux','r') as bashLinux:
+      with open(self.bashLinux,'r') as bashLinux:
         linuxContents = bashLinux.read()
         macContents = macBashOutput.read()
         assert(linuxContents not in macContents)
