@@ -48,7 +48,7 @@ def cleanUp():
       os.remove(file)
 
 def handleBashOutputFileWrite(inputFile, contents):
-  if hasattr(inputFile, 'name'):
+  if hasattr(inputFile, 'name'): #It's an input file
     if inputFile.name == bashLinux:
       outputFiles = [linuxBashOutputFile, linuxBashOutputDotFile]
     elif inputFile.name == bashMac:
@@ -60,10 +60,10 @@ def handleBashOutputFileWrite(inputFile, contents):
         outputFiles = [linuxBashOutputDotFile]
       elif sysName == 'Darwin':
         outputFiles = [macBashOutputDotFile]
-  else:
+  else: #It's the file header StringIO
     if inputFile == linuxBashOutputDotFile:
       outputFiles = [linuxBashOutputFile, linuxBashOutputDotFile]
-    else:
+    elif inputFile == macBashOutputDotFile:
       outputFiles = [macBashOutputFile, macBashOutputDotFile]
   for file in outputFiles:
     with open(file,'a') as outputFile:
