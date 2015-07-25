@@ -76,7 +76,6 @@ class DotfilesTest(unittest.TestCase):
   def testBashInputFileContentsAreWrittenToOutputFile(self):
     self.inputFileMock = io.StringIO(u'some_token=some_value\n')
     dotfiles.addInputFileContents(self.inputFileMock, False)
-    foundExpectedResult = False
     mock = self.inputFileMock.getvalue()
     with open(self.macBashOutputFile,'r') as bashrc:
       result = bashrc.read()
