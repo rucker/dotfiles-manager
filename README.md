@@ -34,4 +34,3 @@ A: bashrc/bash_profile are what I commit to GitHub. They are for show. These fil
 
 ## TO DO
 -Move some files to a subdirectory to keep things tidy.
--Unit tests: the input files should be mocked.
