@@ -7,8 +7,8 @@ My dotfiles reached a point where they became complex enough that I didn't want 
 To that end, I wrote a Python script that will compile these dotfiles from external files (below) and generate the appropriate symlinks in ~ .
 
 ## Usage
-<code>$ python ./dotfilesinstaller.py</code>
-This will create a platform-specific bash dotfile in the project's directory as well as symlinks pointing to those files from ~/ . The dotfiles are compiled from the following files:
+<code>$ python ./scripts/dotfilesinstaller.py</code>
+This will create a platform-specific bash dotfile in the project's directory as well as symlinks pointing to those files from ~/ . The dotfiles are compiled from the following files, which are located in the <code>inputfiles</code> directory:
 
 ### bash_common
 Contains any elements common across platforms.
