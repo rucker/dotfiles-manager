@@ -26,7 +26,7 @@ class DotfilesTest(unittest.TestCase):
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
     self.linuxBashOutputFile = dotfiles.linuxBashOutputFile
     self.linuxBashOutputDotFile = '.' + self.linuxBashOutputFile
-    self.inputFilesDir = 'inputfiles/'
+    self.inputFilesDir = '../inputfiles/'
     self.bashLinux = self.inputFilesDir + 'bash_linux'
     self.bashPrivate = self.inputFilesDir + 'bash_private'
 
