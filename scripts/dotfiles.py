@@ -31,7 +31,7 @@ def identifySystem():
     print "System not supported!"
     exit(1)
   else:
-    inputFilesDir = 'inputfiles/'
+    inputFilesDir = '../inputfiles/'
     print "System identified as " + sysName
     linuxBashOutputFile = 'bashrc'
     linuxBashOutputDotFile = '.' + linuxBashOutputFile
