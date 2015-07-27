@@ -22,6 +22,7 @@ class DotfilesTest(unittest.TestCase):
     dotfiles.identifySystem()
     dotfiles.cleanUp()
     self.symlinkTarget = 'bar'
+    self.regularFile = dotfiles.homeDir + 'foo'
     self.macBashOutputFile = dotfiles.macBashOutputFile
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
     self.linuxBashOutputFile = dotfiles.linuxBashOutputFile
@@ -34,6 +35,10 @@ class DotfilesTest(unittest.TestCase):
     self.createdSymlink = dotfiles.homeDir + 'foo'
     if os.path.islink(self.createdSymlink):
       os.remove(self.createdSymlink)
+    if os.path.isfile(self.regularFile):
+      os.remove(self.regularFile)
+    if os.path.isfile(self.regularFile + '.bak'):
+      os.remove(self.regularFile + '.bak')
     if os.path.isfile(self.symlinkTarget):
       os.remove(self.symlinkTarget)
     dotfiles.cleanUp()
@@ -118,6 +123,15 @@ class DotfilesTest(unittest.TestCase):
     self.setUpSymlink()
     dotfiles.createSymlink('bar', 'foo')
     assert("Link is valid." in sys.stdout.getvalue().strip())
+
+  def testWhenSymlinkSourceExistsAndIsRegularFileItGetsRenamed(self):
+    with open(self.regularFile,'w') as source:
+      source.write('some_token=some_value')
+    self.setUpSymlink()
+    dotfiles.createSymlink('bar','foo')
+    assert("Renaming" in sys.stdout.getvalue().strip())
+    self.assertFalse(os.path.isfile(self.regularFile))
+    self.assertTrue(os.path.isfile(self.regularFile + '.bak'))
 
   def testLinuxTokensNotInMacBashOutputFile(self):
     dotfiles.main()
