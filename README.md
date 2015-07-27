@@ -33,4 +33,4 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts (which are what gets symlinked to from ~) do contain those private tokens.
 
 ## TO DO  
--Initial run: when ~/.bashrc or ~/.bash_profile exists and is a file, the script should delete or rename it, then create a symlink.
+-Nothing for now!
