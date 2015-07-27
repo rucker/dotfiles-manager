@@ -15,7 +15,9 @@ alias grep='grep --color=auto'
 alias dmesg='dmesg -T'
 
 source ~/code/scripts/git-prompt.sh
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+export GRAILS_HOME=~/.gvm/grails/current
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/
+export PATH="/usr/local/opt/coreutils/libexec/gnubin:$GRAILS_HOME/bin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 eval `dircolors`
 alias htop='sudo htop'
