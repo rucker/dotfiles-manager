@@ -7,8 +7,8 @@ My dotfiles reached a point where they became complex enough that I didn't want 
 To that end, I wrote a Python script that will compile these dotfiles from external files (below) and generate the appropriate symlinks in ~ .
 
 ## Usage
-<code>$ python ./dotfilesinstaller.py</code>
-This will create a platform-specific bash dotfile in the project's directory as well as symlinks pointing to those files from ~/ . The dotfiles are compiled from the following files:
+<code>$ python ./scripts/dotfilesinstaller.py</code>
+This will create a platform-specific bash dotfile in the project's directory as well as symlinks pointing to those files from ~/ . The dotfiles are compiled from the following files, which are located in the <code>inputfiles</code> directory:
 
 ### bash_common
 Contains any elements common across platforms.
@@ -29,9 +29,8 @@ A suite of unit tests is included in test_dotfiles.py. To run this, the <code>mo
 For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 
 ## FAQ
-Q: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
-A: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts (which are what gets symlinked to from ~) do contain those private tokens.
+**Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
+**A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts (which are what gets symlinked to from ~) do contain those private tokens.
 
-## TO DO
--Move some files to a subdirectory to keep things tidy.
--Unit tests: the input files should be mocked.
+## TO DO  
+-Initial run: when ~/.bashrc or ~/.bash_profile exists and is a file, the script should delete or rename it, then create a symlink.

@@ -9,6 +9,12 @@ import os
 import io
 import time
 
+class MockFile(io.StringIO):
+  name = None
+  def __init__(self, name, buffer_ = None):
+    super(MockFile, self).__init__(buffer_)
+    self.name = name
+
 class DotfilesTest(unittest.TestCase):
 
   def setUp(self):
@@ -20,6 +26,9 @@ class DotfilesTest(unittest.TestCase):
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
     self.linuxBashOutputFile = dotfiles.linuxBashOutputFile
     self.linuxBashOutputDotFile = '.' + self.linuxBashOutputFile
+    self.inputFilesDir = '../inputfiles/'
+    self.bashLinux = self.inputFilesDir + 'bash_linux'
+    self.bashPrivate = self.inputFilesDir + 'bash_private'
 
   def tearDown(self):
     self.createdSymlink = dotfiles.homeDir + 'foo'
@@ -73,14 +82,19 @@ class DotfilesTest(unittest.TestCase):
     with open(self.macBashOutputFile,'r') as bashrc:
       self.assertEquals(bashrc.readline(), "#!/bin/bash\n")
 
-  def testBashInputFileContentsAreWrittenToOutputFile(self):
-    self.inputFileMock = io.StringIO(u'some_token=some_value\n')
-    dotfiles.addInputFileContents(self.inputFileMock, False)
-    foundExpectedResult = False
-    mock = self.inputFileMock.getvalue()
-    with open(self.macBashOutputFile,'r') as bashrc:
-      result = bashrc.read()
-    self.assertTrue(result in mock)
+  def testBashLinuxFileContentsAreWrittenToOutputFile(self):
+    self.bashLinuxFileMock = MockFile(self.bashLinux, u'some_token=some_value\n')
+    dotfiles.addInputFileContents(self.bashLinuxFileMock, False)
+    with open(self.linuxBashOutputFile,'r') as bashrc:
+      self.assertTrue(bashrc.read() in self.bashLinuxFileMock.getvalue())
+
+  def testBashOutputFileDoesNotContainBashPrivateTokens(self):
+    self.bashLinuxFileMock = MockFile(self.bashLinux, u'some_token=some_value\n')
+    self.bashPrivateFileMock = MockFile(self.bashPrivate, u'private_token=private_value\n')
+    dotfiles.addInputFileContents(self.bashLinuxFileMock, False)
+    dotfiles.addInputFileContents(self.bashPrivateFileMock, False)
+    with open(self.linuxBashOutputFile,'r') as bashrc:
+      self.assertTrue(bashrc.read() not in self.bashPrivateFileMock.getvalue())
 
   def setUpSymlink(self):
     with open(self.symlinkTarget,'a') as bar:
@@ -105,43 +119,10 @@ class DotfilesTest(unittest.TestCase):
     dotfiles.createSymlink('bar', 'foo')
     assert("Link is valid." in sys.stdout.getvalue().strip())
 
-  def testBashOutputFileDoesNotContainBashPrivateTokens(self):
-    dummyFile = False
-    dummyLine = False
-    # Set up bash_private file if it doesn't exist or is empty
-    # FIXME: This should be done with mocking.
-    if not os.path.isfile('bash_private'):
-      with open('bash_private','w') as bashPrivate:
-        bashPrivate.write('foo=bar')
-        dummyFile = True
-    elif os.path.getsize('bash_private') == 0:
-      with open('bash_private','w') as bashPrivate:
-        bashPrivate.write('foo=bar')
-        dummyLine = True
-    dotfiles.install()
-    with open('bash_private','r') as bashPrivate:
-      with open(self.macBashOutputFile,'r') as bashrc:
-        for line in bashPrivate:
-          if line.strip():
-            assert(line not in bashrc.read())
-    # Clean up bash_private if we created/modified it for this test
-    if dummyFile:
-      os.remove('bash_private')
-    elif dummyLine:
-      with open('bash_private', 'w') as bashPrivate:
-        bashPrivate.seek(0)
-        bashPrivate.truncate()
-
-  def testAllOutputFilesExistAfterInstallation(self):
-    dotfiles.main()
-    for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
-      if not os.path.isfile(file):
-	self.fail("Did not find expected output file: "  + file)
-
   def testLinuxTokensNotInMacBashOutputFile(self):
     dotfiles.main()
     with open(self.macBashOutputFile,'r') as macBashOutput:
-      with open('bash_linux','r') as bashLinux:
+      with open(self.bashLinux,'r') as bashLinux:
         linuxContents = bashLinux.read()
         macContents = macBashOutput.read()
         assert(linuxContents not in macContents)
