@@ -108,6 +108,9 @@ def createSymlink(targetName, linkName)	:
     else:
       print "\tLink is valid."
       return
+  elif os.path.isfile(link):
+    print "\tLink source is regular file. Renaming to " + homeDir + linkName + '.bak'
+    os.rename(link, homeDir + linkName + '.bak')
   else:
     print "\tSymlink does not exist. Creating..."
   os.symlink(target, link)
