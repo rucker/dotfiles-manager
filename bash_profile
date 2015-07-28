@@ -14,7 +14,9 @@ alias diff='colordiff'
 alias grep='grep --color=auto'
 alias dmesg='dmesg -T'
 
-source ~/code/scripts/git-prompt.sh
+if [ -f ~/code/scripts/git-prompt.sh ]; then
+  source ~/code/scripts/git-prompt.sh
+fi
 export GRAILS_HOME=~/.gvm/grails/current
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$GRAILS_HOME/bin:$PATH"

@@ -14,7 +14,9 @@ alias diff='colordiff'
 alias grep='grep --color=auto'
 alias dmesg='dmesg -T'
 
-source ~/code/scripts/git-prompt.sh
+if [ -f ~/code/scripts/git-prompt.sh ]; then
+  source ~/code/scripts/git-prompt.sh
+fi
 alias pbcopy='xclip -selection c'
 alias gimme='sudo apt-get install'
 alias remove='sudo apt-get remove'
