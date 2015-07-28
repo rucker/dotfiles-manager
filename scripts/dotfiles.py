@@ -9,14 +9,16 @@ import sys
 def init():
   global homeDir
   global destDir
+  global inputFilesDir
 
   homeDir = os.path.expanduser('~') + '/'
-  destDir = os.path.dirname(os.path.abspath(__file__)) + '/'
+  thisDir = os.path.dirname(os.path.abspath(__file__))
+  destDir = thisDir[:thisDir.rfind('/') + 1]
+  inputFilesDir = destDir + 'inputfiles/'
   os.chdir(destDir)
 
 def identifySystem():
   global sysName
-  global inputFilesDir
   global macBashOutputFile
   global macBashOutputDotFile
   global linuxBashOutputFile
@@ -31,7 +33,6 @@ def identifySystem():
     print "System not supported!"
     exit(1)
   else:
-    inputFilesDir = '../inputfiles/'
     print "System identified as " + sysName
     linuxBashOutputFile = 'bashrc'
     linuxBashOutputDotFile = '.' + linuxBashOutputFile
@@ -81,7 +82,7 @@ def addBashOutputFileHeader():
 
 def addInputFileContents(inputFile, allowComments):
   if hasattr(inputFile, 'name'):
-    print "\t" + inputFile.name
+    print "\t" + inputFile.name[inputFile.name.rfind('/') + 1:]
   with io.StringIO() as bashrc:
     for line in inputFile:
       if line.startswith('#'):
