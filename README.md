@@ -33,6 +33,6 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts (which are what gets symlinked to from ~) do contain those private tokens.
 
 ## TO DO  
--Do away with symlinks.
--Check if program is installed before using it in an alias (e.g. colordiff)
+-Do away with symlinks.  
+-Check if program is installed before using it in an alias (e.g. colordiff)  
 -Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
