@@ -27,7 +27,7 @@ class DotfilesTest(unittest.TestCase):
     self.macBashOutputDotFile = '.' + self.macBashOutputFile
     self.linuxBashOutputFile = dotfiles.linuxBashOutputFile
     self.linuxBashOutputDotFile = '.' + self.linuxBashOutputFile
-    self.inputFilesDir = '../inputfiles/'
+    self.inputFilesDir = dotfiles.inputFilesDir
     self.bashLinux = self.inputFilesDir + 'bash_linux'
     self.bashPrivate = self.inputFilesDir + 'bash_private'
 
@@ -130,7 +130,6 @@ class DotfilesTest(unittest.TestCase):
     self.setUpSymlink()
     dotfiles.createSymlink('bar','foo')
     assert("Renaming" in sys.stdout.getvalue().strip())
-    self.assertFalse(os.path.isfile(self.regularFile))
     self.assertTrue(os.path.isfile(self.regularFile + '.bak'))
 
   def testLinuxTokensNotInMacBashOutputFile(self):
