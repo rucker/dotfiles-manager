@@ -1,7 +1,13 @@
 #!/bin/bash
 # Use this file for aliases that are common across platforms.
 
-export PS1="\[\033[G\]\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[0;35m\]\$(__git_ps1)\[\033[01;34m\] \$\[\033[00m\] "
+PS1="\[\033[G\]\[\033[01;32m\]\u@\h\[\033[01;34m\] \w"
+if [ -f ~/code/scripts/git-prompt.sh ]; then
+  source ~/code/scripts/git-prompt.sh
+  PS1=$PS1"\[\033[0;35m\]\$(__git_ps1)\[\033[01;34m\]"
+fi
+export PS1=$PS1"\$\[\033[00m\] "
+
 umask 022
 
 export LS_OPTIONS='-h --color=auto --group-directories-first'
@@ -13,6 +19,3 @@ alias diff='colordiff'
 alias grep='grep --color=auto'
 alias dmesg='dmesg -T'
 
-if [ -f ~/code/scripts/git-prompt.sh ]; then
-  source ~/code/scripts/git-prompt.sh
-fi
