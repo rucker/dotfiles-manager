@@ -26,4 +26,4 @@ export PATH="/usr/local/opt/coreutils/libexec/gnubin:$GRAILS_HOME/bin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 eval `dircolors`
 alias htop='sudo htop'
-source ~/.gvm/bin/gvm-init.sh
+source ~/.sdkman/bin/sdkman-init.sh
