@@ -9,12 +9,18 @@ magenta="\[\033[1;35m\]"
 default="\[\033[00m\]"
 timestamp="[\D{%Y-%m-%d} \t]"
 
-PS1="$goToFirstCol$timestamp$green\u@\h$blue \w"
+PS1="$goToFirstCol$timestamp $green\u@\h$blue \w"
 if [ -f ~/code/scripts/git-prompt.sh ]; then
   source ~/code/scripts/git-prompt.sh
   PS1=$PS1"$magenta$(__git_ps1)"
 fi
 export PS1=$PS1"$blue\n\$$default "
+
+do_alias() {
+  if [ "$(which $2)" != "" ]; then
+    alias $1=$2
+  fi
+}
 
 umask 022
 
@@ -23,11 +29,11 @@ export LS_OPTIONS='-h --color=auto --group-directories-first'
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
-alias diff='colordiff'
+do_alias "diff" "colordiff"
 alias grep='grep --color=auto'
 alias dmesg='dmesg -T'
 
-alias pbcopy='xclip -selection c'
+do_alias "pbcopy" "xclip -selection c"
 alias gimme='sudo apt-get install'
 alias remove='sudo apt-get remove'
 eval `dircolors`
