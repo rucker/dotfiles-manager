@@ -7,13 +7,14 @@ green="\[\033[1;32m\]"
 blue="\[\033[1;34m\]"
 magenta="\[\033[1;35m\]"
 default="\[\033[00m\]"
+timestamp="[\D{%Y-%m-%d} \t]"
 
-PS1="$goToFirstCol$green\u@\h$blue \w"
+PS1="$goToFirstCol$timestamp$green\u@\h$blue \w"
 if [ -f ~/code/scripts/git-prompt.sh ]; then
   source ~/code/scripts/git-prompt.sh
   PS1=$PS1"$magenta$(__git_ps1)"
 fi
-export PS1=$PS1"$blue \$$default "
+export PS1=$PS1"$blue\n\$$default "
 
 umask 022
 
