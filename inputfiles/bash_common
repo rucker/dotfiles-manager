@@ -18,7 +18,7 @@ export PS1=$PS1"$blue_bold\n\$$default "
 
 do_alias() {
   if [ "$(which $2)" != "" ]; then
-    alias $1=$2
+    alias "$1"="$2"
   fi
 }
 
