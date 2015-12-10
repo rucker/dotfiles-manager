@@ -32,4 +32,4 @@ alias l='ls $LS_OPTIONS -lA'
 do_alias "diff" "colordiff"
 alias grep='grep --color=auto'
 alias dmesg='dmesg -T'
-
+alias hgrep='history | grep'
