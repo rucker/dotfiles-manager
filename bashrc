@@ -32,7 +32,7 @@ alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
 do_alias "diff" "colordiff"
 alias grep='grep --color=auto'
-alias dmesg='dmesg -T'
+alias dmesg='dmesg -H'
 
 do_alias "pbcopy" "xclip -selection c"
 alias gimme='sudo apt-get install'

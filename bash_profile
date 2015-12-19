@@ -32,7 +32,7 @@ alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
 do_alias "diff" "colordiff"
 alias grep='grep --color=auto'
-alias dmesg='dmesg -T'
+alias dmesg='dmesg -H'
 
 export GRAILS_HOME=~/.gvm/grails/current
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/
