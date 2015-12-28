@@ -60,16 +60,16 @@ class DotfilesTest(unittest.TestCase):
       assert(sys.stdout.getvalue().strip().endswith('not supported!'))
       assertEqual(cm.exception.code, 1)
 
-  def testInstallerWillDeleteExistingOutputFiles(self):
+  def testInstallerWillCleanUpExistingOutputFiles(self):
     dotfiles.init()
     dotfiles.identifySystem()
     self.macBashOutputFile = dotfiles.macBashOutputFile
-    for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
+    for file in [self.macBashOutputFile, self.linuxBashOutputFile]:
       with open(file,'a') as bash:
         bash.write('Test file...')
     dotfiles.cleanUp()
 
-    for file in [self.macBashOutputFile, self.macBashOutputDotFile, self.linuxBashOutputFile, self.linuxBashOutputDotFile]:
+    for file in [self.macBashOutputFile, self.linuxBashOutputFile]:
       assert("Removing " + file in sys.stdout.getvalue().strip())
       self.assertFalse(os.path.isfile(file))
 
