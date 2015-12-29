@@ -36,3 +36,4 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 
 ## TO DO  
 -Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
+-Add .gitconfig to this repo. This file should probably be compiled like .bash* so I can do things like use different credentials on different machines.
