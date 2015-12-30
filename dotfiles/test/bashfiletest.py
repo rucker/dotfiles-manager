@@ -4,23 +4,19 @@ import sys
 sys.path.insert(0, '../')
 import unittest
 import io
+import __builtin__
+from mock import mock_open, patch
 
 from dotfiles import bashfile
-from systems import Systems
-
-class MockFile(io.StringIO):
-  name = None
-  def __init__(self, name, buffer_ = None):
-    super(MockFile, self).__init__(buffer_)
-    self.name = name
+from constants import Systems, BashInputFiles
 
 class BashfileTest(unittest.TestCase):
 
   def testBashFileStartsWithShebangAndCorrectHeader(self):
     with io.StringIO() as fileBuffer:
-      bashfile.writeHeader(Systems.DARWIN.value, fileBuffer)
-      assert(fileBuffer.getvalue().startswith('#!/bin/bash'))
-      assert(fileBuffer.getvalue().index('bash_profile') > -1)
+      bashfile.writeHeader('.bash_profile', fileBuffer)
+      self.assertTrue(fileBuffer.getvalue().startswith('#!/bin/bash'))
+      self.assertTrue(fileBuffer.getvalue().index('.bash_profile') > -1)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BashfileTest)
 unittest.main(module=__name__, buffer=True, exit=False)
