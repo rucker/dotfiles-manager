@@ -3,19 +3,29 @@
 import sys
 import platform
 import io
-from systems import Systems
+import os
+from constants import Systems, BashInputFiles
+import bashfile
+import env
+
+def init():
+  identifySystem()
+
+  env.homeDir = os.path.expanduser('~') + '/'
+  env.workingDir = os.path.dirname(os.path.abspath(__file__)) + '/'
+  env.inputFilesDir = env.workingDir + 'inputfiles/'
+  env.outputFilesDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
+  os.chdir(env.workingDir)
 
 def identifySystem():
-  global sysName
   supportedPlatforms = [Systems.DARWIN.value, Systems.LINUX.value]
-  sysName = platform.system()
+  env.sysName = platform.system()
 
-  if sysName not in supportedPlatforms:
+  if env.sysName not in supportedPlatforms:
     print "System not supported!"
     exit(1)
-  print "System identified as " + sysName
+  print "System identified as " + env.sysName
 
 if __name__ == '__main__':
-  identifySystem()
-  with io.StringIO() as fileBuffer:
-    bashfile.writeHeader(sysName, fileBuffer)
+  init()
+  bashfile.compileBashProfile()
