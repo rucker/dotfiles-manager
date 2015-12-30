@@ -1,5 +1,3 @@
-#!/bin/bash
-# Use this file for aliases that are common across platforms.
 
 goToFirstCol="\[\033[G\]"
 green_bold="\[\033[1;32m\]"
