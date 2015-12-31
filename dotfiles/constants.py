@@ -12,3 +12,9 @@ class BashInputFiles(Enum):
   BASH_MAC = 'bash_mac'
   BASH_LINUX = 'bash_linux'
   BASH_PRIVATE = 'bash_private'
+
+class BashOutputFiles(Enum):
+  BASH_PROFILE = 'bash_profile'
+  DOT_BASH_PROFILE = '.bash_profile'
+  BASHRC = 'bashrc'
+  DOT_BASHRC = '.bashrc'

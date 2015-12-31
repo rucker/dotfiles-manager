@@ -35,6 +35,9 @@ def identifySystem():
     exit(1)
   print "System identified as " + env.sysName
 
-if __name__ == '__main__':
+def main():
   init()
-  bashfile.compileBashProfile()
+  bashfile.compileBashFiles()
+
+if __name__ == '__main__':
+  main()
