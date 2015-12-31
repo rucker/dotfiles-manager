@@ -2,17 +2,14 @@
 
 import sys
 import unittest
-import io
-import os
-import __builtin__
-from mock import mock_open, patch
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import env
 import dotfiles
+import testfilemocks
 from dotfiles import bashfile
-from constants import Systems, BashInputFiles
+from constants import Systems, BashInputFiles, BashOutputFiles
 
 class BashFileIntTest(unittest.TestCase):
 
@@ -22,58 +19,73 @@ class BashFileIntTest(unittest.TestCase):
     env.inputFilesDir = ''
     env.outputFilesDir = ''
     env.homeDir = ''
-    self.createInputFiles()
+    testfilemocks.createInputFiles()
 
   @classmethod
   def tearDownClass(self):
-    self.destroyInputAndOutputFiles()
+    testfilemocks.destroyInputAndOutputFiles()
 
   def testBashCommonAndBashMacWrittenToBashProfile(self):
     bashfile.compileBashProfile()
-    with open(env.outputFilesDir + 'bash_profile') as bashProfile:
+    with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value) as bashProfile:
       contents = bashProfile.read()
-      with open(env.inputFilesDir + 'bash_common') as bashInput:
+      with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value) as bashInput:
         self.assertTrue(bashInput.read() in contents)
-      with open(env.inputFilesDir + 'bash_mac') as bashInput:
+      with open(env.inputFilesDir + BashInputFiles.BASH_MAC.value) as bashInput:
         self.assertTrue(bashInput.read() in contents)
 
   def testBashLinuxNotWrittenToBashProfile(self):
     bashfile.compileBashProfile()
-    with open(env.outputFilesDir + 'bash_profile') as bashProfile:
+    with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value) as bashProfile:
       contents = bashProfile.read()
-      with open(env.inputFilesDir + 'bash_linux') as bashInput:
+      with open(env.inputFilesDir + BashInputFiles.BASH_LINUX.value) as bashInput:
         self.assertTrue(bashInput.read() not in contents)
 
   def testBashPrivateNotWrittenToBashProfileInWorkingDir(self):
     bashfile.compileBashProfile()
-    with open(env.outputFilesDir + 'bash_profile') as bashProfile:
+    with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value) as bashProfile:
       contents = bashProfile.read()
-      with open(env.inputFilesDir + 'bash_private') as bashInput:
+      with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
         self.assertTrue(bashInput.read() not in contents)
 
   def testBashPrivateWrittenToBashProfileInHomeDir(self):
+    env.sysName = Systems.DARWIN.value
     bashfile.compileBashProfile()
-    with open(env.homeDir + '.bash_profile') as bashProfile:
+    with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bashProfile:
       contents = bashProfile.read()
-      with open(env.inputFilesDir + 'bash_private') as bashInput:
+      with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
         self.assertTrue(bashInput.read() in contents)
 
-  @classmethod
-  def createInputFiles(self):
-    with open('bash_common', 'w') as bashCommon:
-      bashCommon.write('some_common_token=some_common_value')
-    with open('bash_mac', 'w') as bashMac:
-      bashMac.write('some_mac_token=some_mac_value')
-    with open('bash_linux', 'w') as bashLinux:
-      bashLinux.write('some_linux_token=some_linux_value')
-    with open('bash_private', 'w') as bashPrivate:
-      bashPrivate.write('some_private_token=some_private_value')
+  def testBashCommonAndBashLinuxWrittenToBashrc(self):
+    bashfile.compileBashrc()
+    with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
+      contents = bashrc.read()
+      with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value) as bashInput:
+        self.assertTrue(bashInput.read() in contents)
+      with open(env.inputFilesDir + BashInputFiles.BASH_LINUX.value) as bashInput:
+        self.assertTrue(bashInput.read() in contents)
 
-  @classmethod
-  def destroyInputAndOutputFiles(self):
-    for file in ['bash_common', 'bash_mac', 'bash_linux', 'bash_private', 'bash_profile', 'bashrc', '.bash_profile', '.bashrc']:
-      if os.path.isfile(file):
-        os.remove(file)
+  def testBashMacNotWrittenToBashrc(self):
+    bashfile.compileBashrc()
+    with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
+      contents = bashrc.read()
+      with open(env.inputFilesDir + BashInputFiles.BASH_MAC.value) as bashInput:
+        self.assertTrue(bashInput.read() not in contents)
+
+  def testBashPrivateNotWrittenToBashrcInWorkingDir(self):
+    bashfile.compileBashrc()
+    with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
+      contents = bashrc.read()
+      with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
+        self.assertTrue(bashInput.read() not in contents)
+
+  def testBashPrivateWrittenToBashrcInHomeDir(self):
+    env.sysName = Systems.LINUX.value
+    bashfile.compileBashrc()
+    with open(env.homeDir + BashOutputFiles.DOT_BASHRC.value) as bashrc:
+      contents = bashrc.read()
+      with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
+        self.assertTrue(bashInput.read() in contents)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
