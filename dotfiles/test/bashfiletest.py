@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
 import sys
-sys.path.insert(0, '../')
 import unittest
 import io
 import __builtin__
 from mock import mock_open, patch
+
+sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 from dotfiles import bashfile
 from constants import Systems, BashInputFiles
