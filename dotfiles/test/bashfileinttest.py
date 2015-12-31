@@ -49,7 +49,7 @@ class BashFileIntTest(unittest.TestCase):
         self.assertTrue(bashInput.read() not in contents)
 
   def testBashPrivateWrittenToBashProfileInHomeDir(self):
-    env.sysName = Systems.DARWIN.value
+    env.platform = Systems.DARWIN.value
     bashfile.compileBashProfile()
     with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bashProfile:
       contents = bashProfile.read()
@@ -80,7 +80,7 @@ class BashFileIntTest(unittest.TestCase):
         self.assertTrue(bashInput.read() not in contents)
 
   def testBashPrivateWrittenToBashrcInHomeDir(self):
-    env.sysName = Systems.LINUX.value
+    env.platform = Systems.LINUX.value
     bashfile.compileBashrc()
     with open(env.homeDir + BashOutputFiles.DOT_BASHRC.value) as bashrc:
       contents = bashrc.read()

@@ -28,12 +28,12 @@ def init():
 
 def identifySystem():
   supportedPlatforms = [Systems.DARWIN.value, Systems.LINUX.value]
-  env.sysName = platform.system()
+  env.platform = platform.system()
 
-  if env.sysName not in supportedPlatforms:
+  if env.platform not in supportedPlatforms:
     print "System not supported!"
     exit(1)
-  print "System identified as " + env.sysName
+  print "System identified as " + env.platform
 
 def main():
   init()
