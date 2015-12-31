@@ -17,10 +17,6 @@ class BashFileIntTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(self):
-    dotfiles.init()
-    env.inputFilesDir = ''
-    env.outputFilesDir = ''
-    env.homeDir = ''
     testfilemocks.createInputFiles()
 
   @classmethod
@@ -29,13 +25,28 @@ class BashFileIntTest(unittest.TestCase):
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
   def testBashrcNotCreatedInHomeDirOnDarwinSystem(self):
-    dotfiles.main()
+    bashfile.compileBashFiles()
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
     self.assertFalse(os.path.isfile(BashOutputFiles.DOT_BASHRC.value))
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.LINUX.value))
   def testBashProfileNotCreatedInHomeDirOnLinuxSystem(self):
-    dotfiles.main()
+    bashfile.compileBashFiles()
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
     self.assertFalse(os.path.isfile(BashOutputFiles.DOT_BASH_PROFILE.value))
+
+  def testValidSymlinkToVimrcIsCreated(self):
+    bashfile.compileBashFiles()
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    self.assertTrue(os.path.isfile(VimFiles.DOT_VIMRC.value))
+
+  def testWhenDotVimrcExistsInHomeDirAndIsRegularFileItGetsDeleted(self):
+    os.remove(VimFiles.DOT_VIMRC.value)
+    with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
+      vimrc.write("foo bar baz")
+    bashfile.compileBashFiles()
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    self.assertTrue("Deleted." in sys.stdout.getvalue().strip())
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

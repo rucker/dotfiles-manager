@@ -39,6 +39,10 @@ def symlink(targetName, linkName) :
   print "Symlink " + link + " -> " + target
   if os.path.islink(link):
       print "\tLink already exists."
+  elif os.path.isfile(link):
+      print "\tRegular file exists at " + link + ".Deleting..."
+      os.remove(link)
+      print "Deleted."
   else:
     print "\tSymlink does not exist. Creating..."
     os.symlink(target, link)
@@ -48,7 +52,7 @@ def main():
   print "\nPreparing dotfiles!\n"
   init()
   bashfile.compileBashFiles()
-  symlink(VimFiles.DOT_VIMRC.value, VimFiles.VIMRC.value)
+  symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
   print "\nDone."
 
 if __name__ == '__main__':
