@@ -11,20 +11,33 @@ import time
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import dotfiles
-from constants import Systems
+from constants import Systems, VimFiles
 import env
+import testfilemocks
 
 class DotfilesTest(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(self):
+    dotfiles.init()
+    env.inputFilesDir = ''
+    env.outputFilesDir = ''
+    env.homeDir = ''
+    testfilemocks.createInputFiles()
+
+  @classmethod
+  def tearDownClass(self):
+    testfilemocks.destroyInputAndOutputFiles()
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
   def testWhenSystemIsDarwinInstallerIdentifiesSystemAsDarwin(self):
     dotfiles.identifySystem()
-    self.assertTrue(sys.stdout.getvalue().strip().endswith(Systems.DARWIN.value))
+    self.assertEquals(env.platform, Systems.DARWIN.value)
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.LINUX.value))
   def testWhenSystemIsLinuxInstallerIdentifiesSystemAsLinux(self):
     dotfiles.identifySystem()
-    self.assertTrue(sys.stdout.getvalue().strip().endswith(Systems.LINUX.value))
+    self.assertEquals(env.platform, Systems.LINUX.value)
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.WINDOWS.value))
   def testWhenSystemIsWindowsInstallerIdentifiesSystemAsWindowsAndExitsWithCode1(self):
@@ -32,6 +45,19 @@ class DotfilesTest(unittest.TestCase):
       dotfiles.identifySystem()
       self.assertTrue(sys.stdout.getvalue().strip().endswith('not supported!'))
       assertEqual(cm.exception.code, 1)
+
+  def testWhenSymlinkDoesNotExistItGetsCreated(self):
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    try:
+      os.stat(VimFiles.DOT_VIMRC.value)
+      self.assertTrue("Link created." in sys.stdout.getvalue().strip())
+    except OSError:
+      self.fail("Symlink " + VimFiles.DOT_VIMRC.value + " not created!")
+
+  def testWhenSymlinkExistsItGetsReported(self):
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    self.assertTrue("Link already exists." in sys.stdout.getvalue().strip())
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)

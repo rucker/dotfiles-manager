@@ -18,3 +18,7 @@ class BashOutputFiles(Enum):
   DOT_BASH_PROFILE = '.bash_profile'
   BASHRC = 'bashrc'
   DOT_BASHRC = '.bashrc'
+
+class VimFiles(Enum):
+  VIMRC = 'vimrc'
+  DOT_VIMRC = '.vimrc'
