@@ -1,13 +1,14 @@
 #!/usr/bin/python
 
 import sys
-sys.path.insert(0, '../')
 import unittest
 import mock
 import platform
 import os
 import io
 import time
+
+sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import dotfiles
 from constants import Systems

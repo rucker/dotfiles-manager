@@ -15,6 +15,14 @@ def init():
   env.workingDir = os.path.dirname(os.path.abspath(__file__)) + '/'
   env.inputFilesDir = env.workingDir + 'inputfiles/'
   env.outputFilesDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
+
+  print "Environment:"
+  print os.path.realpath(__file__)
+  print "homeDir: " + env.homeDir
+  print "workingDir: " + env.workingDir
+  print "inputFilesDir: " + env.inputFilesDir
+  print "outputFilesDir: " + env.outputFilesDir
+
   os.chdir(env.workingDir)
 
 def identifySystem():
