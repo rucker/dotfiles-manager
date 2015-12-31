@@ -34,7 +34,7 @@ def identifySystem():
     exit(1)
 
 def symlink(targetName, linkName) :
-  target = env.workingDir + targetName
+  target = env.outputFilesDir + targetName
   link = env.homeDir + linkName
   print "Symlink " + link + " -> " + target
   if os.path.islink(link):
