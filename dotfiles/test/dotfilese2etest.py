@@ -11,7 +11,7 @@ import env
 import dotfiles
 import testfilemocks
 from dotfiles import bashfile
-from constants import Systems, BashInputFiles, BashOutputFiles
+from constants import Systems, BashInputFiles, BashOutputFiles, VimFiles
 
 class BashFileIntTest(unittest.TestCase):
 

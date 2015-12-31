@@ -4,7 +4,7 @@ import sys
 import platform
 import io
 import os
-from constants import Systems, BashInputFiles
+from constants import Systems, VimFiles
 import bashfile
 import env
 
@@ -16,13 +16,12 @@ def init():
   env.inputFilesDir = env.workingDir + 'inputfiles/'
   env.outputFilesDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
 
-  print ""
   print "Environment:"
-  print "homeDir: " + env.homeDir
-  print "workingDir: " + env.workingDir
-  print "inputFilesDir: " + env.inputFilesDir
-  print "outputFilesDir: " + env.outputFilesDir
-  print ""
+  print "\tplatform: " + env.platform
+  print "\thomeDir: " + env.homeDir
+  print "\tworkingDir: " + env.workingDir
+  print "\tinputFilesDir: " + env.inputFilesDir
+  print "\toutputFilesDir: " + env.outputFilesDir
 
   os.chdir(env.workingDir)
 
@@ -33,11 +32,24 @@ def identifySystem():
   if env.platform not in supportedPlatforms:
     print "System not supported!"
     exit(1)
-  print "System identified as " + env.platform
+
+def symlink(targetName, linkName) :
+  target = env.workingDir + targetName
+  link = env.homeDir + linkName
+  print "Symlink " + link + " -> " + target
+  if os.path.islink(link):
+      print "\tLink already exists."
+  else:
+    print "\tSymlink does not exist. Creating..."
+    os.symlink(target, link)
+    print "\tLink created."
 
 def main():
+  print "\nPreparing dotfiles!\n"
   init()
   bashfile.compileBashFiles()
+  symlink(VimFiles.DOT_VIMRC.value, VimFiles.VIMRC.value)
+  print "\nDone."
 
 if __name__ == '__main__':
   main()
