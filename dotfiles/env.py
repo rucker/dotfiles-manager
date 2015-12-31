@@ -3,7 +3,7 @@
 import os
 import platform
 
-sysName = ''
+platform = ''
 homeDir = ''
 workingDir = ''
 inputFilesDir = ''

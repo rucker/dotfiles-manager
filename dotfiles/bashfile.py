@@ -26,7 +26,7 @@ def compileBashProfile():
     writeInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
     writeInputFileContents(BashInputFiles.BASH_MAC.value, fileBuffer)
     writeOutputFile(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value, fileBuffer)
-    if env.sysName is Systems.DARWIN.value:
+    if env.platform is Systems.DARWIN.value:
       writeInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
       writeOutputFile(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value, fileBuffer)
     print "\nDone."
@@ -38,7 +38,7 @@ def compileBashrc():
     writeInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
     writeInputFileContents(BashInputFiles.BASH_LINUX.value, fileBuffer)
     writeOutputFile(env.outputFilesDir + BashOutputFiles.BASHRC.value, fileBuffer)
-    if env.sysName is Systems.LINUX.value:
+    if env.platform is Systems.LINUX.value:
       writeInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
       writeOutputFile(env.homeDir + BashOutputFiles.DOT_BASHRC.value, fileBuffer)
     print "\nDone."
