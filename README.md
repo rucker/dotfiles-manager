@@ -1,5 +1,5 @@
 # dotfiles
-These are my dotfiles. There are many like them, but these are mine.
+These are my dotfiles. There are many like them, but these are mine. This repo contains my current dotfiles as well as a build script to set up/compile them.
 
 ## Background
 My dotfiles reached a point where they became complex enough that I didn't want to manage them by hand any more: not only do I want different things in .bashrc on Linux than I do in .bash_profile on OS X, but also I want to avoid accidentally committing any sensitive data they might contain to GitHub.
