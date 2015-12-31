@@ -21,6 +21,7 @@ class BashFileIntTest(unittest.TestCase):
     dotfiles.init()
     env.inputFilesDir = ''
     env.outputFilesDir = ''
+    env.homeDir = ''
     self.createInputFiles()
 
   @classmethod
@@ -43,6 +44,20 @@ class BashFileIntTest(unittest.TestCase):
       with open(env.inputFilesDir + 'bash_linux') as bashInput:
         self.assertTrue(bashInput.read() not in contents)
 
+  def testBashPrivateNotWrittenToBashProfileInWorkingDir(self):
+    bashfile.compileBashProfile()
+    with open(env.outputFilesDir + 'bash_profile') as bashProfile:
+      contents = bashProfile.read()
+      with open(env.inputFilesDir + 'bash_private') as bashInput:
+        self.assertTrue(bashInput.read() not in contents)
+
+  def testBashPrivateWrittenToBashProfileInHomeDir(self):
+    bashfile.compileBashProfile()
+    with open(env.homeDir + '.bash_profile') as bashProfile:
+      contents = bashProfile.read()
+      with open(env.inputFilesDir + 'bash_private') as bashInput:
+        self.assertTrue(bashInput.read() in contents)
+
   @classmethod
   def createInputFiles(self):
     with open('bash_common', 'w') as bashCommon:
@@ -56,7 +71,7 @@ class BashFileIntTest(unittest.TestCase):
 
   @classmethod
   def destroyInputAndOutputFiles(self):
-    for file in ['bash_common', 'bash_mac', 'bash_linux', 'bash_private', 'bash_profile', 'bashrc']:
+    for file in ['bash_common', 'bash_mac', 'bash_linux', 'bash_private', 'bash_profile', 'bashrc', '.bash_profile', '.bashrc']:
       if os.path.isfile(file):
         os.remove(file)
 
