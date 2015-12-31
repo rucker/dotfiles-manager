@@ -9,8 +9,8 @@ To those ends, I wrote a Python script that will compile these dotfiles from ext
 Also, I want to easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, the script will create the appropriate symlinks from ~ to this repo.
 
 ## Usage
-<code>$ python ./scripts/dotfiles.py</code>
-This will create a platform-specific bash dotfile in ~ . The dotfiles are compiled from the following files, which are located in the <code>inputfiles</code> directory:
+<code>$ python ./dotfiles/dotfiles.py</code>
+This will symlink ~/.vimrc -> ./vimrc and create a platform-specific bash dotfile in ~ . The dotfiles are compiled from the following files, which are located in the <code>dotfiles/inputfiles</code> directory:
 
 ### bash_common
 Contains any elements common across platforms.
