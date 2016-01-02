@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import io
+import os
 
 import env
 from constants import Systems, BashInputFiles, BashOutputFiles
@@ -19,29 +20,33 @@ def writeOutputFile(filePath, fileBuffer):
   with open(filePath, 'w') as outputFile:
     outputFile.write(fileBuffer.getvalue())
 
-def compileBashProfile():
-  print "Compiling file: " + BashOutputFiles.BASH_PROFILE.value
+def compileBashFile(platform):
+  if platform is Systems.DARWIN.value:
+    bashFile = BashOutputFiles.BASH_PROFILE.value
+    bashDotFile = BashOutputFiles.DOT_BASH_PROFILE.value
+    bashPlatformFile = BashInputFiles.BASH_MAC.value
+  elif platform is Systems.LINUX.value:
+    bashFile = BashOutputFiles.BASHRC.value
+    bashDotFile = BashOutputFiles.DOT_BASHRC.value
+    bashPlatformFile = BashInputFiles.BASH_LINUX.value
+  print "Compiling file: " + bashFile
   with io.StringIO() as fileBuffer:
-    writeHeader(BashOutputFiles.DOT_BASH_PROFILE.value, fileBuffer)
+    writeHeader(bashDotFile, fileBuffer)
     writeInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
-    writeInputFileContents(BashInputFiles.BASH_MAC.value, fileBuffer)
-    writeOutputFile(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value, fileBuffer)
-    if env.platform == Systems.DARWIN.value:
-      writeInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
-      writeOutputFile(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value, fileBuffer)
+    writeInputFileContents(bashPlatformFile, fileBuffer)
+    writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
+    if env.platform is platform:
+      if os.path.isfile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value):
+	writeInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
+	writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
+      else:
+	print BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..."
     print "File completed."
 
+def compileBashProfile():
+  compileBashFile(Systems.DARWIN.value)
 def compileBashrc():
-  print "Compiling file: " + BashOutputFiles.BASHRC.value
-  with io.StringIO() as fileBuffer:
-    writeHeader(BashOutputFiles.DOT_BASHRC.value, fileBuffer)
-    writeInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
-    writeInputFileContents(BashInputFiles.BASH_LINUX.value, fileBuffer)
-    writeOutputFile(env.outputFilesDir + BashOutputFiles.BASHRC.value, fileBuffer)
-    if env.platform == Systems.LINUX.value:
-      writeInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
-      writeOutputFile(env.homeDir + BashOutputFiles.DOT_BASHRC.value, fileBuffer)
-    print "File completed."
+  compileBashFile(Systems.LINUX.value)
 
 def compileBashFiles():
   compileBashProfile()

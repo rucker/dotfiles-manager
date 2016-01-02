@@ -19,10 +19,20 @@ def createInputFiles():
   with open(VimFiles.VIMRC.value, 'w') as vimrc:
     vimrc.write('someconfigs')
 
+def createFile(fileName, contents):
+  with open(fileName, 'w') as file:
+    file.write('some_token=some_value')
+
+def destroyFile(fileName):
+  if os.path.isfile(fileName):
+    os.remove(fileName)
+
 def destroyInputAndOutputFiles():
-  for file in [BashInputFiles.BASH_COMMON, BashInputFiles.BASH_MAC, BashInputFiles.BASH_LINUX, BashInputFiles.BASH_PRIVATE, BashOutputFiles.BASH_PROFILE, BashOutputFiles.DOT_BASH_PROFILE, BashOutputFiles.BASHRC, BashOutputFiles.DOT_BASHRC, VimFiles.VIMRC]:
-    if os.path.isfile(file.value):
-      os.remove(file.value)
-  for link in [VimFiles.DOT_VIMRC]:
-    if os.path.islink(link.value):
-      os.unlink(link.value)
+  for name, member in BashInputFiles.__members__.items():
+    destroyFile(unicode(BashInputFiles[name].value))
+  for name, member in BashOutputFiles.__members__.items():
+    destroyFile(unicode(BashOutputFiles[name].value))
+  destroyFile(VimFiles.VIMRC.value)
+  for link in [VimFiles.DOT_VIMRC.value]:
+    if os.path.islink(link):
+      os.unlink(link)
