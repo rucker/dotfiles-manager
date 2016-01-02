@@ -21,11 +21,11 @@ def writeOutputFile(filePath, fileBuffer):
     outputFile.write(fileBuffer.getvalue())
 
 def compileBashFile(platform):
-  if platform is Systems.DARWIN.value:
+  if platform == Systems.DARWIN.value:
     bashFile = BashOutputFiles.BASH_PROFILE.value
     bashDotFile = BashOutputFiles.DOT_BASH_PROFILE.value
     bashPlatformFile = BashInputFiles.BASH_MAC.value
-  elif platform is Systems.LINUX.value:
+  elif platform == Systems.LINUX.value:
     bashFile = BashOutputFiles.BASHRC.value
     bashDotFile = BashOutputFiles.DOT_BASHRC.value
     bashPlatformFile = BashInputFiles.BASH_LINUX.value
@@ -35,12 +35,12 @@ def compileBashFile(platform):
     writeInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
     writeInputFileContents(bashPlatformFile, fileBuffer)
     writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
-    if env.platform is platform:
+    if env.platform == platform:
       if os.path.isfile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value):
 	writeInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
-	writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
       else:
-	print BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..."
+	print "\t" + BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..."
+      writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
     print "File completed."
 
 def compileBashProfile():
