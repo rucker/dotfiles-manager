@@ -34,6 +34,7 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.
 
-## TO DO  
+## TO DO / Wishlist
+-Source .bashrc/.bash_profile after bash file compilation.
 -Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
 -Add .gitconfig to this repo. This file should probably be compiled like .bash* so I can do things like use different credentials on different machines.
