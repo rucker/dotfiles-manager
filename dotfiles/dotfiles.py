@@ -39,14 +39,15 @@ def symlink(targetName, linkName) :
   print "Symlink " + link + " -> " + target
   if os.path.islink(link):
       print "\tLink already exists."
+      return
   elif os.path.isfile(link):
-      print "\tRegular file exists at " + link + ".Deleting..."
-      os.remove(link)
-      print "Deleted."
+      print "\tRegular file exists at " + link + ". Renaming to " + linkName + ".bak"
+      os.rename(link, link + ".bak")
   else:
-    print "\tSymlink does not exist. Creating..."
-    os.symlink(target, link)
-    print "\tLink created."
+    print "\tSymlink does not exist."
+  print "Creating..."
+  os.symlink(target, link)
+  print "\tLink created."
 
 def main():
   print "\nPreparing dotfiles!\n"

@@ -40,13 +40,5 @@ class BashFileIntTest(unittest.TestCase):
     dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
     self.assertTrue(os.path.isfile(VimFiles.DOT_VIMRC.value))
 
-  def testWhenDotVimrcExistsInHomeDirAndIsRegularFileItGetsDeleted(self):
-    os.remove(VimFiles.DOT_VIMRC.value)
-    with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
-      vimrc.write("foo bar baz")
-    bashfile.compileBashFiles()
-    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
-    self.assertTrue("Deleted." in sys.stdout.getvalue().strip())
-
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
