@@ -13,14 +13,16 @@ import testfilemocks
 from dotfiles import bashfile
 from constants import Systems, BashInputFiles, BashOutputFiles, VimFiles
 
-class BashFileIntTest(unittest.TestCase):
+class DotFilesIntTest(unittest.TestCase):
 
-  @classmethod
-  def setUpClass(self):
+  def setUp(self):
+    dotfiles.init()
+    env.inputFilesDir = ''
+    env.outputFilesDir = ''
+    env.homeDir = ''
     testfilemocks.createInputFiles()
 
-  @classmethod
-  def tearDownClass(self):
+  def tearDown(self):
     testfilemocks.destroyInputAndOutputFiles()
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
@@ -31,6 +33,7 @@ class BashFileIntTest(unittest.TestCase):
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.LINUX.value))
   def testBashProfileNotCreatedInHomeDirOnLinuxSystem(self):
+    dotfiles.identifySystem()
     bashfile.compileBashFiles()
     dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
     self.assertFalse(os.path.isfile(BashOutputFiles.DOT_BASH_PROFILE.value))
@@ -40,5 +43,27 @@ class BashFileIntTest(unittest.TestCase):
     dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
     self.assertTrue(os.path.isfile(VimFiles.DOT_VIMRC.value))
 
-suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
+  def testWhenSymlinkDoesNotExistItGetsCreated(self):
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    try:
+      os.stat(VimFiles.DOT_VIMRC.value)
+      self.assertTrue("Link created." in sys.stdout.getvalue().strip())
+    except OSError:
+      self.fail("Symlink " + VimFiles.DOT_VIMRC.value + " not created!")
+
+  def testWhenSymlinkExistsItGetsReported(self):
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    self.assertTrue("Link already exists." in sys.stdout.getvalue().strip())
+
+  def testWhenDotFileExistsInHomeDirAndIsRegularFileItGetsRenamedAndANewSymlinkIsCreated(self):
+    with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
+      vimrc.write("foo bar baz")
+    bashfile.compileBashFiles()
+    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+    self.assertTrue("Renaming" in sys.stdout.getvalue().strip())
+    self.assertTrue("Link created." in sys.stdout.getvalue().strip())
+    os.remove(VimFiles.DOT_VIMRC.value + '.bak')
+
+suite = unittest.TestLoader().loadTestsFromTestCase(DotFilesIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
