@@ -9,7 +9,7 @@ To those ends, I wrote a Python script that will compile these dotfiles from ext
 Also, I want to easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, the script will create the appropriate symlinks from ~ to this repo.
 
 ## Usage
-<code>$ python ./dotfiles/dotfiles.py</code>
+<code>$ ./dotfiles/dotfiles.py</code>
 This will symlink ~/.vimrc -> ./vimrc and create a platform-specific bash dotfile in ~ . The dotfiles are compiled from the following files, which are located in the <code>dotfiles/inputfiles</code> directory:
 
 ### bash_common
@@ -38,3 +38,5 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 -Source .bashrc/.bash_profile after bash file compilation.
 -Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
 -Add .gitconfig to this repo. This file should probably be compiled like .bash* so I can do things like use different credentials on different machines.
+-If existing dotfiles get renamed, prompt the user to delete/diff/leave them once the script completes." Possibly implement a flag to override this behavior.
+-Add symlink to dotfiles.py in ~/bin if that directory exists.
