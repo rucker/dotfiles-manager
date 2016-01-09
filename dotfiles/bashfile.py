@@ -43,7 +43,7 @@ def compileBashFile(platform):
 	print "\t" + BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..."
       writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
       print "\tSourcing " + env.homeDir + bashDotFile + "..."
-      subprocess.check_call('source ' + env.homeDir + bashDotFile, shell=True)
+      subprocess.check_call('source ' + env.homeDir + bashDotFile, shell=True, executable='/bin/bash')
     print "File completed."
 
 def compileBashProfile():
