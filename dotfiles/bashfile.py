@@ -2,6 +2,7 @@
 
 import io
 import os
+import subprocess
 
 import env
 from constants import Systems, BashInputFiles, BashOutputFiles
@@ -11,7 +12,7 @@ def writeHeader(fileName, fileBuffer):
 
 def writeInputFileContents(fileName, fileBuffer):
   with open(env.inputFilesDir + fileName) as inputFile:
-    print "\tSourcing input file " + fileName
+    print "\tReading input file " + fileName
     for line in inputFile:
       fileBuffer.write(unicode(line))
 
@@ -41,6 +42,8 @@ def compileBashFile(platform):
       else:
 	print "\t" + BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..."
       writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
+      print "\tSourcing " + env.homeDir + bashDotFile + "..."
+      subprocess.check_call('source ' + env.homeDir + bashDotFile, shell=True)
     print "File completed."
 
 def compileBashProfile():

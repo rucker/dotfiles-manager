@@ -103,5 +103,12 @@ class BashFileIntTest(unittest.TestCase):
     self.assertTrue(BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
     testfilemocks.createFile(BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
 
+  def testBashFileIsSourcedAfterItIsWritten(self):
+    bashfile.compileBashFile(Systems.DARWIN.value)
+    self.assertTrue("Sourcing " + BashOutputFiles.DOT_BASH_PROFILE.value in sys.stdout.getvalue().strip())
+    env.platform = Systems.LINUX.value
+    bashfile.compileBashFile(Systems.LINUX.value)
+    self.assertTrue("Sourcing " + BashOutputFiles.DOT_BASHRC.value in sys.stdout.getvalue().strip())
+
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
