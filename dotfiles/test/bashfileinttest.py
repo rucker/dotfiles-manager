@@ -103,6 +103,16 @@ class BashFileIntTest(unittest.TestCase):
     self.assertTrue(BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
     testfilemocks.createFile(BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
 
+  def testScriptsDirIsWrittenToBashFile(self):
+    env.platform = Systems.DARWIN.value
+    bashfile.compileBashProfile()
+    with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bash_profile:
+      for line in bash_profile.readlines():
+        if 'scriptsDir' in line:
+          self.assertTrue(os.path.isdir(line.replace('\"',"").replace('\n',"").split('=')[1]))
+          return
+    self.fail("scriptsDir not written to bash file!")
+
   def testBashFileIsSourcedAfterItIsWritten(self):
     bashfile.compileBashFile(Systems.DARWIN.value)
     self.assertTrue("Sourcing " + BashOutputFiles.DOT_BASH_PROFILE.value in sys.stdout.getvalue().strip())

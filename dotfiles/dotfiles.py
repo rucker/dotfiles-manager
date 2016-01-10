@@ -14,6 +14,7 @@ def init():
   env.homeDir = os.path.expanduser('~') + '/'
   env.workingDir = os.path.dirname(os.path.abspath(__file__)) + '/'
   env.inputFilesDir = env.workingDir + 'inputfiles/'
+  env.scriptsDir = env.workingDir + 'scripts/'
   env.outputFilesDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
 
   print "Environment:"
@@ -21,6 +22,7 @@ def init():
   print "\thomeDir: " + env.homeDir
   print "\tworkingDir: " + env.workingDir
   print "\tinputFilesDir: " + env.inputFilesDir
+  print "\tscriptsDir: " + env.scriptsDir
   print "\toutputFilesDir: " + env.outputFilesDir
 
   os.chdir(env.workingDir)
