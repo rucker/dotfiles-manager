@@ -27,6 +27,7 @@ class DotFilesIntTest(unittest.TestCase):
 
   @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
   def testBashrcNotCreatedInHomeDirOnDarwinSystem(self):
+    dotfiles.identifySystem()
     bashfile.compileBashFiles()
     dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
     self.assertFalse(os.path.isfile(BashOutputFiles.DOT_BASHRC.value))
