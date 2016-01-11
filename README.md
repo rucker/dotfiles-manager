@@ -10,7 +10,9 @@ Also, I want to easily maintain various other config files (e.g. vimrc) that don
 
 ## Usage
 <code>$ ./dotfiles/dotfiles.py</code>
-This will symlink ~/.vimrc -> ./vimrc and create a platform-specific bash dotfile in ~ . The dotfiles are compiled from the following files, which are located in the <code>dotfiles/inputfiles</code> directory:
+This will symlink <code>~/.vimrc -> ./vimrc</code>, create a platform-specific bash dotfile in <code>~</code> , and symlink <code>~/bin/dotfiles -> ./dotfiles/dotfiles.py</code> (while asking the user if that dir should be created when it does not exist).
+
+The dotfiles are compiled from the following files, which are located in <code>./dotfiles/inputfiles</code>:
 
 ### bash_common
 Contains any elements common across platforms.
@@ -38,4 +40,3 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 - Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
 - Add .gitconfig to this repo. This file should probably be compiled like .bash* so I can do things like use different credentials on different machines.
 - If existing dotfiles get renamed, prompt the user to delete/diff/leave them once the script completes. Possibly implement a flag to override this behavior.
-- Add symlink to dotfiles.py in ~/bin if that directory exists. Possibly ask the user if the dir should be created when it does not exist.
