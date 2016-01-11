@@ -49,7 +49,7 @@ def compileBashFile(platform):
       else:
 	print "\t" + BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..."
       writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
-    print "File completed."
+    print "File completed.\n"
 
 def compileBashProfile():
   compileBashFile(Systems.DARWIN.value)

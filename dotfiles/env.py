@@ -5,6 +5,7 @@ import platform
 
 platform = ''
 homeDir = ''
+homeBinDir = ''
 workingDir = ''
 inputFilesDir = ''
 outputFilesDir = ''
