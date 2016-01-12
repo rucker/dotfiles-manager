@@ -6,6 +6,7 @@ import io
 import os
 from constants import Systems, VimFiles
 import bashfile
+import gitconfig
 import env
 
 def init():
@@ -76,6 +77,7 @@ def main():
   print "\nPreparing dotfiles!\n"
   init()
   bashfile.compileBashFiles()
+  gitconfig.compileGitConfig()
   createSymlinks()
   print "Done."
 

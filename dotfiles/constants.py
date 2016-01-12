@@ -22,3 +22,11 @@ class BashOutputFiles(Enum):
 class VimFiles(Enum):
   VIMRC = 'vimrc'
   DOT_VIMRC = '.vimrc'
+
+class GitConfigInputFiles(Enum):
+  GIT_PUBLIC = 'git_public'
+  GIT_PRIVATE = 'git_private'
+
+class GitConfigOutputFiles(Enum):
+  GITCONFIG = 'gitconfig'
+  DOT_GITCONFIG = '.gitconfig'
