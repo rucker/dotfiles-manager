@@ -8,7 +8,7 @@ from mock import mock_open, patch
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
-from dotfiles import bashfile
+import bashfile
 from constants import Systems, BashOutputFiles
 
 class BashFileTest(unittest.TestCase):
