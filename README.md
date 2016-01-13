@@ -1,5 +1,7 @@
 # dotfiles
-These are my dotfiles. There are many like them, but these are mine. This repo contains my current dotfiles as well as a build script to set up/compile them.
+These are my dotfiles. There are many like them, but these are mine.
+
+This repo contains my current dotfiles as well as a build script to set up/compile them.
 
 ## Background
 My dotfiles reached a point where they became complex enough that I didn't want to manage them by hand any more: not only do I want different things in .bashrc on Linux than I do in .bash_profile on OS X, but also I want to avoid accidentally committing any sensitive data they might contain to GitHub.
@@ -14,17 +16,27 @@ This will symlink <code>~/.vimrc -> ./vimrc</code>, create a platform-specific b
 
 The dotfiles are compiled from the following files, which are located in <code>./dotfiles/inputfiles</code>:
 
-### bash_common
+### bashrc/bash_profile
+
+#### bash_common
 Contains any elements common across platforms.
 
-### bash_private (optional)
+#### bash_private (optional)
 Contains any sensitive data that should not be committed to version control.
 
-### bash_linux
+#### bash_linux
 Contains any elements specific to Linux.
 
-### bash_mac
+#### bash_mac
 Contains any elements specific to Mac OS X.
+
+## gitconfig
+
+#### git_public
+Contains any tokens that can be made publig (e.g. published on GitHub)
+
+#### git_private
+Contains private tokens that should not be shared (e.g. personal keys)
 
 ## Dependencies
 The <code>mock</code> and <code>enum34</code> packages are required. Fetch them from PyPi using pip, i.e. <code>$ pip install mock enum34</code>
