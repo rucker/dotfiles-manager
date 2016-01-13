@@ -103,15 +103,13 @@ class BashFileIntTest(unittest.TestCase):
     self.assertTrue(BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
     testfilemocks.createFile(BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
 
-  def testScriptsDirIsWrittenToBashFile(self):
+  def testScriptsDirIsWrittenToBashPrivate(self):
     env.platform = Systems.DARWIN.value
+    env.scriptsDir = "/some/scripts/dir/"
     bashfile.compileBashProfile()
-    with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bash_profile:
-      for line in bash_profile.readlines():
-        if 'scriptsDir' in line:
-          self.assertTrue(os.path.isdir(line.replace('\"',"").replace('\n',"").split('=')[1]))
-          return
-    self.fail("scriptsDir not written to bash file!")
+    with open(env.inputFilesDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bash_profile:
+      contents = bash_profile.read()
+      self.assertTrue("__sourceInDir \"" + env.scriptsDir + "\"" in contents)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
