@@ -6,7 +6,6 @@ import mock
 import platform
 import os
 import io
-import time
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
