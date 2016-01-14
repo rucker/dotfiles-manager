@@ -11,6 +11,6 @@ def compileGitConfig():
   with io.StringIO() as fileBuffer:
     filewriter.writeInputFileContents(GitConfigInputFiles.GIT_PUBLIC.value, fileBuffer)
     filewriter.writeOutputFile(env.outputFilesDir + GitConfigOutputFiles.GITCONFIG.value, fileBuffer)
-    filewriter.writeInputFileContents(GitConfigInputFiles.GIT_PRIVATE.value, fileBuffer)
+    filewriter.writeOptionalInputFileContents(GitConfigInputFiles.GIT_PRIVATE.value, fileBuffer)
     filewriter.writeOutputFile(env.homeDir + GitConfigOutputFiles.DOT_GITCONFIG.value, fileBuffer)
     print "File completed.\n"

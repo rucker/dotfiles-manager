@@ -1,16 +1,24 @@
 #!/usr/bin/python
 
 import io
+import os
+
 import env
 
 def writeToOutputBuffer(output, fileBuffer):
   fileBuffer.write(unicode(output))
 
+def writeOptionalInputFileContents(fileName, fileBuffer):
+  if os.path.isfile(env.inputFilesDir + fileName):
+    writeInputFileContents(fileName, fileBuffer)
+  else:
+    print "\t" + fileName + " is not present. Skipping..."
+
 def writeInputFileContents(fileName, fileBuffer):
   with open(env.inputFilesDir + fileName) as inputFile:
     print "\tReading input file " + fileName
     for line in inputFile:
-      fileBuffer.write(unicode(line))
+      writeToOutputBuffer(line, fileBuffer)
 
 def writeOutputFile(filePath, fileBuffer):
   print "\tWriting output file " + filePath

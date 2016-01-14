@@ -94,7 +94,7 @@ class BashFileIntTest(unittest.TestCase):
       with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
         self.assertTrue(bashInput.read() in contents)
 
-  def testBashPrivateIsSkippedWhenNotPresent(self):
+  def testInputFileIsSkippedWhenNotPresent(self):
     env.platform = Systems.DARWIN.value
     with open(BashInputFiles.BASH_PRIVATE.value) as bashPrivate:
       bashPrivateText = bashPrivate.read()

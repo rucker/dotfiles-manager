@@ -31,10 +31,7 @@ def compileBashFile(platform):
     filewriter.writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
     if env.platform == platform:
       appendEnvScriptsDirToOutputBuffer(fileBuffer)
-      if os.path.isfile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value):
-	filewriter.writeInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
-      else:
-	print "\t" + BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..."
+      filewriter.writeOptionalInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
       filewriter.writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
     print "File completed.\n"
 
