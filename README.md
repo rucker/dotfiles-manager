@@ -12,30 +12,34 @@ Also, I want to easily maintain various other config files (e.g. vimrc) that don
 
 ## Usage
 <code>$ ./dotfiles/dotfiles.py</code>
-This will symlink <code>~/.vimrc -> ./vimrc</code>, create a platform-specific bash dotfile in <code>~</code> , and symlink <code>~/bin/dotfiles -> ./dotfiles/dotfiles.py</code> (while asking the user if that dir should be created when it does not exist).
+This will:
+* Symlink <code>~/.vimrc -> ./vimrc</code>
+* Create a platform-specific bash dotfile in <code>~</code>
+* Symlink <code>~/.gitconfig -> ./gitconfig</code>
+* Symlink <code>~/bin/dotfiles -> ./dotfiles/dotfiles.py</code> (will ask the user if that dir should be created when it does not exist).
 
-The dotfiles are compiled from the following files, which are located in <code>./dotfiles/inputfiles</code>:
+The dotfiles are compiled from the input files described below, which are located in <code>./dotfiles/inputfiles</code>:
 
 ### bashrc/bash_profile
 
-#### bash_common
+##### bash_common
 Contains any elements common across platforms.
 
-#### bash_private (optional)
+##### bash_private (optional)
 Contains any sensitive data that should not be committed to version control.
 
-#### bash_linux
+##### bash_linux
 Contains any elements specific to Linux.
 
-#### bash_mac
+##### bash_mac
 Contains any elements specific to Mac OS X.
 
-## gitconfig
+### gitconfig
 
-#### git_public
+##### git_public
 Contains any tokens that can be made publig (e.g. published on GitHub)
 
-#### git_private
+##### git_private
 Contains private tokens that should not be shared (e.g. personal keys)
 
 ## Dependencies
