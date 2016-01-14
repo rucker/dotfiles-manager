@@ -8,7 +8,7 @@ My dotfiles reached a point where they became complex enough that I didn't want 
 
 To those ends, I wrote a Python script that will compile these dotfiles from external files.
 
-Also, I want to easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, the script will create the appropriate symlinks from ~ to this repo.
+Also, I want to easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, the script will create the appropriate symlinks from <code>~</code> to this project's location.
 
 ## Usage
 <code>$ ./dotfiles/dotfiles.py</code>
@@ -45,7 +45,6 @@ Contains private tokens that should not be shared (e.g. personal keys)
 ## Dependencies
 The <code>mock</code> and <code>enum34</code> packages are required. Fetch them from PyPi using pip, i.e. <code>$ pip install mock enum34</code>
 
-## Assumptions
 For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 
 ## FAQ
