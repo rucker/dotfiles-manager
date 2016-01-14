@@ -39,7 +39,7 @@ Contains any elements specific to Mac OS X.
 ##### git_public
 Contains any tokens that can be made publig (e.g. published on GitHub)
 
-##### git_private
+##### git_private (optional)
 Contains private tokens that should not be shared (e.g. personal keys)
 
 ## Dependencies
