@@ -12,7 +12,7 @@ import env
 import dotfiles
 import testfilemocks
 import bashfile
-from constants import Systems, BashInputFiles, BashOutputFiles, VimFiles
+from constants import Systems, BashInputFiles, BashOutputFiles, VimFiles, GitConfigOutputFiles
 
 class DotFilesIntTest(unittest.TestCase):
 
@@ -107,6 +107,14 @@ class DotFilesIntTest(unittest.TestCase):
       self.assertTrue("The existing file " + VimFiles.DOT_VIMRC.value + " was renamed to " + bakFile in sys.stdout.getvalue().strip())
       self.assertTrue("Deleting file " + bakFile in sys.stdout.getvalue().strip())
       self.assertFalse(os.path.isfile(bakFile))
+
+  def testOutputFilesAreCleanedUp(self):
+    outputFilesColls = [ BashOutputFiles, VimFiles, GitConfigOutputFiles ]
+    dotfiles.cleanUp()
+    for outputFileColl in outputFilesColls:
+      for outputFile in outputFileColl:
+        self.assertFalse(os.path.exists(env.homeDir + outputFile.value + '.bak'))
+        self.assertFalse(os.path.exists(env.outputFilesDir + outputFile.value + '.bak'))
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotFilesIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
