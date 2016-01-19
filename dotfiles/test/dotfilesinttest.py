@@ -60,13 +60,13 @@ class DotFilesIntTest(unittest.TestCase):
     self.assertTrue("Link already exists." in sys.stdout.getvalue().strip())
 
   def testWhenDotFileExistsInHomeDirAndIsRegularFileItGetsRenamedAndANewSymlinkIsCreated(self):
-    with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
-      vimrc.write("foo bar baz")
-    bashfile.compileBashFiles()
-    dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
-    self.assertTrue("Renaming" in sys.stdout.getvalue().strip())
-    self.assertTrue("Link created." in sys.stdout.getvalue().strip())
-    os.remove(VimFiles.DOT_VIMRC.value + '.bak')
+     with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
+       vimrc.write("foo bar baz")
+     bashfile.compileBashFiles()
+     dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+     self.assertTrue("Renaming" in sys.stdout.getvalue().strip())
+     self.assertTrue("Link created." in sys.stdout.getvalue().strip())
+     os.remove(VimFiles.DOT_VIMRC.value + '.bak')
 
   def testWhenHomeBinDirDoesNotExistUserIsAskedIfItShouldBeCreated(self):
     with mock.patch('__builtin__.raw_input', return_value='n'):
@@ -80,6 +80,33 @@ class DotFilesIntTest(unittest.TestCase):
       self.assertTrue(env.homeBinDir + " does not exist" in sys.stdout.getvalue().strip())
       self.assertTrue(os.path.exists(env.homeBinDir))
       shutil.rmtree(env.homeBinDir)
+
+  def testWhenDotFileExistsInHomeDirAndIsRegularFileUserCanChooseToKeepThatFile(self):
+    with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
+      vimrc.write("foo bar baz")
+    with mock.patch('__builtin__.raw_input', return_value='y'):
+      bashfile.compileBashFiles()
+      dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+      dotfiles.cleanUpRenamedFiles()
+      bakFile = env.homeDir + VimFiles.DOT_VIMRC.value + '.bak'
+      self.assertTrue("Link created." in sys.stdout.getvalue().strip())
+      self.assertTrue("The existing file " + VimFiles.DOT_VIMRC.value + " was renamed to " + bakFile in sys.stdout.getvalue().strip())
+      self.assertTrue("Keeping file " + bakFile in sys.stdout.getvalue().strip())
+      self.assertTrue(os.path.isfile(bakFile))
+      os.remove(bakFile)
+
+  def testWhenDotFileExistsInHomeDirAndIsRegularFileUserCanChooseToDeleteThatFile(self):
+    with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
+      vimrc.write("foo bar baz")
+    with mock.patch('__builtin__.raw_input', return_value='n'):
+      bashfile.compileBashFiles()
+      dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
+      dotfiles.cleanUpRenamedFiles()
+      bakFile = env.homeDir + VimFiles.DOT_VIMRC.value + '.bak'
+      self.assertTrue("Link created." in sys.stdout.getvalue().strip())
+      self.assertTrue("The existing file " + VimFiles.DOT_VIMRC.value + " was renamed to " + bakFile in sys.stdout.getvalue().strip())
+      self.assertTrue("Deleting file " + bakFile in sys.stdout.getvalue().strip())
+      self.assertFalse(os.path.isfile(bakFile))
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotFilesIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

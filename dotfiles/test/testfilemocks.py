@@ -30,6 +30,8 @@ def createFile(fileName, contents):
 def destroyFile(fileName):
   if os.path.isfile(fileName):
     os.remove(fileName)
+  elif os.path.isfile(fileName + '.bak'):
+    os.remove(fileName + '.bak')
 
 def destroyInputAndOutputFiles():
   for name, member in BashInputFiles.__members__.items():

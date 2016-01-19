@@ -5,6 +5,10 @@ import os
 
 import env
 
+def backupFile(fileName):
+  print "\tThe file " + fileName + " already exists. Renaming to " + fileName + ".bak"
+  os.rename(fileName, fileName + ".bak")
+
 def writeToOutputBuffer(output, fileBuffer):
   fileBuffer.write(unicode(output))
 
@@ -21,6 +25,8 @@ def writeInputFileContents(fileName, fileBuffer):
       writeToOutputBuffer(line, fileBuffer)
 
 def writeOutputFile(filePath, fileBuffer):
+  if os.path.isfile(filePath):
+    backupFile(filePath)
   print "\tWriting output file " + filePath
   with open(filePath, 'w') as outputFile:
     outputFile.write(fileBuffer.getvalue())
