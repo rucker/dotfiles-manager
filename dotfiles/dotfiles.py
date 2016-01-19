@@ -4,6 +4,8 @@ import sys
 import platform
 import io
 import os
+import argparse
+
 from constants import Systems, BashOutputFiles, VimFiles, GitConfigOutputFiles
 import bashfile
 import gitconfig
@@ -12,7 +14,25 @@ import ioutils
 
 def init():
   identifySystem()
+  setArgs()
+  setEnv()
+  os.chdir(env.workingDir)
 
+def identifySystem():
+  supportedPlatforms = [Systems.DARWIN.value, Systems.LINUX.value]
+  env.platform = platform.system()
+
+  if env.platform not in supportedPlatforms:
+    print "System not supported!"
+    exit(1)
+
+def setArgs():
+  parser = argparse.ArgumentParser(description="Compile your dotfiles.")
+  parser.prefix_chars='-'
+  parser.add_argument('-c', '--clobber', help="Clobber any existing output files (don't back them up).")
+  env.args = str(parser.parse_args())
+
+def setEnv():
   env.homeDir = os.path.expanduser('~') + '/'
   env.homeBinDir = env.homeDir + 'bin/'
   env.workingDir = os.path.dirname(os.path.realpath(__file__)) + '/'
@@ -28,17 +48,8 @@ def init():
   print "\tinputFilesDir: " + env.inputFilesDir
   print "\tscriptsDir: " + env.scriptsDir
   print "\toutputFilesDir: " + env.outputFilesDir
+  print "\targs: " + env.args
   print ""
-
-  os.chdir(env.workingDir)
-
-def identifySystem():
-  supportedPlatforms = [Systems.DARWIN.value, Systems.LINUX.value]
-  env.platform = platform.system()
-
-  if env.platform not in supportedPlatforms:
-    print "System not supported!"
-    exit(1)
 
 def symlink(target, linkName) :
   print "Symlink " + linkName + " -> " + target

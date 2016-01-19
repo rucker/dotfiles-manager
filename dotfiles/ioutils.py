@@ -40,7 +40,7 @@ def writeInputFileContents(fileName, fileBuffer):
       writeToOutputBuffer(line, fileBuffer)
 
 def writeOutputFile(filePath, fileBuffer):
-  if os.path.isfile(filePath) and env.outputFilesDir not in filePath:
+  if '-c' not in env.args and os.path.isfile(filePath) and env.outputFilesDir not in filePath:
     backupFile(filePath)
   print "\tWriting output file " + filePath
   with open(filePath, 'w') as outputFile:

@@ -10,6 +10,7 @@ import env
 import dotfiles
 import testfilemocks
 import bashfile
+import testenv
 from constants import Systems, BashInputFiles, BashOutputFiles
 
 class BashFileIntTest(unittest.TestCase):
@@ -17,14 +18,13 @@ class BashFileIntTest(unittest.TestCase):
   @classmethod
   def setUpClass(self):
     dotfiles.init()
-    env.inputFilesDir = ''
-    env.outputFilesDir = ''
-    env.homeDir = ''
+    testenv.setUp()
     testfilemocks.createInputFiles()
 
   @classmethod
   def tearDownClass(self):
     testfilemocks.destroyInputAndOutputFiles()
+    testenv.tearDown()
 
   def testBashCommonAndBashMacWrittenToBashProfile(self):
     env.platform = Systems.DARWIN.value
@@ -96,20 +96,29 @@ class BashFileIntTest(unittest.TestCase):
 
   def testInputFileIsSkippedWhenNotPresent(self):
     env.platform = Systems.DARWIN.value
-    with open(BashInputFiles.BASH_PRIVATE.value) as bashPrivate:
+    with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashPrivate:
       bashPrivateText = bashPrivate.read()
-    testfilemocks.destroyFile(BashInputFiles.BASH_PRIVATE.value)
+    testfilemocks.destroyFile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value)
     bashfile.compileBashProfile()
     self.assertTrue(BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
-    testfilemocks.createFile(BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
+    testfilemocks.createFile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
 
   def testScriptsDirIsWrittenToBashPrivate(self):
     env.platform = Systems.DARWIN.value
     env.scriptsDir = "/some/scripts/dir/"
     bashfile.compileBashProfile()
-    with open(env.inputFilesDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bash_profile:
+    with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bash_profile:
       contents = bash_profile.read()
       self.assertTrue("__sourceInDir \"" + env.scriptsDir + "\"" in contents)
+
+  def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
+    env.args = ['-c']
+    with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value, 'w') as bash_profile:
+      bash_profile.write("some_bash_token=some_value")
+    bashfile.compileBashProfile()
+    self.assertTrue("already exists. Renaming" not in sys.stdout.getvalue().strip())
+    self.assertFalse(os.path.isfile(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value + '.bak'))
+    env.args = ''
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

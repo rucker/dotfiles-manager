@@ -1,13 +1,14 @@
 #!/usr/bin/python
 
 import os
+import shutil
 
 import env
 
 def setUp():
-  env.homeDir = 'home/'
-  env.inputFilesDir = 'inputfiles/'
-  env.outputFilesDir = 'outputfiles/'
+  env.homeDir = 'testhome/'
+  env.inputFilesDir = 'testinputfiles/'
+  env.outputFilesDir = 'testoutputfiles/'
   setUpDirs()
 
 def setUpDirs():
@@ -18,4 +19,4 @@ def setUpDirs():
 def tearDown():
   for dir in [env.homeDir, env.inputFilesDir, env.outputFilesDir]:
     if os.path.exists(dir):
-      os.rmdir(dir)
+      shutil.rmtree(dir)
