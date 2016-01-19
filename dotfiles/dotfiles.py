@@ -8,7 +8,7 @@ from constants import Systems, BashOutputFiles, VimFiles, GitConfigOutputFiles
 import bashfile
 import gitconfig
 import env
-import filewriter
+import ioutils
 
 def init():
   identifySystem()
@@ -46,7 +46,7 @@ def symlink(target, linkName) :
     print "\tLink already exists.\n"
     return
   elif os.path.isfile(linkName):
-    filewriter.backupFile(linkName)
+    ioutils.backupFile(linkName)
   else:
     print "\tSymlink does not exist."
   print "\tCreating..."
@@ -73,19 +73,9 @@ def createSymlinks():
       return
   symlink(os.path.realpath(__file__), env.homeBinDir + 'dotfiles')
 
-def cleanUpRenamedFiles():
-  for fileName in [ BashOutputFiles.DOT_BASH_PROFILE.value, BashOutputFiles.DOT_BASHRC.value, VimFiles.DOT_VIMRC.value, GitConfigOutputFiles.DOT_GITCONFIG.value ] :
-    newFile = env.homeDir + fileName
-    bakFile = newFile + '.bak'
-    if os.path.isfile(bakFile):
-      choice = ''
-      while choice not in ['Y','N']:
-        choice = raw_input("The existing file " + newFile + " was renamed to " + bakFile + ".\nWould you like to delete it? (Y/N): ").upper()
-        if choice == 'Y':
-          os.remove(bakFile)
-          print "Deleting file " + bakFile + "."
-	elif choice == 'N':
-          print "Keeping file " + bakFile + "."
+def cleanUp():
+  ioutils.cleanUpRenamedFiles([ BashOutputFiles.DOT_BASH_PROFILE.value, BashOutputFiles.DOT_BASHRC.value, VimFiles.DOT_VIMRC.value, GitConfigOutputFiles.DOT_GITCONFIG.value ])
+
 
 def main():
   print "\nPreparing dotfiles!\n"
@@ -93,7 +83,7 @@ def main():
   bashfile.compileBashFiles()
   gitconfig.compileGitConfig()
   createSymlinks()
-  cleanUpRenamedFiles()
+  cleanUp()
   print "Done."
 
 if __name__ == '__main__':

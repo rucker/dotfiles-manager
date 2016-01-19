@@ -5,6 +5,21 @@ import os
 
 import env
 
+def cleanUpRenamedFiles(fileNames):
+  for fileName in fileNames:
+    newFile = env.homeDir + fileName
+    bakFile = newFile + '.bak'
+    if os.path.isfile(bakFile):
+      choice = ''
+      print "The existing file " + newFile + " was renamed to " + bakFile + "."
+      while choice not in ['Y','N']:
+	choice = raw_input("Would you like to delete it? (Y/N): ").upper()
+	if choice == 'Y':
+	  os.remove(bakFile)
+	  print "Deleting file " + bakFile + "."
+	elif choice == 'N':
+	  print "Keeping file " + bakFile + "."
+
 def backupFile(fileName):
   print "\tThe file " + fileName + " already exists. Renaming to " + fileName + ".bak"
   os.rename(fileName, fileName + ".bak")
@@ -25,7 +40,7 @@ def writeInputFileContents(fileName, fileBuffer):
       writeToOutputBuffer(line, fileBuffer)
 
 def writeOutputFile(filePath, fileBuffer):
-  if os.path.isfile(filePath):
+  if os.path.isfile(filePath) and env.outputFilesDir not in filePath:
     backupFile(filePath)
   print "\tWriting output file " + filePath
   with open(filePath, 'w') as outputFile:

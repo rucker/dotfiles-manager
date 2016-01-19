@@ -84,10 +84,10 @@ class DotFilesIntTest(unittest.TestCase):
   def testWhenDotFileExistsInHomeDirAndIsRegularFileUserCanChooseToKeepThatFile(self):
     with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
       vimrc.write("foo bar baz")
-    with mock.patch('__builtin__.raw_input', return_value='y'):
+    with mock.patch('__builtin__.raw_input', return_value='n'):
       bashfile.compileBashFiles()
       dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
-      dotfiles.cleanUpRenamedFiles()
+      dotfiles.cleanUp()
       bakFile = env.homeDir + VimFiles.DOT_VIMRC.value + '.bak'
       self.assertTrue("Link created." in sys.stdout.getvalue().strip())
       self.assertTrue("The existing file " + VimFiles.DOT_VIMRC.value + " was renamed to " + bakFile in sys.stdout.getvalue().strip())
@@ -98,10 +98,10 @@ class DotFilesIntTest(unittest.TestCase):
   def testWhenDotFileExistsInHomeDirAndIsRegularFileUserCanChooseToDeleteThatFile(self):
     with open(VimFiles.DOT_VIMRC.value, 'w') as vimrc:
       vimrc.write("foo bar baz")
-    with mock.patch('__builtin__.raw_input', return_value='n'):
+    with mock.patch('__builtin__.raw_input', return_value='y'):
       bashfile.compileBashFiles()
       dotfiles.symlink(VimFiles.VIMRC.value, VimFiles.DOT_VIMRC.value)
-      dotfiles.cleanUpRenamedFiles()
+      dotfiles.cleanUp()
       bakFile = env.homeDir + VimFiles.DOT_VIMRC.value + '.bak'
       self.assertTrue("Link created." in sys.stdout.getvalue().strip())
       self.assertTrue("The existing file " + VimFiles.DOT_VIMRC.value + " was renamed to " + bakFile in sys.stdout.getvalue().strip())
