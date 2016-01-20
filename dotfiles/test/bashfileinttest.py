@@ -7,10 +7,10 @@ import unittest
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import env
+import testenv
 import dotfiles
 import testfilemocks
 import bashfile
-import testenv
 from constants import Systems, BashInputFiles, BashOutputFiles
 
 class BashFileIntTest(unittest.TestCase):
@@ -19,11 +19,9 @@ class BashFileIntTest(unittest.TestCase):
   def setUpClass(self):
     dotfiles.init()
     testenv.setUp()
-    testfilemocks.createInputFiles()
 
   @classmethod
   def tearDownClass(self):
-    testfilemocks.destroyInputAndOutputFiles()
     testenv.tearDown()
 
   def testBashCommonAndBashMacWrittenToBashProfile(self):

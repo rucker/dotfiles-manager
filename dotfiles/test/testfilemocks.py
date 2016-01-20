@@ -17,7 +17,7 @@ def createInputFiles():
     bashLinux.write('some_linux_token=some_linux_value\n')
   with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value, 'w') as bashPrivate:
     bashPrivate.write('some_private_token=some_private_value\n')
-  with open(env.homeDir + VimFiles.VIMRC.value, 'w') as vimrc:
+  with open(env.outputFilesDir + VimFiles.VIMRC.value, 'w') as vimrc:
     vimrc.write('someconfigs')
   with open(env.inputFilesDir + GitConfigInputFiles.GIT_PUBLIC.value, 'w') as gitPublic:
     gitPublic.write('some_git_public_token=some_public_git_value')

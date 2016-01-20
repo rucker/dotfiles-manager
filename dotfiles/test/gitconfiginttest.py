@@ -9,6 +9,7 @@ import mock
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import env
+import testenv
 import dotfiles
 import testfilemocks
 import gitconfig
@@ -18,13 +19,10 @@ class GitConfigIntTest(unittest.TestCase):
 
   def setUp(self):
     dotfiles.init()
-    env.inputFilesDir = ''
-    env.outputFilesDir = ''
-    env.homeDir = ''
-    testfilemocks.createInputFiles()
+    testenv.setUp()
 
   def tearDown(self):
-    testfilemocks.destroyInputAndOutputFiles()
+    testenv.tearDown()
 
   def testWhenGitConfigFileIsWrittenItContainsTheContentsOfGitPublicButNotGitPrivate(self):
     gitconfig.compileGitConfig()
@@ -37,7 +35,7 @@ class GitConfigIntTest(unittest.TestCase):
 
   def testWhenGitConfigDotFileIsWrittenItContainsTheContentsOfGitPublicAndGitPrivate(self):
     gitconfig.compileGitConfig()
-    with open(env.outputFilesDir + GitConfigOutputFiles.DOT_GITCONFIG.value) as dotGitConfig:
+    with open(env.homeDir + GitConfigOutputFiles.DOT_GITCONFIG.value) as dotGitConfig:
       with open(env.inputFilesDir + GitConfigInputFiles.GIT_PUBLIC.value) as gitPublic:
         with open(env.inputFilesDir + GitConfigInputFiles.GIT_PRIVATE.value) as gitPrivate:
           contents = dotGitConfig.read()
