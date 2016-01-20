@@ -23,4 +23,3 @@ def tearDown():
   for dir in [env.homeDir, env.inputFilesDir, env.outputFilesDir]:
     if os.path.exists(dir):
       shutil.rmtree(dir)
-  testfilemocks.destroyInputAndOutputFiles()

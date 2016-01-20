@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import env
-from constants import BashInputFiles, BashOutputFiles, VimFiles, GitConfigInputFiles, GitConfigOutputFiles
+from constants import BashInputFiles, VimFiles, GitConfigInputFiles
 
 def createInputFiles():
   with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value, 'w') as bashCommon:
@@ -31,22 +31,3 @@ def createFile(fileName, contents):
 def destroyFile(fileName):
   if os.path.isfile(fileName):
     os.remove(fileName)
-  elif os.path.isfile(fileName + '.bak'):
-    os.remove(fileName + '.bak')
-
-def destroyInputAndOutputFiles():
-  for name, member in BashInputFiles.__members__.items():
-    destroyFile(env.inputFilesDir + unicode(BashInputFiles[name].value))
-  for name, member in BashOutputFiles.__members__.items():
-    destroyFile(env.outputFilesDir + unicode(BashOutputFiles[name].value))
-    destroyFile(env.homeDir + unicode(BashOutputFiles[name].value))
-  for name, member in GitConfigInputFiles.__members__.items():
-    destroyFile(env.inputFilesDir + unicode(GitConfigInputFiles[name].value))
-  for name, member in GitConfigOutputFiles.__members__.items():
-    destroyFile(env.outputFilesDir + unicode(GitConfigOutputFiles[name].value))
-    destroyFile(env.homeDir + unicode(GitConfigOutputFiles[name].value))
-  destroyFile(env.outputFilesDir + VimFiles.VIMRC.value)
-  destroyFile(env.homeDir + VimFiles.VIMRC.value)
-  for link in [env.homeDir + VimFiles.DOT_VIMRC.value]:
-    if os.path.islink(link):
-      os.unlink(link)
