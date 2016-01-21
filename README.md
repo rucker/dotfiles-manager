@@ -55,5 +55,4 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 - Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
 - Create two scripts directories: one for scripts that should be sourced, another for scripts that should be symlinked to from ~/bin (minus their file extension). Some of this second group will be available on GitHub. For those, check out the repository and add a command-line option to do a <code>$git pull</code> e.g. "-p" (pull).
 - When a program passed to doAlias is not installed, ask the user if it should be installed via brew/apt-get.
-- Implement -h / --help command-line arg.
-- Implement -d / --deubg command-line arg for more verbose output (possibly implement logging for this.
+- Implement -d / --deubg command-line arg for more verbose output (possibly implement logging for this).
