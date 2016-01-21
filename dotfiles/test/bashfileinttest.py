@@ -3,6 +3,7 @@
 import sys
 import os
 import unittest
+import argparse
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
@@ -110,7 +111,9 @@ class BashFileIntTest(unittest.TestCase):
       self.assertTrue("__sourceInDir \"" + env.scriptsDir + "\"" in contents)
 
   def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
-    env.args = ['-c']
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--clobber', action='store_true')
+    env.args = parser.parse_args(['-c'])
     with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value, 'w') as bash_profile:
       bash_profile.write("some_bash_token=some_value")
     bashfile.compileBashProfile()

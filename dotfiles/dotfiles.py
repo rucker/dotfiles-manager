@@ -27,10 +27,10 @@ def identifySystem():
     exit(1)
 
 def setArgs():
-  parser = argparse.ArgumentParser(description="Compile your dotfiles.")
-  parser.prefix_chars='-'
-  parser.add_argument('-c', '--clobber', help="Clobber any existing output files (don't back them up).")
-  env.args = str(parser.parse_args())
+  parser = argparse.ArgumentParser(description="Compile your custom dotfiles from input files.")
+  parser.add_argument('-c', '--clobber', action='store_true', help="Clobber any existing output files (don't back them up).")
+  env.args = parser.parse_args()
+  print "\nPreparing dotfiles!\n"
 
 def setEnv():
   env.homeDir = os.path.expanduser('~') + '/'
@@ -48,7 +48,7 @@ def setEnv():
   print "\tinputFilesDir: " + env.inputFilesDir
   print "\tscriptsDir: " + env.scriptsDir
   print "\toutputFilesDir: " + env.outputFilesDir
-  print "\targs: " + env.args
+  print "\targs: " + str(env.args)
   print ""
 
 def symlink(target, linkName) :
@@ -89,7 +89,6 @@ def cleanUp():
 
 
 def main():
-  print "\nPreparing dotfiles!\n"
   init()
   bashfile.compileBashFiles()
   gitconfig.compileGitConfig()
