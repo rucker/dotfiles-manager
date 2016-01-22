@@ -6,9 +6,14 @@ This repo contains my current dotfiles as well as a build script to set up/compi
 ## Background
 My dotfiles reached a point where they became complex enough that I didn't want to manage them by hand any more: not only do I want different things in .bashrc on Linux than I do in .bash_profile on OS X, but also I want to avoid accidentally committing any sensitive data they might contain to GitHub.
 
-To those ends, I wrote a Python script that will compile these dotfiles from external files.
+To those ends, I wrote a Python script that will manage my dotfiles for me.
 
-Also, I want to easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, the script will create the appropriate symlinks from <code>~</code> to this project's location.
+## Goals
+
+The goals of this project are:  
+1. Compile dotfiles from external files as needed (e.g. .bashrc/.bash_profile as described above).  
+2. Easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, create the appropriate symlinks from <code>~</code> to this project's location.  
+3. Be portable to various NIX-like systems. The project should work correctly regardless of where it lives on disk (it should not have any hard-coded paths). I may get it working on Windows/Cygwin if I ever get stuck doing development on that platform.  
 
 ## Usage
 <code>$ ./dotfiles/dotfiles.py</code>
@@ -53,12 +58,9 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 
 ## TO DO / Wishlist
 - Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
-- Create 3 scripts directories:
-
-  ~~1) scripts that should be sourced (and are under version control)~~ Done
-
-  ~~2) scripts that should be sourced (and are ignored by git)~~ Done
-
+- Create 3 scripts directories:  
+  ~~1) scripts that should be sourced (and are under version control)~~ Done  
+  ~~2) scripts that should be sourced (and are ignored by git)~~ Done  
   3) scripts that should be symlinked to from ~/bin (minus their file extension). Some of these will be available on GitHub. For those, check out the repository and add a command-line option to do a <code>$git pull</code> e.g. "-p" (pull).
 - When a program passed to doAlias is not installed, ask the user if it should be installed via brew/apt-get.
 - Implement -d / --deubg command-line arg for more verbose output (possibly implement logging for this).
