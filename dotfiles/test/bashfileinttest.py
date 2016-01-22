@@ -108,7 +108,8 @@ class BashFileIntTest(unittest.TestCase):
     bashfile.compileBashProfile()
     with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bash_profile:
       contents = bash_profile.read()
-      self.assertTrue("__sourceInDir \"" + env.scriptsDir + "\"" in contents)
+      self.assertTrue("__sourceInDir \"" + env.scriptsDir + "sourced/\"" in contents)
+      self.assertTrue("__sourceInDir \"" + env.scriptsDir + "sourced-private/\"" in contents)
 
   def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
     parser = argparse.ArgumentParser()
