@@ -23,6 +23,8 @@ This will:
 * Symlink <code>~/.gitconfig -> ./gitconfig</code>
 * Symlink <code>~/bin/dotfiles -> ./dotfiles/dotfiles.py</code> (will ask the user if that dir should be created when it does not exist).
 
+## Compiled Dotfiles
+
 The dotfiles are compiled from the input files described below, which are located in <code>./dotfiles/inputfiles</code>:
 
 ### bashrc/bash_profile
@@ -46,6 +48,15 @@ Contains any tokens that can be made public (e.g. published on GitHub)
 
 ##### git_private (optional)
 Contains private tokens that should not be shared (e.g. personal keys)
+
+## The scripts directory
+The scripts directory can be used to incorporate additional scripts into the user's bash session. The scripts directory contains the following subdirectories:
+
+### sourced
+Scripts in this directory will be sourced when `.bashrc/.bash_profile` is sourced. 
+
+### sourced-private (optional)
+Same as above, except that scripts in this directory will be ignored by git.
 
 ## Dependencies
 The <code>mock</code> and <code>enum34</code> packages are required. Fetch them from PyPi using pip, i.e. <code>$ pip install mock enum34</code>
