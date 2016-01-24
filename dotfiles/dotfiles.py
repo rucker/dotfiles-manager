@@ -87,6 +87,12 @@ def createSymlinks():
 def cleanUp():
   ioutils.cleanUpRenamedFiles([ BashOutputFiles.DOT_BASH_PROFILE.value, BashOutputFiles.DOT_BASHRC.value, VimFiles.DOT_VIMRC.value, GitConfigOutputFiles.DOT_GITCONFIG.value ])
 
+def printCompletionMessage():
+  if env.platform == Systems.DARWIN.value:
+    bashFileName = BashOutputFiles.DOT_BASH_PROFILE.value
+  else:
+    bashFileName = BashOutputFiles.DOT_BASHRC.value
+  print "Done. Recommend you source ~/" + bashFileName + " or start new a terminal session."
 
 def main():
   init()
@@ -94,7 +100,7 @@ def main():
   gitconfig.compileGitConfig()
   createSymlinks()
   cleanUp()
-  print "Done."
+  printCompletionMessage()
 
 if __name__ == '__main__':
   main()
