@@ -54,8 +54,8 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 
 ## FAQ
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
-**A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.
-**Q**: I deleted a file and now the script fails. What gives?
+**A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.  
+**Q**: I deleted a file and now the script fails. What gives?  
 **A**: Anything in the .gitignore file is considered optional. Everything else is considered required. Renaming or removing anything not git-ignored will cause problems.
 
 ## TO DO / Wishlist
