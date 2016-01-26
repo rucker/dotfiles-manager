@@ -75,6 +75,5 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
   ~~1) scripts that should be sourced (and are under version control)~~ Done  
   ~~2) scripts that should be sourced (and are ignored by git)~~ Done  
   3) scripts that should be symlinked to from ~/bin (minus their file extension). Some of these will be available on GitHub. For those, check out the repository and add a command-line option to do a <code>$git pull</code> e.g. "-p" (pull).
-- When a program passed to doAlias is not installed, ask the user if it should be installed via brew/apt-get.
-- Implement -d / --deubg command-line arg for more verbose output (possibly implement logging for this).
+- Implement -v / --verbose switch (possibly implement logging for this).
 - If the user chooses to create ~/bin, make sure that directory is in $PATH. If not, add it (this would mean writing to an input file (probably bash_private)).
