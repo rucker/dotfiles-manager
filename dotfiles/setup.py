@@ -8,6 +8,6 @@ setup(name = 'dotfiles',
       author = 'Rick Ucker',
       url = 'https://github.com/rucker/dotfiles',
       license = 'MIT',
-      packages = ['dotfiles','test'],
+      packages = ['dotfiles','dotfiles/test'],
       requires = ['mock','enum34'],
      )
