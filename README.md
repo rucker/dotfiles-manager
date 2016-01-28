@@ -66,11 +66,12 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.  
 **Q**: I deleted a file and now the script fails. What gives?  
-**A**: Anything in the .gitignore file is considered optional. Everything else is considered required. Renaming or removing anything not git-ignored will cause problems.
+**A**: Anything in the .gitignore file is considered optional. Everything else is considered required. Renaming or removing anything not git-ignored will cause problems.  
 **Q**: If this script is for managing dotfiles, why are you keeping and sourcing external scripts?  
 **A**: The idea is for those scripts' functionality to be availble during my bash session. Since I could produce the same effect by writing the contents of those scripts to `.bashrc/.bash_profile`, I think this is still in the spirit of managing my dotfiles.
 
 ## TO DO / Wishlist
 - Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
 - Implement -v / --verbose switch (possibly implement logging for this).
-- Incorporate [testfixtures](https://pythonhosted.org/testfixtures/index.html) package into tests ([TempDir](https://pythonhosted.org/testfixtures/files.html) in particular).
+- Incorporate [testfixtures](https://pythonhosted.org/testfixtures/index.html) package into tests ([TempDir](https://pythonhosted.org/testfixtures/files.html) in particular).  
+- Get a proper sdist and install working via setup.py. Part of this is making sense of ["Specify testfixtures in the tests_require parameter of your package’s call to setup in setup.py."](https://pythonhosted.org/testfixtures/installation.html) once `testfixtures` has been implemented.
