@@ -6,11 +6,8 @@ This repo contains my dotfiles and a build script. The script will compile/symli
 ## Background
 My dotfiles reached a point where they became complex enough that I didn't want to manage them by hand any more: not only do I want different things in .bashrc on Linux than I do in .bash_profile on OS X, but also I want to avoid accidentally committing any sensitive data they might contain to GitHub.
 
-To those ends, I wrote a Python script that will manage my dotfiles for me.
-
-## Goals
-
-The goals of this project are:  
+To those ends, I wrote a Python script that will manage my dotfiles for me.  The goals of this project are: 
+ 
 1. Compile dotfiles from external files as needed (e.g. .bashrc/.bash_profile as described above).  
 2. Easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, create the appropriate symlinks from <code>~</code> to this project's location.  
 3. Be portable to various NIX-like systems. The project should work correctly regardless of where it lives on disk (it should not have any hard-coded paths). I may get it working on Windows/Cygwin if I ever get stuck doing development on that platform.  
