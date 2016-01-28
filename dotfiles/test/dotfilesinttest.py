@@ -11,7 +11,6 @@ sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 import env
 import testenv
 import dotfiles
-import testfilemocks
 import bashfile
 from constants import Systems, BashInputFiles, BashOutputFiles, VimFiles
 
