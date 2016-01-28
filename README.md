@@ -21,7 +21,6 @@ This will:
 * Symlink <code>~/.vimrc -> ./vimrc</code>
 * Create a platform-specific bash dotfile in <code>~</code>
 * Symlink <code>~/.gitconfig -> ./gitconfig</code>
-* Symlink <code>~/bin/dotfiles -> ./dotfiles/dotfiles.py</code> (will ask the user if that dir should be created when it does not exist).
 
 ## Compiled Dotfiles
 

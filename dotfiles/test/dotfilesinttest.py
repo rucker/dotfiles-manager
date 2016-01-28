@@ -19,7 +19,6 @@ class DotFilesIntTest(unittest.TestCase):
   def setUp(self):
     dotfiles.init()
     testenv.setUp()
-    env.homeBinDir = 'some-fake-dir/'
 
   def tearDown(self):
     testenv.tearDown()
@@ -65,19 +64,6 @@ class DotFilesIntTest(unittest.TestCase):
      self.assertTrue("Renaming" in sys.stdout.getvalue().strip())
      self.assertTrue("Link created." in sys.stdout.getvalue().strip())
      os.remove(env.homeDir + VimFiles.DOT_VIMRC.value + '.bak')
-
-  def testWhenHomeBinDirDoesNotExistUserIsAskedIfItShouldBeCreated(self):
-    with mock.patch('__builtin__.raw_input', return_value='n'):
-      dotfiles.createSymlinks()
-      self.assertTrue(env.homeBinDir + " does not exist" in sys.stdout.getvalue().strip())
-      self.assertFalse(os.path.exists(env.homeBinDir))
-
-  def testWhenHomeBinDirDoesNotExistUserIsAskedIfItShouldBeCreated(self):
-    with mock.patch('__builtin__.raw_input', return_value='y'):
-      dotfiles.createSymlinks()
-      self.assertTrue(env.homeBinDir + " does not exist" in sys.stdout.getvalue().strip())
-      self.assertTrue(os.path.exists(env.homeBinDir))
-      shutil.rmtree(env.homeBinDir)
 
   def testWhenDotFileExistsInHomeDirAndIsRegularFileUserCanChooseToKeepThatFile(self):
     with open(env.homeDir + VimFiles.DOT_VIMRC.value, 'w') as vimrc:
