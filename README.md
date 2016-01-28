@@ -72,4 +72,4 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 ## TO DO / Wishlist
 - Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
 - Implement -v / --verbose switch (possibly implement logging for this).
-- If the user chooses to create ~/bin, make sure that directory is in $PATH. If not, add it (this would mean writing to an input file (probably bash_private)).
+- Incorporate [testfixtures](https://pythonhosted.org/testfixtures/index.html) package into tests ([TempDir](https://pythonhosted.org/testfixtures/files.html) in particular).
