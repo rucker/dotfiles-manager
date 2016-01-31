@@ -11,7 +11,7 @@ import ioutils
 from constants import BashInputFiles, BashOutputFiles
 
 class IOUtilsIntTest(unittest.TestCase):
-  
+
   @classmethod
   def setUpClass(self):
     testenv.setUp()
@@ -29,7 +29,7 @@ class IOUtilsIntTest(unittest.TestCase):
       for line in lines:
         pair = line.split('=')
         self.assertTrue(map[pair[0]] == pair[1])
-  
+
   def testMapInputFileContentsSkipsFunctions(self):
     with open(env.inputFilesDir + 'test_file', 'w') as bashCommon:
       bashCommon.write('function foo() {}\n')
@@ -42,10 +42,19 @@ class IOUtilsIntTest(unittest.TestCase):
     self.assertTrue(map.has_key('bar'))
     self.assertTrue(map['bar'] == 'baz')
 
+  def testDictToBufferConvertsADictToABuffer(self):
+    map = dict()
+    ioutils.mapInputFileContents(BashInputFiles.BASH_COMMON.value, map)
+    buffer = ioutils.dictToBuffer(map)
+    for k,v in map.items():
+      for line in buffer.readlines():
+	self.assertTrue(k in line)
+	self.assertTrue(v in line)
+
   def testWriteOutputFileWritesMapToFile(self):
     map = dict()
     ioutils.mapInputFileContents(BashInputFiles.BASH_COMMON.value, map)
-    ioutils.writeOutputFile(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value, map)
+    ioutils.writeOutputFile(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value, ioutils.dictToBuffer(map))
     with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value) as bashCommon:
       with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value) as bashProfile:
 	self.assertTrue(set(bashCommon.readlines()) == set(bashProfile.readlines()))
