@@ -27,22 +27,25 @@ def backupFile(fileName):
 def writeToOutputBuffer(output, fileBuffer):
   fileBuffer.write(unicode(output))
 
-def writeOptionalInputFileContents(fileName, fileBuffer):
+def mapInputFileContents(fileName, dict):
+  with open (env.inputFilesDir + fileName) as inputFile:
+    for line in inputFile:
+      pair = line.split('=')
+      if len(pair) == 2:
+	dict[pair[0]] = pair[1]
+
+def mapOptionalInputFileContents(fileName, dict):
   if os.path.isfile(env.inputFilesDir + fileName):
-    writeInputFileContents(fileName, fileBuffer)
+    mapInputFileContents(fileName, dict)
   else:
     print "\t" + fileName + " is not present. Skipping..."
 
-def writeInputFileContents(fileName, fileBuffer):
-  with open(env.inputFilesDir + fileName) as inputFile:
-    print "\tReading input file " + fileName
-    for line in inputFile:
-      writeToOutputBuffer(line, fileBuffer)
-
-def writeOutputFile(filePath, fileBuffer):
+def handleExistingFile(filePath):
   if not env.args.clobber and os.path.isfile(filePath) and env.outputFilesDir not in filePath:
     backupFile(filePath)
-  print "\tWriting output file " + filePath
+
+def writeOutputFile(filePath, dict):
   with open(filePath, 'w') as outputFile:
-    outputFile.write(fileBuffer.getvalue())
+    for k,v in dict.items():
+      outputFile.write(k + '=' + v)
 

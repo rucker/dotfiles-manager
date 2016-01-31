@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import argparse
 
 import env
 import testfilemocks
@@ -12,6 +13,9 @@ def setUp():
   env.inputFilesDir = thisDir + 'testinputfiles/'
   env.outputFilesDir = thisDir + 'testoutputfiles/'
   setUpDirs()
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-c', '--clobber', action='store_true')
+  env.args = parser.parse_args(['-c'])
   testfilemocks.createInputFiles()
 
 def setUpDirs():
