@@ -48,6 +48,7 @@ def dictToBuffer(dict):
   return buffer
 
 def writeOutputFile(filePath, *buffer):
+  print "\tWriting output file " + filePath
   with open(filePath, 'w') as outputFile:
     for b in buffer:
       outputFile.write(b.getvalue())
