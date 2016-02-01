@@ -68,9 +68,6 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 **A**: The idea is for those scripts' functionality to be availble during my bash session. Since I could produce the same effect by writing the contents of those scripts to `.bashrc/.bash_profile`, I think this is still in the spirit of managing my dotfiles.
 
 ## TO DO / Wishlist
-- Allow an entry in bash_private to override an identical entry from another file under version control. Example: On a specific machine, I might want to export a custom PS1. This should override/take precedence (and ideally, it should replace the existing entry if it's already been compiled to an output file).
-    - Slice 1: Convert existing file compilation implementation to use dictionaries instead of a FileBuffer for each line resembling `key = value`  
-    - Slice 2: Do the same as above, but for functions too. This will probably be tricky since it involves parsing bash syntax. Maybe I could require that functions be written in a certain style.  
 - Implement -v / --verbose switch (possibly implement logging for this).
 - Incorporate [testfixtures](https://pythonhosted.org/testfixtures/index.html) package into tests ([TempDir](https://pythonhosted.org/testfixtures/files.html) in particular).  
 - Get a proper sdist and install working via setup.py. Part of this is making sense of ["Specify testfixtures in the tests_require parameter of your package’s call to setup in setup.py."](https://pythonhosted.org/testfixtures/installation.html) once `testfixtures` has been implemented.
