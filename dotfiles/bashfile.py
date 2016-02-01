@@ -36,7 +36,7 @@ def compileBashFile(platform):
   ioutils.mapInputFileContents(BashInputFiles.BASH_COMMON.value, map)
   ioutils.mapInputFileContents(bashPlatformFile, map)
   tail = createScriptsDirBuffer()
-  ioutils.writeOutputFile(env.outputFilesDir + bashFile, ioutils.dictToBuffer(map), head, tail)
+  ioutils.writeOutputFile(env.outputFilesDir + bashFile, head, ioutils.dictToBuffer(map), tail)
   if env.platform == platform:
     ioutils.mapOptionalInputFileContents(BashInputFiles.BASH_PRIVATE.value, map)
     ioutils.writeOutputFile(env.homeDir + bashDotFile, head, ioutils.dictToBuffer(map), tail)
