@@ -24,24 +24,12 @@ def backupFile(fileName):
   print "\tThe file " + fileName + " already exists. Renaming to " + fileName + ".bak"
   os.rename(fileName, fileName + ".bak")
 
-def writeInputFileContents(fileName, fileBuffer):
-  with open(env.inputFilesDir + fileName) as inputFile:
-    print "\tReading input file " + fileName
-    for line in inputFile:
-      fileBuffer.write(unicode(line))
-
 def mapInputFileContents(fileName, dict):
   with open (env.inputFilesDir + fileName) as inputFile:
     for line in inputFile:
       pair = line.split('=')
       if len(pair) == 2:
 	dict[pair[0]] = pair[1]
-
-def writeOptionalInputFileContents(fileName, fileBuffer):
-  if os.path.isfile(env.inputFilesDir + fileName):
-    writeInputFileContents(fileName, fileBuffer)
-  else:
-    print "\t" + fileName + " is not present. Skipping..."
 
 def mapOptionalInputFileContents(fileName, dict):
   if os.path.isfile(env.inputFilesDir + fileName):
