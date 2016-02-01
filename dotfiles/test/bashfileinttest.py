@@ -77,7 +77,7 @@ class BashFileIntTest(unittest.TestCase):
       with open(env.inputFilesDir + BashInputFiles.BASH_MAC.value) as bashInput:
         self.assertTrue(bashInput.read() not in contents)
 
-  def testBashPrivateNotWrittenToBashrcInProjectOutputDir(self):
+  def testBashPrivateNotWrittenToBashrcInWorkingDir(self):
     env.platform = Systems.LINUX.value
     bashfile.compileBashrc()
     with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
@@ -121,22 +121,6 @@ class BashFileIntTest(unittest.TestCase):
     self.assertTrue("already exists. Renaming" not in sys.stdout.getvalue().strip())
     self.assertFalse(os.path.isfile(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value + '.bak'))
     env.args = ''
-
-  def testWhenBashPrivateContainsATokenAlsoInPublicMappingsThenThePublicTokenIsReplaced(self):
-    env.platform = Systems.LINUX.value
-    with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value, 'a') as bashCommon:
-      bashCommon.write('alias foo="bar"\n')
-    with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value, 'a') as bashPrivate:
-      bashPrivate.write('alias foo="baz"\n')
-    bashfile.compileBashrc()
-    with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
-      contents = bashrc.read()
-      self.assertTrue('bar' in contents)
-      self.assertTrue('baz' not in contents)
-    with open(env.homeDir + BashOutputFiles.DOT_BASHRC.value) as dotBashrc:
-      contents = dotBashrc.read()
-      self.assertTrue('baz' in contents)
-      self.assertTrue('bar' not in contents)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
