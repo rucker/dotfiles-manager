@@ -24,6 +24,9 @@ def backupFile(fileName):
   print "\tThe file " + fileName + " already exists. Renaming to " + fileName + ".bak"
   os.rename(fileName, fileName + ".bak")
 
+def writeToOutputBuffer(output, fileBuffer):
+  fileBuffer.write(unicode(output))
+
 def mapInputFileContents(fileName, dict):
   with open (env.inputFilesDir + fileName) as inputFile:
     for line in inputFile:
@@ -41,14 +44,8 @@ def handleExistingFile(filePath):
   if not env.args.clobber and os.path.isfile(filePath) and env.outputFilesDir not in filePath:
     backupFile(filePath)
 
-def dictToBuffer(dict):
-  buffer = io.StringIO()
-  for k,v in dict.items():
-    buffer.write(unicode(k + '=' + v))
-  return buffer
-
-def writeOutputFile(filePath, *buffer):
+def writeOutputFile(filePath, dict):
   with open(filePath, 'w') as outputFile:
-    for b in buffer:
-      outputFile.write(b.getvalue())
+    for k,v in dict.items():
+      outputFile.write(k + '=' + v)
 
