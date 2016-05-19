@@ -102,15 +102,6 @@ class BashFileIntTest(unittest.TestCase):
     self.assertTrue(BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
     testfilemocks.createFile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
 
-  def testScriptsDirIsWrittenToBashPrivate(self):
-    env.platform = Systems.DARWIN.value
-    env.scriptsDir = "/some/scripts/dir/"
-    bashfile.compileBashProfile()
-    with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bash_profile:
-      contents = bash_profile.read()
-      self.assertTrue("__sourceInDir \"" + env.scriptsDir + "sourced/\"" in contents)
-      self.assertTrue("__sourceInDir \"" + env.scriptsDir + "sourced-private/\"" in contents)
-
   def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--clobber', action='store_true')
