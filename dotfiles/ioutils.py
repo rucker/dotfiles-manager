@@ -46,3 +46,15 @@ def writeOutputFile(filePath, fileBuffer):
   with open(filePath, 'w') as outputFile:
     outputFile.write(fileBuffer.getvalue())
 
+def revertDotFiles(fileNames):
+  for file in fileNames:
+    file = env.homeDir + file
+    bakFile = file + '.bak'
+    if (os.path.isfile(bakFile)):
+      choice = ''
+      print "An older version of " + file + " was found at: " + bakFile + "."
+      while choice not in (['Y','N']):
+        choice = raw_input("Revert to this backup? (Y/N): ").upper()
+        if choice == 'Y':
+          os.remove(file)
+          os.rename(bakFile, file)

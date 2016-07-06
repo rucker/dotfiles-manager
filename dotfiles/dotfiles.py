@@ -29,6 +29,7 @@ def identifySystem():
 def setArgs():
   parser = argparse.ArgumentParser(description="Compile your custom dotfiles from input files.")
   parser.add_argument('-c', '--clobber', action='store_true', help="Clobber any existing output files (don't back them up).")
+  parser.add_argument('-r', '--revert', action='store_true', help="Revert dotfiles to backed-up version.")
   env.args = parser.parse_args()
   print "\nPreparing dotfiles!\n"
 
@@ -77,11 +78,14 @@ def printCompletionMessage():
 
 def main():
   init()
-  bashfile.compileBashFiles()
-  gitconfig.compileGitConfig()
-  createSymlinks()
-  cleanUp()
-  printCompletionMessage()
+  if env.args.revert:
+    ioutils.revertDotFiles([ BashOutputFiles.DOT_BASH_PROFILE.value, BashOutputFiles.DOT_BASHRC.value, VimFiles.DOT_VIMRC.value, GitConfigOutputFiles.DOT_GITCONFIG.value ])
+  else:
+    bashfile.compileBashFiles()
+    gitconfig.compileGitConfig()
+    createSymlinks()
+    cleanUp()
+    printCompletionMessage()
 
 if __name__ == '__main__':
   main()

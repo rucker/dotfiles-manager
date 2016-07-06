@@ -57,7 +57,7 @@ Same as above, except that scripts in this directory will be ignored by git.
 ## Dependencies
 The <code>mock</code> and <code>enum34</code> packages are required. Fetch them from PyPi using pip, i.e. <code>$ pip install mock enum34</code>
 
-For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
+For the Mac version, a Homebrew installation is assumed as is using the GNU coreutils.
 
 ## FAQ
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
@@ -68,7 +68,7 @@ For the Mac version, a Homebrew installation is assumed as is using GNU Bash.
 **A**: The idea is for those scripts' functionality to be availble during my bash session. Since I could produce the same effect by writing the contents of those scripts to `.bashrc/.bash_profile`, I think this is still in the spirit of managing my dotfiles.
 
 ## TO DO / Wishlist
-- Implement -r / --revert switch to restore previously backed up dotfiles. Walk the user through each and ask to confirm before restoring.
+- Backups should be done automatically (no prompting the user). Instead of leaving behind ~/[filename].bak, place backups in a backups directory with date stamps. The `-r` flag should probably just revert to the most recent backup (beyond that, the user is on their own).
 - Implement -v / --verbose switch (possibly implement logging for this).
 - Incorporate [testfixtures](https://pythonhosted.org/testfixtures/index.html) package into tests ([TempDir](https://pythonhosted.org/testfixtures/files.html) in particular).  
 - Get a proper sdist and install working via setup.py. Part of this is making sense of ["Specify testfixtures in the tests_require parameter of your package’s call to setup in setup.py."](https://pythonhosted.org/testfixtures/installation.html) once `testfixtures` has been implemented.
