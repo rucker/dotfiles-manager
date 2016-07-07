@@ -12,12 +12,12 @@ To those ends, I wrote a Python script that will manage my dotfiles for me.  The
 2. Easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, create the appropriate symlinks from <code>~</code> to this project's location.  
 3. Be portable to various NIX-like systems. The project should work correctly regardless of where it lives on disk (it should not have any hard-coded paths). I may get it working on Windows/Cygwin if I ever get stuck doing development on that platform.  
 
-## Usage
-<code>$ ./dotfiles/dotfiles.py</code>
-This will:
+## What it Does
+Running <code>$ ./dotfiles/dotfiles.py</code> will:
 * Symlink <code>~/.vimrc -> ./vimrc</code>
 * Symlink <code>~/.gitconfig -> ./gitconfig</code>
 * Create a platform-specific bash dotfile in <code>~</code>
+* Back up any existing dotfiles to `./dotfiles/backups/`.
 
 ## Compiled Dotfiles
 
@@ -59,6 +59,13 @@ The <code>mock</code> and <code>enum34</code> packages are required. Fetch them 
 
 For the Mac version, a Homebrew installation is assumed as is using the GNU coreutils.
 
+## Testing Strategy
+Unit tests:
+- Exercise logic e.g. execution path.
+
+Integration tests:
+- Deal with file IO. Env paths are altered so as not to break 'prod' data (the real text files).
+
 ## FAQ
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.  
@@ -68,8 +75,8 @@ For the Mac version, a Homebrew installation is assumed as is using the GNU core
 **A**: The idea is for those scripts' functionality to be availble during my bash session. Since I could produce the same effect by writing the contents of those scripts to `.bashrc/.bash_profile`, I think this is still in the spirit of managing my dotfiles.
 
 ## TO DO / Wishlist
-- Backups should be done automatically (no prompting the user). Instead of leaving behind ~/[filename].bak, place backups in a backups directory with date stamps. The `-r` flag should probably just revert to the most recent backup (beyond that, the user is on their own).
 - Implement -v / --verbose switch (possibly implement logging for this).
 - Incorporate [testfixtures](https://pythonhosted.org/testfixtures/index.html) package into tests ([TempDir](https://pythonhosted.org/testfixtures/files.html) in particular).  
 - Get a proper sdist and install working via setup.py. Part of this is making sense of ["Specify testfixtures in the tests_require parameter of your package’s call to setup in setup.py."](https://pythonhosted.org/testfixtures/installation.html) once `testfixtures` has been implemented.
 - Gracefully handle missing required input files (tell the user what's wrong and exit).
+- Migrate to Python 3.
