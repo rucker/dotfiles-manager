@@ -2,27 +2,16 @@
 
 import io
 import os
+import time
+import glob
 
 import env
 
-def cleanUpRenamedFiles(fileNames):
-  for fileName in fileNames:
-    newFile = env.homeDir + fileName
-    bakFile = newFile + '.bak'
-    if os.path.isfile(bakFile):
-      choice = ''
-      print "The existing file " + newFile + " was renamed to " + bakFile + "."
-      while choice not in ['Y','N']:
-	choice = raw_input("Would you like to delete it? (Y/N): ").upper()
-	if choice == 'Y':
-	  os.remove(bakFile)
-	  print "Deleting file " + bakFile + "."
-	elif choice == 'N':
-	  print "Keeping file " + bakFile + "."
-
 def backupFile(fileName):
-  print "\tThe file " + fileName + " already exists. Renaming to " + fileName + ".bak"
-  os.rename(fileName, fileName + ".bak")
+  timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
+  backupFile = env.backupsDir + fileName[fileName.rfind('/') + 1 :].replace('.','') + '_' + timestamp + '.bak'
+  print "\tBacking up " + fileName + " to " + backupFile
+  os.rename(fileName, backupFile)
 
 def writeToOutputBuffer(output, fileBuffer):
   fileBuffer.write(unicode(output))
@@ -48,13 +37,16 @@ def writeOutputFile(filePath, fileBuffer):
 
 def revertDotFiles(fileNames):
   for file in fileNames:
-    file = env.homeDir + file
-    bakFile = file + '.bak'
-    if (os.path.isfile(bakFile)):
+    name = file.replace('.','')
+    searchPattern = env.backupsDir + '*' + name + '*'
+    print 'search pattern: ' + searchPattern
+    results = sorted(glob.glob(searchPattern), reverse=True)
+    if results:
+      bakFile = results[0]
+      print bakFile
       choice = ''
-      print "An older version of " + file + " was found at: " + bakFile + "."
       while choice not in (['Y','N']):
-        choice = raw_input("Revert to this backup? (Y/N): ").upper()
+        choice = raw_input("Revert " + file + " to backup located at " + bakFile + "? (Y/N): ").upper()
         if choice == 'Y':
-          os.remove(file)
-          os.rename(bakFile, file)
+          os.remove(env.homeDir + file)
+          os.rename(bakFile, env.homeDir + file)

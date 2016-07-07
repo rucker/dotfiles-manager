@@ -39,6 +39,7 @@ def setEnv():
   env.inputFilesDir = env.workingDir + 'inputfiles/'
   env.scriptsDir = env.workingDir + 'scripts/'
   env.outputFilesDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
+  env.backupsDir = env.workingDir + 'backups/'
 
   print "Environment:"
   print "\tplatform: " + env.platform
@@ -47,6 +48,7 @@ def setEnv():
   print "\tinputFilesDir: " + env.inputFilesDir
   print "\tscriptsDir: " + env.scriptsDir
   print "\toutputFilesDir: " + env.outputFilesDir
+  print "\tbackupsDir: " + env.backupsDir
   print "\targs: " + str(env.args)
   print ""
 
@@ -66,9 +68,6 @@ def symlink(target, linkName) :
 def createSymlinks():
   symlink(env.outputFilesDir + VimFiles.VIMRC.value, env.homeDir + VimFiles.DOT_VIMRC.value)
 
-def cleanUp():
-  ioutils.cleanUpRenamedFiles([ BashOutputFiles.DOT_BASH_PROFILE.value, BashOutputFiles.DOT_BASHRC.value, VimFiles.DOT_VIMRC.value, GitConfigOutputFiles.DOT_GITCONFIG.value ])
-
 def printCompletionMessage():
   if env.platform == Systems.DARWIN.value:
     bashFileName = BashOutputFiles.DOT_BASH_PROFILE.value
@@ -84,7 +83,6 @@ def main():
     bashfile.compileBashFiles()
     gitconfig.compileGitConfig()
     createSymlinks()
-    cleanUp()
     printCompletionMessage()
 
 if __name__ == '__main__':

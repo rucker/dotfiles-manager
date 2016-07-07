@@ -5,6 +5,8 @@ import os
 import shutil
 import unittest
 import mock
+import fnmatch
+import time
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
@@ -56,41 +58,20 @@ class DotFilesIntTest(unittest.TestCase):
     self.createVimrcSymlink()
     self.assertTrue("Link already exists." in sys.stdout.getvalue().strip())
 
-  def testWhenDotFileExistsInHomeDirAndIsRegularFileItGetsRenamedAndANewSymlinkIsCreated(self):
-     with open(env.homeDir + VimFiles.DOT_VIMRC.value, 'w') as vimrc:
-       vimrc.write("foo bar baz")
-     bashfile.compileBashFiles()
-     self.createVimrcSymlink()
-     self.assertTrue("Renaming" in sys.stdout.getvalue().strip())
-     self.assertTrue("Link created." in sys.stdout.getvalue().strip())
-     os.remove(env.homeDir + VimFiles.DOT_VIMRC.value + '.bak')
-
-  def testWhenDotFileExistsInHomeDirAndIsRegularFileUserCanChooseToKeepThatFile(self):
+  def testWhenDotFileExistsInHomeDirAndIsRegularFileItGetsBackedUpAndANewSymlinkIsCreated(self):
     with open(env.homeDir + VimFiles.DOT_VIMRC.value, 'w') as vimrc:
       vimrc.write("foo bar baz")
-    with mock.patch('__builtin__.raw_input', return_value='n'):
-      bashfile.compileBashFiles()
-      self.createVimrcSymlink()
-      dotfiles.cleanUp()
-      bakFile = env.homeDir + VimFiles.DOT_VIMRC.value + '.bak'
-      self.assertTrue("Link created." in sys.stdout.getvalue().strip())
-      self.assertTrue("The existing file " + env.homeDir + VimFiles.DOT_VIMRC.value + " was renamed to " + bakFile in sys.stdout.getvalue().strip())
-      self.assertTrue("Keeping file " + bakFile in sys.stdout.getvalue().strip())
-      self.assertTrue(os.path.isfile(bakFile))
-      os.remove(bakFile)
-
-  def testWhenDotFileExistsInHomeDirAndIsRegularFileUserCanChooseToDeleteThatFile(self):
-    with open(env.homeDir + VimFiles.DOT_VIMRC.value, 'w') as vimrc:
-      vimrc.write("foo bar baz")
-    with mock.patch('__builtin__.raw_input', return_value='y'):
-      bashfile.compileBashFiles()
-      self.createVimrcSymlink()
-      dotfiles.cleanUp()
-      bakFile = env.homeDir + VimFiles.DOT_VIMRC.value + '.bak'
-      self.assertTrue("Link created." in sys.stdout.getvalue().strip())
-      self.assertTrue("The existing file " + env.homeDir + VimFiles.DOT_VIMRC.value + " was renamed to " + bakFile in sys.stdout.getvalue().strip())
-      self.assertTrue("Deleting file " + bakFile in sys.stdout.getvalue().strip())
-      self.assertFalse(os.path.isfile(bakFile))
+    bashfile.compileBashFiles()
+    self.createVimrcSymlink()
+    self.assertTrue("Backing up" in sys.stdout.getvalue().strip())
+    self.assertTrue("Link created." in sys.stdout.getvalue().strip())
+    backupFound = False
+    matchPattern = VimFiles.VIMRC.value + '_' + time.strftime('%Y-%m-%d') + '*.bak'
+    for obj in os.walk(env.backupsDir):
+      file = obj[2][0]
+      if fnmatch.fnmatch(file, matchPattern):
+        backupFound = True
+    self.assertTrue(backupFound)
 
   def createVimrcSymlink(self):
     dotfiles.symlink(env.outputFilesDir + VimFiles.VIMRC.value, env.homeDir + VimFiles.DOT_VIMRC.value)
