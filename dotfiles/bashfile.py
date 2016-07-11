@@ -23,7 +23,7 @@ def compileBashFile(platform):
     bashDotFile = BashOutputFiles.DOT_BASHRC.value
     bashPlatformFile = BashInputFiles.BASH_LINUX.value
 
-  print "Compiling file: " + bashFile
+  ioutils.output("Compiling file: " + bashFile)
   with io.StringIO() as fileBuffer:
     writeHeader(bashDotFile, fileBuffer)
     appendEnvScriptsDirToOutputBuffer(fileBuffer)
@@ -33,7 +33,7 @@ def compileBashFile(platform):
     if env.platform == platform:
       ioutils.writeOptionalInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
       ioutils.writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
-    print "File completed.\n"
+    ioutils.output("File completed.\n")
 
 def compileBashProfile():
   compileBashFile(Systems.DARWIN.value)

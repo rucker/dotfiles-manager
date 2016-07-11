@@ -95,6 +95,7 @@ class BashFileIntTest(unittest.TestCase):
 
   def testInputFileIsSkippedWhenNotPresent(self):
     env.platform = Systems.DARWIN.value
+    env.args = env.parser.parse_args(['-v'])
     with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashPrivate:
       bashPrivateText = bashPrivate.read()
     testfilemocks.destroyFile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value)
@@ -103,9 +104,7 @@ class BashFileIntTest(unittest.TestCase):
     testfilemocks.createFile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
 
   def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--clobber', action='store_true')
-    env.args = parser.parse_args(['-c'])
+    env.args = env.parser.parse_args(['-c'])
     with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value, 'w') as bash_profile:
       bash_profile.write("some_bash_token=some_value")
     bashfile.compileBashProfile()

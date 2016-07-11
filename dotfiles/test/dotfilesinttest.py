@@ -45,6 +45,7 @@ class DotFilesIntTest(unittest.TestCase):
     self.assertTrue(os.path.isfile(env.homeDir + VimFiles.DOT_VIMRC.value))
 
   def testWhenSymlinkDoesNotExistItGetsCreated(self):
+    env.args = env.parser.parse_args(['-v'])
     self.createVimrcSymlink()
     try:
       os.stat(env.homeDir + VimFiles.DOT_VIMRC.value)
@@ -54,11 +55,13 @@ class DotFilesIntTest(unittest.TestCase):
       self.fail("Symlink " + env.homeDir + VimFiles.DOT_VIMRC.value + " not created!")
 
   def testWhenSymlinkExistsItGetsReported(self):
+    env.args = env.parser.parse_args(['-v'])
     self.createVimrcSymlink()
     self.createVimrcSymlink()
     self.assertTrue("Link already exists." in sys.stdout.getvalue().strip())
 
   def testWhenDotFileExistsInHomeDirAndIsRegularFileItGetsBackedUpAndANewSymlinkIsCreated(self):
+    env.args = env.parser.parse_args(['-v'])
     with open(env.homeDir + VimFiles.DOT_VIMRC.value, 'w') as vimrc:
       vimrc.write("foo bar baz")
     bashfile.compileBashFiles()

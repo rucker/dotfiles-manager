@@ -23,15 +23,16 @@ def identifySystem():
   env.platform = platform.system()
 
   if env.platform not in supportedPlatforms:
-    print "System not supported!"
+    ioutils.output("System not supported!")
     exit(1)
 
 def setArgs():
-  parser = argparse.ArgumentParser(description="Compile your custom dotfiles from input files.")
-  parser.add_argument('-c', '--clobber', action='store_true', help="Clobber any existing output files (don't back them up).")
-  parser.add_argument('-r', '--revert', action='store_true', help="Revert dotfiles to backed-up version.")
-  env.args = parser.parse_args()
-  print "\nPreparing dotfiles!\n"
+  env.parser = argparse.ArgumentParser(description="Compile your custom dotfiles from input files.")
+  env.parser.add_argument('-c', '--clobber', action='store_true', help="Clobber any existing output files (don't back them up).")
+  env.parser.add_argument('-r', '--revert', action='store_true', help="Revert dotfiles to most recent backup.")
+  env.parser.add_argument('-v', '--verbose', action='store_true', help="Enable verbose output.")
+  env.args = env.parser.parse_args()
+  ioutils.output("\nPreparing dotfiles!\n")
 
 def setEnv():
   env.homeDir = os.path.expanduser('~') + '/'
@@ -41,29 +42,29 @@ def setEnv():
   env.outputFilesDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
   env.backupsDir = env.workingDir + 'backups/'
 
-  print "Environment:"
-  print "\tplatform: " + env.platform
-  print "\thomeDir: " + env.homeDir
-  print "\tworkingDir: " + env.workingDir
-  print "\tinputFilesDir: " + env.inputFilesDir
-  print "\tscriptsDir: " + env.scriptsDir
-  print "\toutputFilesDir: " + env.outputFilesDir
-  print "\tbackupsDir: " + env.backupsDir
-  print "\targs: " + str(env.args)
-  print ""
+  ioutils.output("Environment:")
+  ioutils.output("\tplatform: " + env.platform)
+  ioutils.output("\thomeDir: " + env.homeDir)
+  ioutils.output("\tworkingDir: " + env.workingDir)
+  ioutils.output("\tinputFilesDir: " + env.inputFilesDir)
+  ioutils.output("\tscriptsDir: " + env.scriptsDir)
+  ioutils.output("\toutputFilesDir: " + env.outputFilesDir)
+  ioutils.output("\tbackupsDir: " + env.backupsDir)
+  ioutils.output("\targs: " + str(env.args))
+  ioutils.output("")
 
 def symlink(target, linkName) :
-  print "Symlink " + linkName + " -> " + target
+  ioutils.output("Symlink " + linkName + " -> " + target)
   if os.path.islink(linkName):
-    print "\tLink already exists.\n"
+    ioutils.output("\tLink already exists.\n")
     return
   elif os.path.isfile(linkName):
     ioutils.backupFile(linkName)
   else:
-    print "\tSymlink does not exist."
-  print "\tCreating..."
+    ioutils.output("\tSymlink does not exist.")
+  ioutils.output("\tCreating...")
   os.symlink(target, linkName)
-  print "\tLink created.\n"
+  ioutils.output("\tLink created.\n")
 
 def createSymlinks():
   symlink(env.outputFilesDir + VimFiles.VIMRC.value, env.homeDir + VimFiles.DOT_VIMRC.value)
