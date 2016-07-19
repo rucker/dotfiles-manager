@@ -78,5 +78,6 @@ Integration tests:
 - Give user the ability to pass in specific dotfile(s) for compilation. Could be done via `-f --file` switch.
 - Incorporate [testfixtures](https://pythonhosted.org/testfixtures/index.html) package into tests ([TempDir](https://pythonhosted.org/testfixtures/files.html) in particular).  
 - Get a proper sdist and install working via setup.py. Part of this is making sense of ["Specify testfixtures in the tests_require parameter of your package’s call to setup in setup.py."](https://pythonhosted.org/testfixtures/installation.html) once `testfixtures` has been implemented.
+  - Part of this could be creating necessary directories such as `backups` (which would allow that dir and its .gitignore to be removed from git).
 - Gracefully handle missing required input files (tell the user what's wrong and exit).
 - Migrate to Python 3.
