@@ -4,6 +4,7 @@ import io
 import os
 import time
 import glob
+import shutil
 
 import env
 
@@ -11,7 +12,7 @@ def backupFile(fileName):
   timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
   backupFile = env.backupsDir + fileName[fileName.rfind('/') + 1 :].replace('.','') + '_' + timestamp + '.bak'
   output("\tBacking up " + fileName + " to " + backupFile)
-  os.rename(fileName, backupFile)
+  shutil.move(fileName, backupFile)
 
 def writeToOutputBuffer(output, fileBuffer):
   fileBuffer.write(unicode(output))
@@ -49,7 +50,7 @@ def revertDotFiles(fileNames):
         choice = raw_input("Revert " + file + " to backup located at " + bakFile + "? (Y/N): ").upper()
         if choice == 'Y':
           os.remove(env.homeDir + file)
-          os.rename(bakFile, env.homeDir + file)
+          shutil.move(bakFile, env.homeDir + file)
 
 def output(str):
   if (env.args.verbose):
