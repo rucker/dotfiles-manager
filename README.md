@@ -82,3 +82,4 @@ Integration tests:
   - Part of this could be creating necessary directories such as `backups` (which would allow that dir and its .gitignore to be removed from git).
 - Gracefully handle missing required input files (tell the user what's wrong and exit).
 - Migrate to Python 3.
+- Write a version compatible with BSD coreutils (e.g. `ls` options, `dircolors`)
