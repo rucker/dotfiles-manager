@@ -34,8 +34,11 @@ Contains any sensitive data that should not be committed to version control.
 ##### bash_linux
 Contains any elements specific to Linux.
 
-##### bash_mac
-Contains any elements specific to Mac OS X.
+##### bash_mac_gnu
+Contains any elements specific to Mac OS X systems where the GNU coreutils are installed.
+
+##### bash_mac_bsd
+Contains any elements specific to Mac OS X systems where the GNU coreutils are not installed.
 
 ### gitconfig
 
@@ -70,7 +73,7 @@ Integration tests:
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.  
 **Q**: I deleted a file and now the script fails. What gives?  
-**A**: Anything in the .gitignore file is considered optional. Everything else is considered required. Renaming or removing anything not git-ignored will cause problems.  
+**A**: Input files that are core to this script's functionality are considered to be required. Removing or renaming those files will cause problems.
 **Q**: If this script is for managing dotfiles, why are you keeping and sourcing external scripts?  
 **A**: The idea is for those scripts' functionality to be availble during my bash session. Since I could produce the same effect by writing the contents of those scripts to `.bashrc/.bash_profile`, I think this is still in the spirit of managing my dotfiles.
 
