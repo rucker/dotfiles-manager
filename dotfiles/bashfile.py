@@ -17,7 +17,10 @@ def compileBashFile(platform):
   if platform == Systems.DARWIN.value:
     bashFile = BashOutputFiles.BASH_PROFILE.value
     bashDotFile = BashOutputFiles.DOT_BASH_PROFILE.value
-    bashPlatformFile = BashInputFiles.BASH_MAC.value
+    if env.isGnu == True:
+      bashPlatformFile = BashInputFiles.BASH_MAC_GNU.value
+    else:
+      bashPlatformFile = BashInputFiles.BASH_MAC_BSD.value
   elif platform == Systems.LINUX.value:
     bashFile = BashOutputFiles.BASHRC.value
     bashDotFile = BashOutputFiles.DOT_BASHRC.value
@@ -28,7 +31,7 @@ def compileBashFile(platform):
     writeHeader(bashDotFile, fileBuffer)
     appendEnvScriptsDirToOutputBuffer(fileBuffer)
     ioutils.writeInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
-    ioutils.writeInputFileContents(bashPlatformFile, fileBuffer)
+    ioutils.writeOptionalInputFileContents(bashPlatformFile, fileBuffer)
     ioutils.writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
     if env.platform == platform:
       ioutils.writeOptionalInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)

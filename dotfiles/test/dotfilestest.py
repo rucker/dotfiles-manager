@@ -42,6 +42,12 @@ class DotfilesTest(unittest.TestCase):
       self.assertTrue(sys.stdout.getvalue().strip().endswith('not supported!'))
       assertEqual(cm.exception.code, 1)
 
+  @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
+  def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self):
+    with mock.patch('os.path.isdir', return_value=True):
+      dotfiles.identifySystem()
+      self.assertTrue(env.isGnu)
+
   def testWhenUserPassesArg_r_thenCorrectLogicalBranchingOccurs(self):
     parser = argparse.ArgumentParser()
     parser.add_argument('-r', '--revert', action='store_true')

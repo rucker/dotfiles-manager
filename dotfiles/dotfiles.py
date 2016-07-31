@@ -21,10 +21,14 @@ def init():
 def identifySystem():
   supportedPlatforms = [Systems.DARWIN.value, Systems.LINUX.value]
   env.platform = platform.system()
-
   if env.platform not in supportedPlatforms:
     ioutils.output("System not supported!")
     exit(1)
+
+  if env.platform == Systems.LINUX.value or os.path.isdir('/usr/local/opt/coreutils/libexec/gnubin/'):
+    env.isGnu = True
+  else:
+    env.isGnu = False
 
 def setArgs():
   env.parser = argparse.ArgumentParser(description="Compile your custom dotfiles from input files.")

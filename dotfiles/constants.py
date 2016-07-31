@@ -9,7 +9,8 @@ class Systems(Enum):
 
 class BashInputFiles(Enum):
   BASH_COMMON = 'bash_common'
-  BASH_MAC = 'bash_mac'
+  BASH_MAC_BSD = 'bash_mac_bsd'
+  BASH_MAC_GNU = 'bash_mac_gnu'
   BASH_LINUX = 'bash_linux'
   BASH_PRIVATE = 'bash_private'
 
@@ -18,6 +19,7 @@ class BashOutputFiles(Enum):
   DOT_BASH_PROFILE = '.bash_profile'
   BASHRC = 'bashrc'
   DOT_BASHRC = '.bashrc'
+  BASH_ALIASES = 'bash_aliases'
 
 class VimFiles(Enum):
   VIMRC = 'vimrc'

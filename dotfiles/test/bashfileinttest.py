@@ -32,7 +32,7 @@ class BashFileIntTest(unittest.TestCase):
       contents = bashProfile.read()
       with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value) as bashInput:
         self.assertTrue(bashInput.read() in contents)
-      with open(env.inputFilesDir + BashInputFiles.BASH_MAC.value) as bashInput:
+      with open(env.inputFilesDir + BashInputFiles.BASH_MAC_GNU.value) as bashInput:
         self.assertTrue(bashInput.read() in contents)
 
   def testBashLinuxNotWrittenToBashProfile(self):
@@ -74,7 +74,7 @@ class BashFileIntTest(unittest.TestCase):
     bashfile.compileBashrc()
     with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
       contents = bashrc.read()
-      with open(env.inputFilesDir + BashInputFiles.BASH_MAC.value) as bashInput:
+      with open(env.inputFilesDir + BashInputFiles.BASH_MAC_GNU.value) as bashInput:
         self.assertTrue(bashInput.read() not in contents)
 
   def testBashPrivateNotWrittenToBashrcInWorkingDir(self):

@@ -11,7 +11,7 @@ from constants import BashInputFiles, VimFiles, GitConfigInputFiles
 def createInputFiles():
   with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value, 'w') as bashCommon:
     bashCommon.write('some_common_token=some_common_value\n')
-  with open(env.inputFilesDir + BashInputFiles.BASH_MAC.value, 'w') as bashMac:
+  with open(env.inputFilesDir + BashInputFiles.BASH_MAC_GNU.value, 'w') as bashMac:
     bashMac.write('some_mac_token=some_mac_value\n')
   with open(env.inputFilesDir + BashInputFiles.BASH_LINUX.value, 'w') as bashLinux:
     bashLinux.write('some_linux_token=some_linux_value\n')
