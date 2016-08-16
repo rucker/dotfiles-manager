@@ -9,52 +9,57 @@ My dotfiles reached a point where they became complex enough that I didn't want 
 To those ends, I wrote a Python script that will manage my dotfiles for me.  The goals of this project are: 
  
 1. Compile dotfiles from external files as needed (e.g. .bashrc/.bash_profile as described above).  
-2. Easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, create the appropriate symlinks from <code>~</code> to this project's location.  
+2. Easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, create the appropriate symlinks from `$HOME` to this project's location.  
 3. Be portable to various NIX-like systems. The project should work correctly regardless of where it lives on disk (it should not have any hard-coded paths). I may get it working on Windows/Cygwin if I ever get stuck doing development on that platform.  
 
 ## What it Does
 Running <code>$ ./dotfiles/dotfiles.py</code> will:
+* Back up any existing dotfiles to `./dotfiles/backups/`
 * Symlink <code>~/.vimrc -> ./vimrc</code>
-* Symlink <code>~/.gitconfig -> ./gitconfig</code>
-* Create a platform-specific bash dotfile in <code>~</code>
-* Back up any existing dotfiles to `./dotfiles/backups/`.
+* Compile a platform-specific bash dotfile (i.e. `.bashrc` or `.bash_profile`), located in `$HOME`
+* Compile a `.gitconfig file`, located in `$HOME`
 
 ## Compiled Dotfiles
 
-The dotfiles are compiled from the input files described below, which are located in <code>./dotfiles/inputfiles</code>:
+Both .gitconfig and .bashrc/.bash_profile are compiled from input files located in `./dotfiles/inputfiles`. Make note that the presence of most of these files is **required**.
 
 ### bashrc/bash_profile
+Any Tokens contained in input files described below are compiled into bashrc/bash_profile in the following order:  
+1. bash_common  
+2. bash_$PLATFORM (i.e. `bash_linux`, `bash_mac_gnu`, or `bash_mac_bsd`)  
+3. bash_private  
+Be mindful of the order, particularly if you plan to make changes to your `$PATH`
 
-##### bash_common
+**bash_common**  
 Contains any elements common across platforms.
 
-##### bash_private (optional)
-Contains any sensitive data that should not be committed to version control.
-
-##### bash_linux
+**bash_linux**  
 Contains any elements specific to Linux.
 
-##### bash_mac_gnu
+**bash_mac_gnu**  
 Contains any elements specific to Mac OS X systems where the GNU coreutils are installed.
 
-##### bash_mac_bsd
+**bash_mac_bsd**  
 Contains any elements specific to Mac OS X systems where the GNU coreutils are not installed.
+
+**bash_private (optional)**  
+Contains any sensitive data that should not be committed to version control.
 
 ### gitconfig
 
-##### git_public
+**git_public**  
 Contains any tokens that can be made public (e.g. published on GitHub)
 
-##### git_private (optional)
+**git_private (optional)**  
 Contains private tokens that should not be shared (e.g. personal keys)
 
 ## The scripts directory
 The scripts directory can be used to incorporate additional scripts into the user's bash session. The scripts directory contains the following subdirectories:
 
-### sourced
+**sourced**  
 Scripts in this directory will be sourced when `.bashrc/.bash_profile` is sourced. 
 
-### sourced-private (optional)
+**sourced-private (optional)**  
 Same as above, except that scripts in this directory will be ignored by git.
 
 ## Dependencies
@@ -62,12 +67,10 @@ The <code>mock</code> and <code>enum34</code> packages are required. Fetch them 
 
 For the Mac version, a Homebrew installation is assumed as is using the GNU coreutils.
 
-## Testing Strategy
-Unit tests:
-- Exercise logic e.g. execution path.
-
-Integration tests:
-- Deal with file IO. Env paths are altered so as not to break 'prod' data (the real text files).
+## Testing  
+Everything in this project is test-driven. `$ testdriver.py` will run all tests.  
+Unit tests: Exercise logic e.g. execution path.  
+Integration tests: Deal with file IO. Env paths are altered so as not to break 'prod' data (the real text files).
 
 ## FAQ
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
