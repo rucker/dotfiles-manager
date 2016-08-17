@@ -3,6 +3,15 @@ These are my dotfiles. There are many like them, but these are mine.
 
 This repo contains my dotfiles and a build script. The script will compile/symlink them and do some basic setup.
 
+## What it Does
+Running <code>$ ./dotfiles/dotfiles.py</code> will:
+* Back up any existing dotfiles to `./dotfiles/backups/`
+* Symlink <code>~/.vimrc -> ./vimrc</code>
+* Compile a platform-specific bash dotfile (i.e. `.bashrc` or `.bash_profile`), located in `$HOME`. By default, you'll get the latest version of my dotfiles unless you modify the relevant input files (below).
+* Compile a `.gitconfig file`, located in `$HOME`
+
+Use `$ dotfiles.py -h` for help.
+
 ## Background
 My dotfiles reached a point where they became complex enough that I didn't want to manage them by hand any more: not only do I want different things in .bashrc on Linux than I do in .bash_profile on OS X, but also I want to avoid accidentally committing any sensitive data they might contain to GitHub.
 
@@ -12,13 +21,6 @@ To those ends, I wrote a Python script that will manage my dotfiles for me.  The
 2. Easily maintain various other config files (e.g. vimrc) that don't need this compilation. For those files, create the appropriate symlinks from `$HOME` to this project's location.  
 3. Be portable to various NIX-like systems. The project should work correctly regardless of where it lives on disk (it should not have any hard-coded paths). I may get it working on Windows/Cygwin if I ever get stuck doing development on that platform.  
 
-## What it Does
-Running <code>$ ./dotfiles/dotfiles.py</code> will:
-* Back up any existing dotfiles to `./dotfiles/backups/`
-* Symlink <code>~/.vimrc -> ./vimrc</code>
-* Compile a platform-specific bash dotfile (i.e. `.bashrc` or `.bash_profile`), located in `$HOME`
-* Compile a `.gitconfig file`, located in `$HOME`
-
 ## Compiled Dotfiles
 
 Both .gitconfig and .bashrc/.bash_profile are compiled from input files located in `./dotfiles/inputfiles`. Make note that the presence of most of these files is **required**.
@@ -26,7 +28,7 @@ Both .gitconfig and .bashrc/.bash_profile are compiled from input files located 
 ### bashrc/bash_profile
 Any Tokens contained in input files described below are compiled into bashrc/bash_profile in the following order:  
 1. bash_common  
-2. bash_$PLATFORM (i.e. `bash_linux`, `bash_mac_gnu`, or `bash_mac_bsd`)  
+2. bash_$PLATFORM (i.e. `bash_linux`, `bash_mac_gnu`, or `bash_mac_bsd`). **One** of those three is required (see below)  
 3. bash_private  
 Be mindful of the order, particularly if you plan to make changes to your `$PATH`
 
@@ -36,11 +38,11 @@ Contains any elements common across platforms.
 **bash_linux**  
 Contains any elements specific to Linux.
 
+**bash_mac_bsd**  
+Contains any elements specific to Mac OS X systems where the BSD coreutils are used. If you're on a Mac and you're not sure what this means, you should probably use this file instead of `bash_mac_gnu`.
+
 **bash_mac_gnu**  
 Contains any elements specific to Mac OS X systems where the GNU coreutils are installed.
-
-**bash_mac_bsd**  
-Contains any elements specific to Mac OS X systems where the GNU coreutils are not installed.
 
 **bash_private (optional)**  
 Contains any sensitive data that should not be committed to version control.
@@ -73,10 +75,12 @@ Unit tests: Exercise logic e.g. execution path.
 Integration tests: Deal with file IO. Env paths are altered so as not to break 'prod' data (the real text files).
 
 ## FAQ
+**Q**: Why are there two input files for Mac systems (`bash_mac_gnu` and `bash_mac_bsd`)?  
+**A**: The intention is for this build script **and** any dotfiles it creates to be portable to various sytems. At the time of this writing, I use the GNU coreutils on my personal Macbook. As such, I have a few aliases that are not compatible with Mac systems that *don't* use the GNU coreutils (read: most of them). So if I were to run the build script on another Mac system, I don't want anything incompatible to wind up in my dotfiles there.
 **Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.  
-**Q**: I deleted a file and now the script fails. What gives?  
-**A**: Input files that are core to this script's functionality are considered to be required. Removing or renaming those files will cause problems.
+**Q**: I deleted/moved/renamed a file and now the script fails. What gives?  
+**A**: Input files that are core to this script's functionality are considered to be required. Removing or renaming those files will cause problems.  
 **Q**: If this script is for managing dotfiles, why are you keeping and sourcing external scripts?  
 **A**: The idea is for those scripts' functionality to be availble during my bash session. Since I could produce the same effect by writing the contents of those scripts to `.bashrc/.bash_profile`, I think this is still in the spirit of managing my dotfiles.
 
