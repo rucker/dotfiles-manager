@@ -76,8 +76,8 @@ Integration tests: Deal with file IO. Env paths are altered so as not to break '
 
 ## FAQ
 **Q**: Why are there two input files for Mac systems (`bash_mac_gnu` and `bash_mac_bsd`)?  
-**A**: The intention is for this build script **and** any dotfiles it creates to be portable to various sytems. At the time of this writing, I use the GNU coreutils on my personal Macbook. As such, I have a few aliases that are not compatible with Mac systems that *don't* use the GNU coreutils (read: most of them). So if I were to run the build script on another Mac system, I don't want anything incompatible to wind up in my dotfiles there.
-**Q**: The script creates bashrc/bash_profile and .bashrc/.bash_profile. Why two versions of each?  
+**A**: The intention is for this build script **and** any dotfiles it creates to be portable to various sytems. At the time of this writing, I use the GNU coreutils on my personal Macbook. As such, I have a few aliases that are not compatible with Mac systems that *don't* use the GNU coreutils (read: most of them). So if I were to run the build script on another Mac system, I don't want anything incompatible to wind up in my dotfiles there.  
+**Q**: The script creates `bashrc/bash_profile` and `.bashrc/.bash_profile`. Why two versions of each?  
 **A**: bashrc/bash_profile are what I commit to GitHub. They are for show. These files do not contain the contents of bash_private, whereas their dotted counterparts do.  
 **Q**: I deleted/moved/renamed a file and now the script fails. What gives?  
 **A**: Input files that are core to this script's functionality are considered to be required. Removing or renaming those files will cause problems.  
@@ -91,4 +91,3 @@ Integration tests: Deal with file IO. Env paths are altered so as not to break '
 - Get a proper sdist and install working via setup.py. Part of this is making sense of ["Specify testfixtures in the tests_require parameter of your package’s call to setup in setup.py."](https://pythonhosted.org/testfixtures/installation.html) once `testfixtures` has been implemented.
   - Part of this could be creating necessary directories such as `backups` (which would allow that dir and its .gitignore to be removed from git).
 - Migrate to Python 3.
-- Write a version compatible with BSD coreutils (e.g. `ls` options, `dircolors`)
