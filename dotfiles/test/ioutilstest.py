@@ -36,5 +36,11 @@ class IOUtilsTest(unittest.TestCase):
     ioutils.output("Compiling dotfiles!")
     self.assertFalse("Compiling dotfiles!" in sys.stdout.getvalue().strip())
 
+  def testWhenRequiredInputFileDoesNotExistThenAnErrorIsPrintedAndProgramExitsWithStatus_1(self):
+    with self.assertRaises(SystemExit) as cm:
+      ioutils.writeRequiredInputFileContents("foo", "bar")
+      self.assertTrue(sys.stdout.getvalue().strip().contains("Please replace the file and try again."))
+      assertEqual(cm.exception.code, 1)
+
 suite = unittest.TestLoader().loadTestsFromTestCase(IOUtilsTest)
 unittest.main(module=__name__, buffer=True, exit=False)

@@ -30,7 +30,7 @@ def compileBashFile(platform):
   with io.StringIO() as fileBuffer:
     writeHeader(bashDotFile, fileBuffer)
     appendEnvScriptsDirToOutputBuffer(fileBuffer)
-    ioutils.writeInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
+    ioutils.writeRequiredInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
     ioutils.writeOptionalInputFileContents(bashPlatformFile, fileBuffer)
     ioutils.writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
     if env.platform == platform:
