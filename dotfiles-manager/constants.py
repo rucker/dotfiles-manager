@@ -12,7 +12,7 @@ class BashInputFiles(Enum):
     BASH_MAC_BSD = 'bash_mac_bsd'
     BASH_MAC_GNU = 'bash_mac_gnu'
     BASH_LINUX = 'bash_linux'
-    BASH_PRIVATE = 'bash_private'
+    BASH_LOCAL = 'bash_local'
 
 class BashOutputFiles(Enum):
     BASH_PROFILE = 'bash_profile'
@@ -27,7 +27,7 @@ class VimFiles(Enum):
 
 class GitConfigInputFiles(Enum):
     GIT_PUBLIC = 'git_public'
-    GIT_PRIVATE = 'git_private'
+    GIT_LOCAL = 'git_local'
 
 class GitConfigOutputFiles(Enum):
     GITCONFIG = 'gitconfig'

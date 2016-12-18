@@ -34,7 +34,7 @@ def compileBashFile(platform):
         ioutils.writeOptionalInputFileContents(bashPlatformFile, fileBuffer)
         ioutils.writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
         if env.platform == platform:
-            ioutils.writeOptionalInputFileContents(BashInputFiles.BASH_PRIVATE.value, fileBuffer)
+            ioutils.writeOptionalInputFileContents(BashInputFiles.BASH_LOCAL.value, fileBuffer)
             ioutils.writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
         ioutils.output("File completed.\n")
 

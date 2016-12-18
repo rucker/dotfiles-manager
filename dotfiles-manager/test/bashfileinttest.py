@@ -43,20 +43,20 @@ class BashFileIntTest(unittest.TestCase):
             with open(env.inputFilesDir + BashInputFiles.BASH_LINUX.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
-    def testBashPrivateNotWrittenToBashProfileInWorkingDir(self):
+    def testBashLocalNotWrittenToBashProfileInWorkingDir(self):
         env.platform = Systems.DARWIN.value
         bashfile.compileBashProfile()
         with open(env.outputFilesDir + BashOutputFiles.BASH_PROFILE.value) as bashProfile:
             contents = bashProfile.read()
-            with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
+            with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
-    def testBashPrivateWrittenToBashProfileInHomeDir(self):
+    def testBashLocalWrittenToBashProfileInHomeDir(self):
         env.platform = Systems.DARWIN.value
         bashfile.compileBashProfile()
         with open(env.homeDir + BashOutputFiles.DOT_BASH_PROFILE.value) as bashProfile:
             contents = bashProfile.read()
-            with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
+            with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashCommonAndBashLinuxWrittenToBashrc(self):
@@ -77,31 +77,31 @@ class BashFileIntTest(unittest.TestCase):
             with open(env.inputFilesDir + BashInputFiles.BASH_MAC_GNU.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
-    def testBashPrivateNotWrittenToBashrcInWorkingDir(self):
+    def testBashLocalNotWrittenToBashrcInWorkingDir(self):
         env.platform = Systems.LINUX.value
         bashfile.compileBashrc()
         with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
             contents = bashrc.read()
-            with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
+            with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
-    def testBashPrivateWrittenToBashrcInHomeDir(self):
+    def testBashLocalWrittenToBashrcInHomeDir(self):
         env.platform = Systems.LINUX.value
         bashfile.compileBashrc()
         with open(env.homeDir + BashOutputFiles.DOT_BASHRC.value) as bashrc:
             contents = bashrc.read()
-            with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashInput:
+            with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testInputFileIsSkippedWhenNotPresent(self):
         env.platform = Systems.DARWIN.value
         env.args = env.parser.parse_args(['-v'])
-        with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value) as bashPrivate:
-            bashPrivateText = bashPrivate.read()
-        testfilemocks.destroyFile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value)
+        with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashLocal:
+            bashLocalText = bashLocal.read()
+        testfilemocks.destroyFile(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value)
         bashfile.compileBashProfile()
-        self.assertTrue(BashInputFiles.BASH_PRIVATE.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
-        testfilemocks.createFile(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value, bashPrivateText)
+        self.assertTrue(BashInputFiles.BASH_LOCAL.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
+        testfilemocks.createFile(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value, bashLocalText)
 
     def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
         env.args = env.parser.parse_args(['-c'])

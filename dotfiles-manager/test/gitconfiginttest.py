@@ -24,23 +24,23 @@ class GitConfigIntTest(unittest.TestCase):
     def tearDown(self):
         testenv.tearDown()
 
-    def testWhenGitConfigFileIsWrittenItContainsTheContentsOfGitPublicButNotGitPrivate(self):
+    def testWhenGitConfigFileIsWrittenItContainsTheContentsOfGitPublicButNotGitLocal(self):
         gitconfig.compileGitConfig()
         with open(env.outputFilesDir + GitConfigOutputFiles.GITCONFIG.value) as dotGitConfig:
             with open(env.inputFilesDir + GitConfigInputFiles.GIT_PUBLIC.value) as gitPublic:
-                with open(env.inputFilesDir + GitConfigInputFiles.GIT_PRIVATE.value) as gitPrivate:
+                with open(env.inputFilesDir + GitConfigInputFiles.GIT_LOCAL.value) as gitLocal:
                     contents = dotGitConfig.read()
                     self.assertTrue(gitPublic.read() in contents)
-                    self.assertTrue(gitPrivate.read() not in contents)
+                    self.assertTrue(gitLocal.read() not in contents)
 
-    def testWhenGitConfigDotFileIsWrittenItContainsTheContentsOfGitPublicAndGitPrivate(self):
+    def testWhenGitConfigDotFileIsWrittenItContainsTheContentsOfGitPublicAndGitLocal(self):
         gitconfig.compileGitConfig()
         with open(env.homeDir + GitConfigOutputFiles.DOT_GITCONFIG.value) as dotGitConfig:
             with open(env.inputFilesDir + GitConfigInputFiles.GIT_PUBLIC.value) as gitPublic:
-                with open(env.inputFilesDir + GitConfigInputFiles.GIT_PRIVATE.value) as gitPrivate:
+                with open(env.inputFilesDir + GitConfigInputFiles.GIT_LOCAL.value) as gitLocal:
                     contents = dotGitConfig.read()
                     self.assertTrue(gitPublic.read() in contents)
-                    self.assertTrue(gitPrivate.read() in contents)
+                    self.assertTrue(gitLocal.read() in contents)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(GitConfigIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

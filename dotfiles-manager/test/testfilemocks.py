@@ -15,14 +15,14 @@ def createInputFiles():
         bashMac.write('some_mac_token=some_mac_value\n')
     with open(env.inputFilesDir + BashInputFiles.BASH_LINUX.value, 'w') as bashLinux:
         bashLinux.write('some_linux_token=some_linux_value\n')
-    with open(env.inputFilesDir + BashInputFiles.BASH_PRIVATE.value, 'w') as bashPrivate:
-        bashPrivate.write('some_private_token=some_private_value\n')
+    with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value, 'w') as bashLocal:
+        bashLocal.write('some_local_token=some_local_value\n')
     with open(env.outputFilesDir + VimFiles.VIMRC.value, 'w') as vimrc:
         vimrc.write('someconfigs')
     with open(env.inputFilesDir + GitConfigInputFiles.GIT_PUBLIC.value, 'w') as gitPublic:
         gitPublic.write('some_git_public_token=some_public_git_value')
-    with open(env.inputFilesDir + GitConfigInputFiles.GIT_PRIVATE.value, 'w') as gitPrivate:
-        gitPrivate.write('some_git_private_token=some_private_git_value')
+    with open(env.inputFilesDir + GitConfigInputFiles.GIT_LOCAL.value, 'w') as gitLocal:
+        gitLocal.write('some_git_local_token=some_local_git_value')
 
 def createFile(fileName, contents):
     with open(fileName, 'w') as file:
