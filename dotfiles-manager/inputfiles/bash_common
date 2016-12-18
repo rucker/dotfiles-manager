@@ -1,0 +1,61 @@
+__doAlias() {
+  for prog in $(echo $2 | tr " " "\n"); do
+    if [[ $prog == -* ]]; then
+      continue
+    elif [[ "$(which $prog)" == "" ]]; then
+      return
+    fi
+  done
+  alias "$1"="$2"
+}
+
+__sourceInDir() {
+  if [[ -d $1 && "$(ls -A $1)" ]]; then
+    for s in $1*; do
+      source $s
+    done
+  fi
+}
+
+man() {
+    env \
+        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+        LESS_TERMCAP_md=$(printf "\e[1;31m") \
+        LESS_TERMCAP_me=$(printf "\e[0m") \
+        LESS_TERMCAP_se=$(printf "\e[0m") \
+        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+        LESS_TERMCAP_ue=$(printf "\e[0m") \
+        LESS_TERMCAP_us=$(printf "\e[1;32m") \
+            man "$@"
+}
+
+__sourceInDir $scriptsDir"sourced/"
+__sourceInDir $scriptsDir"sourced-private/"
+
+goToFirstCol="\[\033[G\]"
+green_bold="\[\033[1;32m\]"
+blue_bold="\[\033[1;34m\]"
+magenta_bold="\[\033[1;35m\]"
+yellow_light="\[\033[0;33m\]"
+default="\[\033[00m\]"
+timestamp="[\D{%Y-%m-%d} \t]"
+
+PS1="$goToFirstCol$yellow_light$timestamp $green_bold\u@\h$blue_bold \w"
+if [[ $(type -t __git_ps1) == 'function' ]]; then
+  PS1=$PS1"$magenta_bold\$(__git_ps1)"
+fi
+export PS1=$PS1"$blue_bold\n\$$default "
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+
+umask 022
+
+alias grep="grep --color=auto"
+alias hgrep="history | grep"
+alias dmesg="dmesg -T --color=always"
+alias pull="git pull"
+alias co="git checkout"
+alias st="git st"
+alias lg="git lg -25"
+alias rbi="git rebase -i"
+__doAlias "diff" "colordiff"
+__doAlias "cat" "grc cat"

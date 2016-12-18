@@ -1,0 +1,11 @@
+export PATH="~/bin:/usr/local/opt/coreutils/libexec/gnubin:/opt/local/bin:/opt/local/sbin:$PATH"
+export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+eval `dircolors`
+alias htop="sudo htop"
+alias psgrep="psgrep -i"
+
+export LS_OPTIONS="-h --color=auto --group-directories-first"
+alias ls="ls $LS_OPTIONS"
+alias ll="ls $LS_OPTIONS -l"
+alias l="ls $LS_OPTIONS -lA"

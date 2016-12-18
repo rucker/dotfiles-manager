@@ -1,0 +1,13 @@
+# This is Git's per-user configuration file.
+[core]
+	editor = vim
+[alias]
+        lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+        co = checkout
+        st = status
+        br = branch
+        rbi = rebase -i
+[push]
+	default = simple
+[pull]
+	rebase = true
