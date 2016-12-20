@@ -57,22 +57,6 @@ def setEnv():
     ioutils.output("\targs: " + str(env.args))
     ioutils.output("")
 
-def symlink(target, linkName) :
-    ioutils.output("Symlink " + linkName + " -> " + target)
-    if os.path.islink(linkName):
-        ioutils.output("\tLink already exists.\n")
-        return
-    elif os.path.isfile(linkName):
-        ioutils.backupFile(linkName)
-    else:
-        ioutils.output("\tSymlink does not exist.")
-    ioutils.output("\tCreating...")
-    os.symlink(target, linkName)
-    ioutils.output("\tLink created.\n")
-
-def createSymlinks():
-    symlink(env.outputFilesDir + VimFiles.VIMRC.value, env.homeDir + VimFiles.DOT_VIMRC.value)
-
 def printCompletionMessage():
     if env.platform == Systems.DARWIN.value:
         bashFileName = BashOutputFiles.DOT_BASH_PROFILE.value
@@ -87,7 +71,6 @@ def main():
     else:
         bashfile.compileBashFiles()
         gitconfig.compileGitConfig()
-        createSymlinks()
         printCompletionMessage()
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import env
-from constants import BashInputFiles, VimFiles, GitConfigInputFiles
+from constants import BashInputFiles, VimFiles, GitConfigInputFiles, VimrcInputFiles
 
 def createInputFiles():
     with open(env.inputFilesDir + BashInputFiles.BASH_COMMON.value, 'w') as bashCommon:
@@ -23,6 +23,10 @@ def createInputFiles():
         gitConfig.write('some_gitconfig_token=some_git_config_value')
     with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG_LOCAL.value, 'w') as gitLocal:
         gitLocal.write('some_gitconfig_local_token=some_local_git_value')
+    with open(env.inputFilesDir + VimrcInputFiles.VIMRC.value, 'w') as vimrcLocal:
+        vimrcLocal.write('some_vimrc_local_token=some_vimrc_value')
+    with open(env.inputFilesDir + VimrcInputFiles.VIMRC_LOCAL.value, 'w') as vimrcLocal:
+        vimrcLocal.write('some_vimrc_local_token=some_local_vimrc_value')
 
 def createFile(fileName, contents):
     with open(fileName, 'w') as file:

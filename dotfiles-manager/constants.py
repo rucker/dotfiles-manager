@@ -32,3 +32,11 @@ class GitConfigInputFiles(Enum):
 class GitConfigOutputFiles(Enum):
     GITCONFIG = 'gitconfig'
     DOT_GITCONFIG = '.gitconfig'
+
+class VimrcInputFiles(Enum):
+    VIMRC = 'vimrc'
+    VIMRC_LOCAL = 'vimrc_local'
+
+class VimrcOutputFiles(Enum):
+    VIMRC = 'vimrc'
+    DOT_VIMRC = '.vimrc'
