@@ -24,7 +24,8 @@ class GitConfigIntTest(unittest.TestCase):
     def tearDown(self):
         testenv.tearDown()
 
-    def testWhenGitConfigFileIsWrittenItContainsTheContentsOfGitConfigButNotGitLocal(self):
+    def testWhenUserPassesArg_no_localGitConfigOutputFileContainsContentsOfGitConfigButNotGitLocal(self):
+        env.args = env.parser.parse_args(['--no-local'])
         gitconfig.compileGitConfig()
         with open(env.outputFilesDir + GitConfigOutputFiles.GITCONFIG.value) as dotGitConfig:
             with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG.value) as gitConfig:
@@ -33,7 +34,7 @@ class GitConfigIntTest(unittest.TestCase):
                     self.assertTrue(gitConfig.read() in contents)
                     self.assertTrue(gitLocal.read() not in contents)
 
-    def testWhenGitConfigDotFileIsWrittenItContainsTheContentsOfGitConfigAndGitLocal(self):
+    def testGitConfigOutputFileContainsTheContentsOfGitConfigAndGitLocal(self):
         gitconfig.compileGitConfig()
         with open(env.homeDir + GitConfigOutputFiles.DOT_GITCONFIG.value) as dotGitConfig:
             with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG.value) as gitConfig:

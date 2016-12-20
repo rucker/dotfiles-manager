@@ -35,6 +35,7 @@ def setArgs():
     env.parser.add_argument('-c', '--clobber', action='store_true', help="Clobber any existing output files (don't back them up).")
     env.parser.add_argument('-r', '--revert', action='store_true', help="Revert dotfiles to most recent backup.")
     env.parser.add_argument('-v', '--verbose', action='store_true', help="Enable verbose output.")
+    env.parser.add_argument('-n', '--no-local', action='store_true', help="Skip _local input files during compilation.")
     env.args = env.parser.parse_args()
     ioutils.output("\nPreparing dotfiles!\n")
 

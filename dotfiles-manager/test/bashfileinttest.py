@@ -77,21 +77,23 @@ class BashFileIntTest(unittest.TestCase):
             with open(env.inputFilesDir + BashInputFiles.BASH_MAC_GNU.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
-    def testBashLocalNotWrittenToBashrcInWorkingDir(self):
-        env.platform = Systems.LINUX.value
-        bashfile.compileBashrc()
-        with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
-            contents = bashrc.read()
-            with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashInput:
-                self.assertTrue(bashInput.read() not in contents)
-
-    def testBashLocalWrittenToBashrcInHomeDir(self):
+    def testBashLocalWrittenToBashrc(self):
         env.platform = Systems.LINUX.value
         bashfile.compileBashrc()
         with open(env.homeDir + BashOutputFiles.DOT_BASHRC.value) as bashrc:
             contents = bashrc.read()
             with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
+
+    def testBashLocalNotWrittenToBashrcWhenUserPassesArg_no_local(self):
+        testenv.setUp()
+        env.platform = Systems.LINUX.value
+        env.args = env.parser.parse_args(['--no-local'])
+        bashfile.compileBashrc()
+        with open(env.outputFilesDir + BashOutputFiles.BASHRC.value) as bashrc:
+            contents = bashrc.read()
+            with open(env.inputFilesDir + BashInputFiles.BASH_LOCAL.value) as bashInput:
+                self.assertTrue(bashInput.read() not in contents)
 
     def testInputFileIsSkippedWhenNotPresent(self):
         env.platform = Systems.DARWIN.value
