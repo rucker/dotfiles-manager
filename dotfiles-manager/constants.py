@@ -26,8 +26,8 @@ class VimFiles(Enum):
     DOT_VIMRC = '.vimrc'
 
 class GitConfigInputFiles(Enum):
-    GIT_PUBLIC = 'git_public'
-    GIT_LOCAL = 'git_local'
+    GITCONFIG = 'gitconfig'
+    GITCONFIG_LOCAL = 'gitconfig_local'
 
 class GitConfigOutputFiles(Enum):
     GITCONFIG = 'gitconfig'

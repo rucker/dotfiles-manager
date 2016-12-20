@@ -19,10 +19,10 @@ def createInputFiles():
         bashLocal.write('some_local_token=some_local_value\n')
     with open(env.outputFilesDir + VimFiles.VIMRC.value, 'w') as vimrc:
         vimrc.write('someconfigs')
-    with open(env.inputFilesDir + GitConfigInputFiles.GIT_PUBLIC.value, 'w') as gitPublic:
-        gitPublic.write('some_git_public_token=some_public_git_value')
-    with open(env.inputFilesDir + GitConfigInputFiles.GIT_LOCAL.value, 'w') as gitLocal:
-        gitLocal.write('some_git_local_token=some_local_git_value')
+    with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG.value, 'w') as gitConfig:
+        gitConfig.write('some_gitconfig_token=some_git_config_value')
+    with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG_LOCAL.value, 'w') as gitLocal:
+        gitLocal.write('some_gitconfig_local_token=some_local_git_value')
 
 def createFile(fileName, contents):
     with open(fileName, 'w') as file:
