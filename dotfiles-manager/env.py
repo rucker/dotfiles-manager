@@ -4,7 +4,6 @@ import os
 import platform
 
 platform = ''
-homeDir = ''
 workingDir = ''
 inputFilesDir = ''
 outputFilesDir = ''

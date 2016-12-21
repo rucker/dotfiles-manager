@@ -37,7 +37,7 @@ class GitConfigIntTest(unittest.TestCase):
 
     def testGitConfigOutputFileContainsTheContentsOfGitConfigAndGitLocal(self):
         gitconfig.compileGitConfig()
-        with open(env.homeDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
+        with open(env.outputFilesDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
             with open(env.inputFilesDir + Srcfiles.GITCONFIG.value) as gitConfig:
                 with open(env.inputFilesDir + Srcfiles.GITCONFIG_LOCAL.value) as gitLocal:
                     contents = dotGitConfig.read()

@@ -59,8 +59,8 @@ def revertDotFiles(fileNames):
             while choice not in (['Y','N']):
                 choice = raw_input("Revert " + file + " to backup located at " + bakFile + "? (Y/N): ").upper()
                 if choice == 'Y':
-                    os.remove(env.homeDir + file)
-                    shutil.move(bakFile, env.homeDir + file)
+                    os.remove(env.outputFilesDir + file)
+                    shutil.move(bakFile, env.outputFilesDir + file)
 
 def output(str):
     if (env.args.verbose):

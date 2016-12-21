@@ -40,7 +40,6 @@ def setArgs():
     ioutils.output("\nPreparing dotfiles!\n")
 
 def setEnv():
-    env.homeDir = os.path.expanduser('~') + '/'
     env.workingDir = os.path.dirname(os.path.realpath(__file__)) + '/'
     env.inputFilesDir = env.workingDir + 'inputfiles/'
     env.scriptsDir = env.workingDir + 'scripts/'
@@ -49,7 +48,6 @@ def setEnv():
 
     ioutils.output("Environment:")
     ioutils.output("\tplatform: " + env.platform)
-    ioutils.output("\thomeDir: " + env.homeDir)
     ioutils.output("\tworkingDir: " + env.workingDir)
     ioutils.output("\tinputFilesDir: " + env.inputFilesDir)
     ioutils.output("\tscriptsDir: " + env.scriptsDir)

@@ -22,9 +22,11 @@ class VimrcIntTest(unittest.TestCase):
         testenv.setUp()
 
     def tearDown(self):
+        testenv.clearArgs()
         testenv.tearDown()
 
-    def testWhenVimrcFileIsWrittenItContainsTheContentsOfVimrcButNotVimrcLocal(self):
+    def testWhenVimrcIsWrittenAndUserPassesArg_no_local_ItContainsTheContentsOfVimrcButNotVimrcLocal(self):
+        env.args = env.parser.parse_args(['--no-local'])
         vimrc.compileVimrc()
         with open(env.outputFilesDir + Dotfiles.VIMRC.value) as dotVimrc:
             with open(env.inputFilesDir + Srcfiles.VIMRC.value) as vimrcFile:
@@ -33,9 +35,9 @@ class VimrcIntTest(unittest.TestCase):
                     self.assertTrue(vimrcFile.read() in contents)
                     self.assertTrue(vimrcLocal.read() not in contents)
 
-    def testWhenVimrcDotFileIsWrittenItContainsTheContentsOfVimrcAndVimrcLocal(self):
+    def testWhenVimrcIsWrittenAndUserDoesNotPassArg_no_local_ItContainsTheContentsOfVimrcAndVimrcLocal(self):
         vimrc.compileVimrc()
-        with open(env.homeDir + Dotfiles.VIMRC.value) as dotVimrc:
+        with open(env.outputFilesDir + Dotfiles.VIMRC.value) as dotVimrc:
             with open(env.inputFilesDir + Srcfiles.VIMRC.value) as vimrcFile:
                 with open(env.inputFilesDir + Srcfiles.VIMRC_LOCAL.value) as vimrcLocal:
                     contents = dotVimrc.read()
