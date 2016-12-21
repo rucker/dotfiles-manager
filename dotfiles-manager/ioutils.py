@@ -7,6 +7,8 @@ import glob
 import shutil
 
 import env
+from constants import Srcfiles, Dotfiles
+import ioutils
 
 def backupFile(fileName):
     timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
@@ -66,3 +68,11 @@ def output(str):
     if (env.args.verbose):
         print str
 
+def compileDotfile(fileName):
+    ioutils.output("Compiling file: " + fileName)
+    with io.StringIO() as fileBuffer:
+        ioutils.writeRequiredInputFileContents(fileName, fileBuffer)
+        if env.args.no_local == False:
+            ioutils.writeOptionalInputFileContents(Srcfiles.VIMRC_LOCAL.value, fileBuffer)
+        ioutils.writeOutputFile(env.outputDir + fileName, fileBuffer)
+        ioutils.output("File completed.\n")

@@ -6,9 +6,8 @@ import io
 import os
 import argparse
 
-from constants import Systems, Dotfiles
+from constants import Systems, Dotfiles, Srcfiles
 import bashfile
-import gitconfig
 import env
 import ioutils
 
@@ -69,7 +68,8 @@ def main():
         ioutils.revertDotFiles([ Dotfiles.BASH_PROFILE.value, Dotfiles.BASHRC.value, Dotfiles.VIMRC.value, Dotfiles.GITCONFIG.value ])
     else:
         bashfile.compileBashFiles()
-        gitconfig.compileGitConfig()
+        ioutils.compileDotfile(Srcfiles.VIMRC.value)
+        ioutils.compileDotfile(Srcfiles.GITCONFIG.value)
         printCompletionMessage()
 
 if __name__ == '__main__':
