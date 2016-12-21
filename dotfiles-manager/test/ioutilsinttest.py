@@ -52,5 +52,26 @@ class IOUtilsIntTest(unittest.TestCase):
         with open(env.outputDir + self.fileName) as bash_profile:
             self.assertTrue("some_newer_alternate_value" not in bash_profile.read())
 
+    def testWhenUserPassesArg_no_localThenOutputFileDoesNotContainContentsOfLocalInputFile(self):
+        env.args = env.parser.parse_args(['--no-local'])
+        ioutils.compileDotfile(Dotfiles.GITCONFIG.value)
+        with open(env.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
+            with open(env.srcDir + Srcfiles.GITCONFIG.value) as inputFile:
+                with open(env.srcDir + Srcfiles.GITCONFIG_LOCAL.value) as \
+                localInputFile:
+                    contents = outputFile.read()
+                    self.assertTrue(inputFile.read() in contents)
+                    self.assertTrue(localInputFile.read() not in contents)
+
+    def testDotfileOutputFileContainsTheContentsOfDotfileAndGitLocal(self):
+        ioutils.compileDotfile(Dotfiles.GITCONFIG.value)
+        with open(env.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
+            with open(env.srcDir + Srcfiles.GITCONFIG.value) as inputFile:
+                with open(env.srcDir + Srcfiles.GITCONFIG_LOCAL.value) as \
+                localInputFile:
+                    contents = outputFile.read()
+                    self.assertTrue(inputFile.read() in contents)
+                    self.assertTrue(localInputFile.read() in contents)
+
 suite = unittest.TestLoader().loadTestsFromTestCase(IOUtilsIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

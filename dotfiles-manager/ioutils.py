@@ -71,8 +71,11 @@ def output(str):
 def compileDotfile(fileName):
     ioutils.output("Compiling file: " + fileName)
     with io.StringIO() as fileBuffer:
-        ioutils.writeRequiredInputFileContents(fileName, fileBuffer)
+        #TODO better way to get output file name?
+        inputFileName = fileName[fileName.rfind('/') + 1 :].replace('.','')
+        ioutils.writeRequiredInputFileContents(inputFileName, fileBuffer)
         if env.args.no_local == False:
-            ioutils.writeOptionalInputFileContents(Srcfiles.VIMRC_LOCAL.value, fileBuffer)
+            #TODO better way to get local file name?
+            ioutils.writeOptionalInputFileContents(inputFileName + "_local", fileBuffer)
         ioutils.writeOutputFile(env.outputDir + fileName, fileBuffer)
         ioutils.output("File completed.\n")
