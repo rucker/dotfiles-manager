@@ -12,5 +12,5 @@ def compileVimrc():
         ioutils.writeRequiredInputFileContents(Srcfiles.VIMRC.value, fileBuffer)
         if env.args.no_local == False:
             ioutils.writeOptionalInputFileContents(Srcfiles.VIMRC_LOCAL.value, fileBuffer)
-        ioutils.writeOutputFile(env.outputFilesDir + Dotfiles.VIMRC.value, fileBuffer)
+        ioutils.writeOutputFile(env.outputDir + Dotfiles.VIMRC.value, fileBuffer)
         ioutils.output("File completed.\n")

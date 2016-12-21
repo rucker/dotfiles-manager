@@ -12,5 +12,5 @@ def compileGitConfig():
         ioutils.writeRequiredInputFileContents(Srcfiles.GITCONFIG.value, fileBuffer)
         if env.args.no_local == False:
             ioutils.writeOptionalInputFileContents(Srcfiles.GITCONFIG_LOCAL.value, fileBuffer)
-        ioutils.writeOutputFile(env.outputFilesDir + Dotfiles.GITCONFIG.value, fileBuffer)
+        ioutils.writeOutputFile(env.outputDir + Dotfiles.GITCONFIG.value, fileBuffer)
         ioutils.output("File completed.\n")

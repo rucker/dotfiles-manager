@@ -5,7 +5,7 @@ import platform
 
 platform = ''
 workingDir = ''
-inputFilesDir = ''
-outputFilesDir = ''
+srcDir = ''
+outputDir = ''
 backupsDir = ''
 isGnu = ''

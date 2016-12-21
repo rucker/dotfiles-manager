@@ -28,18 +28,18 @@ class GitConfigIntTest(unittest.TestCase):
     def testWhenUserPassesArg_no_localGitConfigOutputFileContainsContentsOfGitConfigButNotGitLocal(self):
         env.args = env.parser.parse_args(['--no-local'])
         gitconfig.compileGitConfig()
-        with open(env.outputFilesDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
-            with open(env.inputFilesDir + Srcfiles.GITCONFIG.value) as gitConfig:
-                with open(env.inputFilesDir + Srcfiles.GITCONFIG_LOCAL.value) as gitLocal:
+        with open(env.outputDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
+            with open(env.srcDir + Srcfiles.GITCONFIG.value) as gitConfig:
+                with open(env.srcDir + Srcfiles.GITCONFIG_LOCAL.value) as gitLocal:
                     contents = dotGitConfig.read()
                     self.assertTrue(gitConfig.read() in contents)
                     self.assertTrue(gitLocal.read() not in contents)
 
     def testGitConfigOutputFileContainsTheContentsOfGitConfigAndGitLocal(self):
         gitconfig.compileGitConfig()
-        with open(env.outputFilesDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
-            with open(env.inputFilesDir + Srcfiles.GITCONFIG.value) as gitConfig:
-                with open(env.inputFilesDir + Srcfiles.GITCONFIG_LOCAL.value) as gitLocal:
+        with open(env.outputDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
+            with open(env.srcDir + Srcfiles.GITCONFIG.value) as gitConfig:
+                with open(env.srcDir + Srcfiles.GITCONFIG_LOCAL.value) as gitLocal:
                     contents = dotGitConfig.read()
                     self.assertTrue(gitConfig.read() in contents)
                     self.assertTrue(gitLocal.read() in contents)

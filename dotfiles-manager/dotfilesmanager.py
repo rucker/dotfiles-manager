@@ -41,17 +41,17 @@ def setArgs():
 
 def setEnv():
     env.workingDir = os.path.dirname(os.path.realpath(__file__)) + '/'
-    env.inputFilesDir = env.workingDir + 'inputfiles/'
+    env.srcDir = env.workingDir + 'src/'
     env.scriptsDir = env.workingDir + 'scripts/'
-    env.outputFilesDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
+    env.outputDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
     env.backupsDir = env.workingDir + 'backups/'
 
     ioutils.output("Environment:")
     ioutils.output("\tplatform: " + env.platform)
     ioutils.output("\tworkingDir: " + env.workingDir)
-    ioutils.output("\tinputFilesDir: " + env.inputFilesDir)
+    ioutils.output("\tsrcDir: " + env.srcDir)
     ioutils.output("\tscriptsDir: " + env.scriptsDir)
-    ioutils.output("\toutputFilesDir: " + env.outputFilesDir)
+    ioutils.output("\toutputDir: " + env.outputDir)
     ioutils.output("\tbackupsDir: " + env.backupsDir)
     ioutils.output("\targs: " + str(env.args))
     ioutils.output("")

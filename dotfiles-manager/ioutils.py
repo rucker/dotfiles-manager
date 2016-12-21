@@ -18,13 +18,13 @@ def writeToOutputBuffer(output, fileBuffer):
     fileBuffer.write(unicode(output))
 
 def writeOptionalInputFileContents(fileName, fileBuffer):
-    if os.path.isfile(env.inputFilesDir + fileName):
+    if os.path.isfile(env.srcDir + fileName):
         writeInputFileContents(fileName, fileBuffer)
     else:
         output("\t" + fileName + " is not present. Skipping...")
 
 def writeRequiredInputFileContents(fileName, fileBuffer):
-    if os.path.isfile(env.inputFilesDir + fileName):
+    if os.path.isfile(env.srcDir + fileName):
         writeInputFileContents(fileName, fileBuffer)
     else:
         msg = "Required input file " + fileName + " is not present. Please replace the file and try again."
@@ -34,13 +34,13 @@ def writeRequiredInputFileContents(fileName, fileBuffer):
         exit(1)
 
 def writeInputFileContents(fileName, fileBuffer):
-    with open(env.inputFilesDir + fileName) as inputFile:
+    with open(env.srcDir + fileName) as inputFile:
         output("\tReading input file " + fileName)
         for line in inputFile:
             writeToOutputBuffer(line, fileBuffer)
 
 def writeOutputFile(filePath, fileBuffer):
-    if not env.args.clobber and os.path.isfile(filePath) and env.outputFilesDir not in filePath:
+    if not env.args.clobber and os.path.isfile(filePath) and env.outputDir not in filePath:
         backupFile(filePath)
     output("\tWriting output file " + filePath)
     with open(filePath, 'w') as outputFile:
@@ -59,8 +59,8 @@ def revertDotFiles(fileNames):
             while choice not in (['Y','N']):
                 choice = raw_input("Revert " + file + " to backup located at " + bakFile + "? (Y/N): ").upper()
                 if choice == 'Y':
-                    os.remove(env.outputFilesDir + file)
-                    shutil.move(bakFile, env.outputFilesDir + file)
+                    os.remove(env.outputDir + file)
+                    shutil.move(bakFile, env.outputDir + file)
 
 def output(str):
     if (env.args.verbose):

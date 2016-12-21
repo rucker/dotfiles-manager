@@ -33,7 +33,7 @@ def compileBashFile(platform):
         print env.args
         if env.args.no_local == False:
             ioutils.writeOptionalInputFileContents(Srcfiles.BASH_LOCAL.value, fileBuffer)
-        ioutils.writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
+        ioutils.writeOutputFile(env.outputDir + bashFile, fileBuffer)
         ioutils.output("File completed.\n")
 
 def compileBashProfile():

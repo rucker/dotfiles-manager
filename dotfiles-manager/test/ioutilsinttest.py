@@ -28,7 +28,7 @@ class IOUtilsIntTest(unittest.TestCase):
         testenv.tearDown()
 
     def testWhenUserPassesArg_r_AndEnters_Y_whenPromptedThenDotfilesAreRestoredToMostRecentBackedUpVersion(self):
-        with open(env.outputFilesDir + self.fileName, 'w') as bash_profile:
+        with open(env.outputDir + self.fileName, 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
         with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-40-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
@@ -36,12 +36,12 @@ class IOUtilsIntTest(unittest.TestCase):
             bash_profile.write("some_bash_token=some_newer_alternate_value")
         with mock.patch('__builtin__.raw_input', return_value='y'):
             ioutils.revertDotFiles([self.fileName])
-        with open(env.outputFilesDir + self.fileName) as bash_profile:
+        with open(env.outputDir + self.fileName) as bash_profile:
             contents = bash_profile.read()
             self.assertTrue("some_newer_alternate_value" in contents)
 
     def testWhenUserPassesArg_r_AndEnters_N_whenPromptedThenBackedUpDotfilesAreNotRestored(self):
-        with open(env.outputFilesDir + self.fileName, 'w') as bash_profile:
+        with open(env.outputDir + self.fileName, 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
         with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-40-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
@@ -49,7 +49,7 @@ class IOUtilsIntTest(unittest.TestCase):
             bash_profile.write("some_bash_token=some_newer_alternate_value")
         with mock.patch('__builtin__.raw_input', return_value='n'):
             ioutils.revertDotFiles([self.fileName])
-        with open(env.outputFilesDir + self.fileName) as bash_profile:
+        with open(env.outputDir + self.fileName) as bash_profile:
             self.assertTrue("some_newer_alternate_value" not in bash_profile.read())
 
 suite = unittest.TestLoader().loadTestsFromTestCase(IOUtilsIntTest)
