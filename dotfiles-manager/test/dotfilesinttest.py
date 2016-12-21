@@ -14,7 +14,7 @@ import env
 import testenv
 import dotfilesmanager
 import bashfile
-from constants import Systems, BashInputFiles, BashOutputFiles, VimFiles
+from constants import Systems, Srcfiles, Dotfiles
 
 class DotFilesIntTest(unittest.TestCase):
 
@@ -29,13 +29,13 @@ class DotFilesIntTest(unittest.TestCase):
     def testBashrcNotCreatedInHomeDirOnDarwinSystem(self):
         dotfilesmanager.identifySystem()
         bashfile.compileBashFiles()
-        self.assertFalse(os.path.isfile(BashOutputFiles.DOT_BASHRC.value))
+        self.assertFalse(os.path.isfile(Dotfiles.BASHRC.value))
 
     @mock.patch('platform.system', mock.MagicMock(return_value=Systems.LINUX.value))
     def testBashProfileNotCreatedInHomeDirOnLinuxSystem(self):
         dotfilesmanager.identifySystem()
         bashfile.compileBashFiles()
-        self.assertFalse(os.path.isfile(BashOutputFiles.DOT_BASH_PROFILE.value))
+        self.assertFalse(os.path.isfile(Dotfiles.BASH_PROFILE.value))
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotFilesIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

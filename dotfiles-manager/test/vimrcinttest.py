@@ -13,7 +13,7 @@ import testenv
 import dotfilesmanager
 import testfilemocks
 import vimrc
-from constants import VimrcInputFiles, VimrcOutputFiles
+from constants import Srcfiles, Dotfiles
 
 class VimrcIntTest(unittest.TestCase):
 
@@ -26,18 +26,18 @@ class VimrcIntTest(unittest.TestCase):
 
     def testWhenVimrcFileIsWrittenItContainsTheContentsOfVimrcButNotVimrcLocal(self):
         vimrc.compileVimrc()
-        with open(env.outputFilesDir + VimrcOutputFiles.VIMRC.value) as dotVimrc:
-            with open(env.inputFilesDir + VimrcInputFiles.VIMRC.value) as vimrcFile:
-                with open(env.inputFilesDir + VimrcInputFiles.VIMRC_LOCAL.value) as vimrcLocal:
+        with open(env.outputFilesDir + Dotfiles.VIMRC.value) as dotVimrc:
+            with open(env.inputFilesDir + Srcfiles.VIMRC.value) as vimrcFile:
+                with open(env.inputFilesDir + Srcfiles.VIMRC_LOCAL.value) as vimrcLocal:
                     contents = dotVimrc.read()
                     self.assertTrue(vimrcFile.read() in contents)
                     self.assertTrue(vimrcLocal.read() not in contents)
 
     def testWhenVimrcDotFileIsWrittenItContainsTheContentsOfVimrcAndVimrcLocal(self):
         vimrc.compileVimrc()
-        with open(env.homeDir + VimrcOutputFiles.DOT_VIMRC.value) as dotVimrc:
-            with open(env.inputFilesDir + VimrcInputFiles.VIMRC.value) as vimrcFile:
-                with open(env.inputFilesDir + VimrcInputFiles.VIMRC_LOCAL.value) as vimrcLocal:
+        with open(env.homeDir + Dotfiles.VIMRC.value) as dotVimrc:
+            with open(env.inputFilesDir + Srcfiles.VIMRC.value) as vimrcFile:
+                with open(env.inputFilesDir + Srcfiles.VIMRC_LOCAL.value) as vimrcLocal:
                     contents = dotVimrc.read()
                     self.assertTrue(vimrcFile.read() in contents)
                     self.assertTrue(vimrcLocal.read() in contents)

@@ -5,7 +5,7 @@ import os
 
 import env
 import ioutils
-from constants import Systems, BashInputFiles, BashOutputFiles
+from constants import Systems, Srcfiles, Dotfiles
 
 def appendEnvScriptsDirToOutputBuffer(fileBuffer):
     ioutils.writeToOutputBuffer("scriptsDir=\"" + env.scriptsDir + "\"\n\n", fileBuffer)
@@ -15,27 +15,25 @@ def writeHeader(fileName, fileBuffer):
 
 def compileBashFile(platform):
     if platform == Systems.DARWIN.value:
-        bashFile = BashOutputFiles.BASH_PROFILE.value
-        bashDotFile = BashOutputFiles.DOT_BASH_PROFILE.value
+        bashFile = Dotfiles.BASH_PROFILE.value
         if env.isGnu == True:
-            bashPlatformFile = BashInputFiles.BASH_MAC_GNU.value
+            bashPlatformFile = Srcfiles.BASH_MAC_GNU.value
         else:
-            bashPlatformFile = BashInputFiles.BASH_MAC_BSD.value
+            bashPlatformFile = Srcfiles.BASH_MAC_BSD.value
     elif platform == Systems.LINUX.value:
-        bashFile = BashOutputFiles.BASHRC.value
-        bashDotFile = BashOutputFiles.DOT_BASHRC.value
-        bashPlatformFile = BashInputFiles.BASH_LINUX.value
+        bashFile = Dotfiles.BASHRC.value
+        bashPlatformFile = Srcfiles.BASH_LINUX.value
 
     ioutils.output("Compiling file: " + bashFile)
     with io.StringIO() as fileBuffer:
-        writeHeader(bashDotFile, fileBuffer)
+        writeHeader(bashFile, fileBuffer)
         appendEnvScriptsDirToOutputBuffer(fileBuffer)
-        ioutils.writeRequiredInputFileContents(BashInputFiles.BASH_COMMON.value, fileBuffer)
+        ioutils.writeRequiredInputFileContents(Srcfiles.BASH_COMMON.value, fileBuffer)
         ioutils.writeOptionalInputFileContents(bashPlatformFile, fileBuffer)
+        print env.args
+        if env.args.no_local == False:
+            ioutils.writeOptionalInputFileContents(Srcfiles.BASH_LOCAL.value, fileBuffer)
         ioutils.writeOutputFile(env.outputFilesDir + bashFile, fileBuffer)
-        if not env.args.no_local:
-            ioutils.writeOptionalInputFileContents(BashInputFiles.BASH_LOCAL.value, fileBuffer)
-            ioutils.writeOutputFile(env.homeDir + bashDotFile, fileBuffer)
         ioutils.output("File completed.\n")
 
 def compileBashProfile():

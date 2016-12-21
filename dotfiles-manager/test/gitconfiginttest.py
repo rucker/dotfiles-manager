@@ -13,7 +13,7 @@ import testenv
 import dotfilesmanager
 import testfilemocks
 import gitconfig
-from constants import GitConfigInputFiles, GitConfigOutputFiles
+from constants import Srcfiles, Dotfiles
 
 class GitConfigIntTest(unittest.TestCase):
 
@@ -22,23 +22,24 @@ class GitConfigIntTest(unittest.TestCase):
         testenv.setUp()
 
     def tearDown(self):
+        testenv.clearArgs()
         testenv.tearDown()
 
     def testWhenUserPassesArg_no_localGitConfigOutputFileContainsContentsOfGitConfigButNotGitLocal(self):
         env.args = env.parser.parse_args(['--no-local'])
         gitconfig.compileGitConfig()
-        with open(env.outputFilesDir + GitConfigOutputFiles.GITCONFIG.value) as dotGitConfig:
-            with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG.value) as gitConfig:
-                with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG_LOCAL.value) as gitLocal:
+        with open(env.outputFilesDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
+            with open(env.inputFilesDir + Srcfiles.GITCONFIG.value) as gitConfig:
+                with open(env.inputFilesDir + Srcfiles.GITCONFIG_LOCAL.value) as gitLocal:
                     contents = dotGitConfig.read()
                     self.assertTrue(gitConfig.read() in contents)
                     self.assertTrue(gitLocal.read() not in contents)
 
     def testGitConfigOutputFileContainsTheContentsOfGitConfigAndGitLocal(self):
         gitconfig.compileGitConfig()
-        with open(env.homeDir + GitConfigOutputFiles.DOT_GITCONFIG.value) as dotGitConfig:
-            with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG.value) as gitConfig:
-                with open(env.inputFilesDir + GitConfigInputFiles.GITCONFIG_LOCAL.value) as gitLocal:
+        with open(env.homeDir + Dotfiles.GITCONFIG.value) as dotGitConfig:
+            with open(env.inputFilesDir + Srcfiles.GITCONFIG.value) as gitConfig:
+                with open(env.inputFilesDir + Srcfiles.GITCONFIG_LOCAL.value) as gitLocal:
                     contents = dotGitConfig.read()
                     self.assertTrue(gitConfig.read() in contents)
                     self.assertTrue(gitLocal.read() in contents)

@@ -11,7 +11,7 @@ import argparse
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import dotfilesmanager
-from constants import Systems, VimFiles
+from constants import Systems, Dotfiles
 import env
 import testenv
 import testfilemocks
@@ -24,6 +24,9 @@ class DotfilesTest(unittest.TestCase):
     def setUpClass(self):
         dotfilesmanager.init()
         self.wasCalled = False
+
+    def tearDown(self):
+        testenv.clearArgs()
 
     @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
     def testWhenSystemIsDarwinInstallerIdentifiesSystemAsDarwin(self):

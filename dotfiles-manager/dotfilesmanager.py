@@ -6,7 +6,7 @@ import io
 import os
 import argparse
 
-from constants import Systems, BashOutputFiles, VimFiles, GitConfigOutputFiles
+from constants import Systems, Dotfiles
 import bashfile
 import gitconfig
 import env
@@ -60,15 +60,15 @@ def setEnv():
 
 def printCompletionMessage():
     if env.platform == Systems.DARWIN.value:
-        bashFileName = BashOutputFiles.DOT_BASH_PROFILE.value
+        bashFileName = Dotfiles.BASH_PROFILE.value
     else:
-        bashFileName = BashOutputFiles.DOT_BASHRC.value
+        bashFileName = Dotfiles.BASHRC.value
     print "Done. Recommend you source ~/" + bashFileName + " or start new a terminal session."
 
 def main():
     init()
     if env.args.revert:
-        ioutils.revertDotFiles([ BashOutputFiles.DOT_BASH_PROFILE.value, BashOutputFiles.DOT_BASHRC.value, VimFiles.DOT_VIMRC.value, GitConfigOutputFiles.DOT_GITCONFIG.value ])
+        ioutils.revertDotFiles([ Dotfiles.BASH_PROFILE.value, Dotfiles.BASHRC.value, Dotfiles.VIMRC.value, Dotfiles.GITCONFIG.value ])
     else:
         bashfile.compileBashFiles()
         gitconfig.compileGitConfig()

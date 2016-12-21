@@ -20,6 +20,9 @@ def setUpDirs():
         if not os.path.exists(dir):
             os.mkdir(dir)
 
+def clearArgs():
+    env.args = env.parser.parse_args([])
+
 def tearDown():
     for dir in [env.homeDir, env.inputFilesDir, env.outputFilesDir, env.backupsDir]:
         if os.path.exists(dir):

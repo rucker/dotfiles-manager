@@ -11,7 +11,7 @@ import argparse
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import dotfilesmanager
-from constants import Systems, VimFiles
+from constants import Systems, Dotfiles
 import env
 import testenv
 import testfilemocks
@@ -26,13 +26,15 @@ class IOUtilsTest(unittest.TestCase):
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument('-v', '--verbose', action='store_true')
 
+    def tearDown(self):
+        testenv.clearArgs()
+
     def testWhenDotfilesIsRunWith_v_flagThenOutputIsVerbose(self):
         env.args = self.parser.parse_args(['-v'])
         ioutils.output("Compiling dotfiles!")
         self.assertTrue("Compiling dotfiles!" in sys.stdout.getvalue().strip())
 
     def testWhenDotfilesIsRunWithout_v_flagThenOutputNotVerbose(self):
-        env.args.verbose = False
         ioutils.output("Compiling dotfiles!")
         self.assertFalse("Compiling dotfiles!" in sys.stdout.getvalue().strip())
 
