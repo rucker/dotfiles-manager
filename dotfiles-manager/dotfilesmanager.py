@@ -65,7 +65,7 @@ def printCompletionMessage():
 def main():
     init()
     if env.args.revert:
-        ioutils.revertDotFiles([ Dotfiles.BASH_PROFILE.value, Dotfiles.BASHRC.value, Dotfiles.VIMRC.value, Dotfiles.GITCONFIG.value ])
+        ioutils.revertDotfiles([ Dotfiles.BASH_PROFILE.value, Dotfiles.BASHRC.value, Dotfiles.VIMRC.value, Dotfiles.GITCONFIG.value ])
     else:
         bashfile.compileBashFiles()
         ioutils.compileDotfile(Srcfiles.VIMRC.value)

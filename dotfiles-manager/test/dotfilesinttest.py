@@ -16,7 +16,7 @@ import dotfilesmanager
 import bashfile
 from constants import Systems, Srcfiles, Dotfiles
 
-class DotFilesIntTest(unittest.TestCase):
+class DotfilesIntTest(unittest.TestCase):
 
     def setUp(self):
         dotfilesmanager.init()
@@ -37,5 +37,5 @@ class DotFilesIntTest(unittest.TestCase):
         bashfile.compileBashFiles()
         self.assertFalse(os.path.isfile(Dotfiles.BASH_PROFILE.value))
 
-suite = unittest.TestLoader().loadTestsFromTestCase(DotFilesIntTest)
+suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

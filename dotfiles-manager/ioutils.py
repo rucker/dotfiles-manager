@@ -48,7 +48,7 @@ def writeOutputFile(filePath, fileBuffer):
     with open(filePath, 'w') as outputFile:
         outputFile.write(fileBuffer.getvalue())
 
-def revertDotFiles(fileNames):
+def revertDotfiles(fileNames):
     for file in fileNames:
         name = file.replace('.','')
         searchPattern = env.backupsDir + '*' + name + '*'

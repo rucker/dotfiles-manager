@@ -56,7 +56,7 @@ class DotfilesTest(unittest.TestCase):
         parser.add_argument('-r', '--revert', action='store_true')
         env.args = parser.parse_args(['-r'])
         dotfilesmanager.setEnv = testenv.setUp
-        dotfilesmanager.ioutils.revertDotFiles = methodstubs.methodCalled(self)
+        dotfilesmanager.ioutils.revertDotfiles = methodstubs.methodCalled(self)
         dotfilesmanager.main()
         self.assertTrue(self.wasCalled)
 

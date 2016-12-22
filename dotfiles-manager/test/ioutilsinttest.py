@@ -35,7 +35,7 @@ class IOUtilsIntTest(unittest.TestCase):
         with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-43-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_newer_alternate_value")
         with mock.patch('__builtin__.raw_input', return_value='y'):
-            ioutils.revertDotFiles([self.fileName])
+            ioutils.revertDotfiles([self.fileName])
         with open(env.outputDir + self.fileName) as bash_profile:
             contents = bash_profile.read()
             self.assertTrue("some_newer_alternate_value" in contents)
@@ -48,7 +48,7 @@ class IOUtilsIntTest(unittest.TestCase):
         with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-43-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_newer_alternate_value")
         with mock.patch('__builtin__.raw_input', return_value='n'):
-            ioutils.revertDotFiles([self.fileName])
+            ioutils.revertDotfiles([self.fileName])
         with open(env.outputDir + self.fileName) as bash_profile:
             self.assertTrue("some_newer_alternate_value" not in bash_profile.read())
 
