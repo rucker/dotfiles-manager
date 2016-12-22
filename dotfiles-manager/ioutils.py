@@ -20,13 +20,13 @@ def writeToOutputBuffer(output, fileBuffer):
     fileBuffer.write(unicode(output))
 
 def writeOptionalInputFileContents(fileName, fileBuffer):
-    if os.path.isfile(env.srcDir + fileName):
+    if os.path.isfile(env.inputDir + fileName):
         writeInputFileContents(fileName, fileBuffer)
     else:
         output("\t" + fileName + " is not present. Skipping...")
 
 def writeRequiredInputFileContents(fileName, fileBuffer):
-    if os.path.isfile(env.srcDir + fileName):
+    if os.path.isfile(env.inputDir + fileName):
         writeInputFileContents(fileName, fileBuffer)
     else:
         msg = "Required input file " + fileName + " is not present. Please replace the file and try again."
@@ -36,7 +36,7 @@ def writeRequiredInputFileContents(fileName, fileBuffer):
         exit(1)
 
 def writeInputFileContents(fileName, fileBuffer):
-    with open(env.srcDir + fileName) as inputFile:
+    with open(env.inputDir + fileName) as inputFile:
         output("\tReading input file " + fileName)
         for line in inputFile:
             writeToOutputBuffer(line, fileBuffer)

@@ -15,7 +15,6 @@ def init():
     identifySystem()
     setArgs()
     setEnv()
-    os.chdir(env.workingDir)
 
 def identifySystem():
     supportedPlatforms = [Systems.DARWIN.value, Systems.LINUX.value]
@@ -36,23 +35,25 @@ def setArgs():
     env.parser.add_argument('-v', '--verbose', action='store_true', help="Enable verbose output.")
     env.parser.add_argument('-n', '--no-local', action='store_true', help="Skip _local input files during compilation.")
     env.parser.add_argument('-o', '--output-dir', nargs='?', default=os.environ['HOME'], help="Specify output directory.")
+    env.parser.add_argument('-i', '--input-dir', nargs=1, help="Specify input files directory.")
     env.args = env.parser.parse_args()
     ioutils.output("\nPreparing dotfiles!\n")
 
 def setEnv():
-    env.workingDir = os.path.dirname(os.path.realpath(__file__)) + '/'
-    env.srcDir = env.workingDir + 'src/'
-    env.scriptsDir = env.workingDir + 'scripts/'
+    if not env.args.input_dir:
+        env.parser.print_help()
+    else:
+        env.inputDir = str(env.args.input_dir).strip('[]\'')
+    env.scriptsDir = env.inputDir + 'scripts/'
     env.outputDir = env.args.output_dir
-    env.backupsDir = env.workingDir + 'backups/'
+    env.backupsDir = env.inputDir + 'backups/'
 
     ioutils.output("Environment:")
     ioutils.output("\tplatform: " + env.platform)
-    ioutils.output("\tworkingDir: " + env.workingDir)
-    ioutils.output("\tsrcDir: " + env.srcDir)
+    ioutils.output("\tinputDir: " + env.inputDir)
     ioutils.output("\tscriptsDir: " + env.scriptsDir)
-    ioutils.output("\toutputDir: " + env.outputDir)
     ioutils.output("\tbackupsDir: " + env.backupsDir)
+    ioutils.output("\toutputDir: " + env.outputDir)
     ioutils.output("\targs: " + str(env.args))
     ioutils.output("")
 

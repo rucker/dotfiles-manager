@@ -56,18 +56,18 @@ class IOUtilsIntTest(unittest.TestCase):
         env.args = env.parser.parse_args(['--no-local'])
         ioutils.compileDotfile(Dotfiles.GITCONFIG.value)
         with open(env.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
-            with open(env.srcDir + Srcfiles.GITCONFIG.value) as inputFile:
-                with open(env.srcDir + Srcfiles.GITCONFIG_LOCAL.value) as \
+            with open(env.inputDir + Srcfiles.GITCONFIG.value) as inputFile:
+                with open(env.inputDir + Srcfiles.GITCONFIG_LOCAL.value) as \
                 localInputFile:
                     contents = outputFile.read()
                     self.assertTrue(inputFile.read() in contents)
                     self.assertTrue(localInputFile.read() not in contents)
 
-    def testDotfileOutputFileContainsTheContentsOfDotfileAndGitLocal(self):
+    def testDotfileOutputFileContainsTheContentsOfDotfileAndLocalInputFile(self):
         ioutils.compileDotfile(Dotfiles.GITCONFIG.value)
         with open(env.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
-            with open(env.srcDir + Srcfiles.GITCONFIG.value) as inputFile:
-                with open(env.srcDir + Srcfiles.GITCONFIG_LOCAL.value) as \
+            with open(env.inputDir + Srcfiles.GITCONFIG.value) as inputFile:
+                with open(env.inputDir + Srcfiles.GITCONFIG_LOCAL.value) as \
                 localInputFile:
                     contents = outputFile.read()
                     self.assertTrue(inputFile.read() in contents)

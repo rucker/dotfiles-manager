@@ -4,8 +4,7 @@ import os
 import platform
 
 platform = ''
-workingDir = ''
-srcDir = ''
+inputDir = ''
 outputDir = ''
 backupsDir = ''
 isGnu = ''
