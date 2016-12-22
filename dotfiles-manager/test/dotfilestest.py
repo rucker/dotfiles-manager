@@ -64,7 +64,11 @@ class DotfilesTest(unittest.TestCase):
         dotfilesmanager.setEnv()
         self.assertTrue(env.outputDir == 'some_dir')
 
-    def testWhenUserPassesArg_i_thenCorrectInputDirIsStoredInEnv(self):
+    def testWhenUserDoesNotPassArg_o_thenOutputDirIsSetToUserHomeDir(self):
+        dotfilesmanager.setEnv()
+        self.assertTrue(env.outputDir == os.environ['HOME'])
+
+    def testWhenUserPassesArg_i_thenSpecifiedInputDirIsStoredInEnv(self):
         env.args = env.parser.parse_args(['-i', 'some_dir'])
         dotfilesmanager.setEnv()
         self.assertTrue(env.inputDir == 'some_dir')

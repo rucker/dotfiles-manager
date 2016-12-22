@@ -34,16 +34,26 @@ def setArgs():
     env.parser.add_argument('-r', '--revert', action='store_true', help="Revert dotfiles to most recent backup.")
     env.parser.add_argument('-v', '--verbose', action='store_true', help="Enable verbose output.")
     env.parser.add_argument('-n', '--no-local', action='store_true', help="Skip _local input files during compilation.")
-    env.parser.add_argument('-o', '--output-dir', nargs='?', default=os.environ['HOME'], help="Specify output directory.")
+    env.parser.add_argument('-o', '--output-dir', nargs=1, help="Specify output directory.")
     env.parser.add_argument('-i', '--input-dir', nargs=1, help="Specify input files directory.")
     env.args = env.parser.parse_args()
     ioutils.output("\nPreparing dotfiles!\n")
 
 def setEnv():
+    #TODO this isn't quite right. if stmt should be: 
+    # if -i AND if not env.args.input_dir
     if not env.args.input_dir:
         env.parser.print_help()
     else:
         env.inputDir = str(env.args.input_dir).strip('[]\'')
+    print env.args.output_dir
+    if env.args.output_dir:
+        print "hey, it exists!"
+        env.outputDir = env.args.output_dir
+    else:
+        print "falling back to " + os.environ['HOME']
+        env.outputDir = os.environ['HOME']
+        print "ok, set it to " + env.outputDir
     env.scriptsDir = env.inputDir + 'scripts/'
     env.outputDir = env.args.output_dir
     env.backupsDir = env.inputDir + 'backups/'
