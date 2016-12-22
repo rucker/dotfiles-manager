@@ -24,6 +24,7 @@ class DotfilesTest(unittest.TestCase):
     def setUpClass(self):
         dotfilesmanager.init()
         self.wasCalled = False
+        dotfilesmanager.setArgs()
 
     def tearDown(self):
         testenv.clearArgs()
@@ -52,13 +53,16 @@ class DotfilesTest(unittest.TestCase):
             self.assertTrue(env.isGnu)
 
     def testWhenUserPassesArg_r_thenCorrectLogicalBranchingOccurs(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument('-r', '--revert', action='store_true')
-        env.args = parser.parse_args(['-r'])
+        env.args = env.parser.parse_args(['-r'])
         dotfilesmanager.setEnv = testenv.setUp
         dotfilesmanager.ioutils.revertDotfiles = methodstubs.methodCalled(self)
         dotfilesmanager.main()
         self.assertTrue(self.wasCalled)
+
+    def testWhenUserPassesArg_o_thenCorrectOutputDirIsStoredInEnv(self):
+        env.args = env.parser.parse_args(['-o', 'some_dir'])
+        dotfilesmanager.setEnv()
+        self.assertTrue(env.outputDir == 'some_dir')
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)

@@ -23,14 +23,12 @@ class IOUtilsTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         dotfilesmanager.init()
-        self.parser = argparse.ArgumentParser()
-        self.parser.add_argument('-v', '--verbose', action='store_true')
 
     def tearDown(self):
         testenv.clearArgs()
 
     def testWhenDotfilesIsRunWith_v_flagThenOutputIsVerbose(self):
-        env.args = self.parser.parse_args(['-v'])
+        env.args = env.parser.parse_args(['-v'])
         ioutils.output("Compiling dotfiles!")
         self.assertTrue("Compiling dotfiles!" in sys.stdout.getvalue().strip())
 

@@ -35,6 +35,7 @@ def setArgs():
     env.parser.add_argument('-r', '--revert', action='store_true', help="Revert dotfiles to most recent backup.")
     env.parser.add_argument('-v', '--verbose', action='store_true', help="Enable verbose output.")
     env.parser.add_argument('-n', '--no-local', action='store_true', help="Skip _local input files during compilation.")
+    env.parser.add_argument('-o', '--output-dir', nargs='?', default=os.environ['HOME'], help="Specify output directory.")
     env.args = env.parser.parse_args()
     ioutils.output("\nPreparing dotfiles!\n")
 
@@ -42,7 +43,7 @@ def setEnv():
     env.workingDir = os.path.dirname(os.path.realpath(__file__)) + '/'
     env.srcDir = env.workingDir + 'src/'
     env.scriptsDir = env.workingDir + 'scripts/'
-    env.outputDir = env.workingDir[:env.workingDir.rfind('dotfiles/')]
+    env.outputDir = env.args.output_dir
     env.backupsDir = env.workingDir + 'backups/'
 
     ioutils.output("Environment:")
