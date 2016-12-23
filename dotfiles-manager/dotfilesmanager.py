@@ -40,22 +40,13 @@ def setArgs():
     ioutils.output("\nPreparing dotfiles!\n")
 
 def setEnv():
-    #TODO this isn't quite right. if stmt should be: 
-    # if -i AND if not env.args.input_dir
-    if not env.args.input_dir:
-        env.parser.print_help()
-    else:
+    if env.args.input_dir:
         env.inputDir = str(env.args.input_dir).strip('[]\'')
-    print env.args.output_dir
     if env.args.output_dir:
-        print "hey, it exists!"
-        env.outputDir = env.args.output_dir
+        env.outputDir = str(env.args.output_dir).strip('[]\'')
     else:
-        print "falling back to " + os.environ['HOME']
         env.outputDir = os.environ['HOME']
-        print "ok, set it to " + env.outputDir
     env.scriptsDir = env.inputDir + 'scripts/'
-    env.outputDir = env.args.output_dir
     env.backupsDir = env.inputDir + 'backups/'
 
     ioutils.output("Environment:")

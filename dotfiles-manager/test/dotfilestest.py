@@ -44,7 +44,7 @@ class DotfilesTest(unittest.TestCase):
         with self.assertRaises(SystemExit) as cm:
             dotfilesmanager.identifySystem()
             self.assertTrue(sys.stdout.getvalue().strip().endswith('not supported!'))
-            assertEqual(cm.exception.code, 1)
+        self.assertEqual(cm.exception.code, 1)
 
     @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
     def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self):
@@ -73,9 +73,11 @@ class DotfilesTest(unittest.TestCase):
         dotfilesmanager.setEnv()
         self.assertTrue(env.inputDir == 'some_dir')
 
-    def testWhenInputDirIsNotSetSetEnvWillPrintUsage(self):
-        dotfilesmanager.setEnv()
-        self.assertTrue("usage:" in sys.stdout.getvalue().strip())
+#    def testWhenInputDirIsNotSetSetEnvPrintsUsageAndExitsWithCode1(self):
+#        with self.assertRaises(SystemExit) as cm:
+#            dotfilesmanager.setEnv()
+#            self.assertTrue("usage:" in sys.stdout.getvalue().strip())
+#        self.assertEqual(cm.exception.code, 1)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesTest)
 unittest.main(module=__name__, buffer=True, exit=False)

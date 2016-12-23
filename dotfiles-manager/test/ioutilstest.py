@@ -40,7 +40,7 @@ class IOUtilsTest(unittest.TestCase):
         with self.assertRaises(SystemExit) as cm:
             ioutils.writeRequiredInputFileContents("foo", "bar")
             self.assertTrue(sys.stdout.getvalue().strip().contains("Please replace the file and try again."))
-            assertEqual(cm.exception.code, 1)
+        self.assertEqual(cm.exception.code, 1)
 
 suite = unittest.TestLoader().loadTestsFromTestCase(IOUtilsTest)
 unittest.main(module=__name__, buffer=True, exit=False)
