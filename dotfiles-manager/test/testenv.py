@@ -11,6 +11,7 @@ def setUp():
     env.inputDir = thisDir + 'testsrc/'
     env.outputDir = thisDir + 'testoutputfiles/'
     env.backupsDir = thisDir + 'testbackups/'
+    env.configFile = thisDir + '.dotfilesrc'
     setUpDirs()
     testfilemocks.createInputFiles()
 
@@ -26,3 +27,5 @@ def tearDown():
     for dir in [env.inputDir, env.outputDir, env.backupsDir]:
         if os.path.exists(dir):
             shutil.rmtree(dir)
+        if os.path.isfile(env.configFile):
+            os.remove(env.configFile)
