@@ -42,6 +42,9 @@ def setArgs():
 def setEnv():
     if env.args.input_dir:
         env.inputDir = str(env.args.input_dir).strip('[]\'')
+    else:
+        with open(env.configFile) as config:
+            env.inputDir = config.readline().split('=')[1]
     if env.args.output_dir:
         env.outputDir = str(env.args.output_dir).strip('[]\'')
     else:

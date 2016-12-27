@@ -11,6 +11,7 @@ def setUp():
     env.inputDir = thisDir + 'testsrc/'
     env.outputDir = thisDir + 'testoutputfiles/'
     env.backupsDir = thisDir + 'testbackups/'
+    env.configFile = '.dotfilesrc'
     setUpDirs()
     testfilemocks.createInputFiles()
 

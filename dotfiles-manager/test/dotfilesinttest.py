@@ -37,5 +37,9 @@ class DotfilesIntTest(unittest.TestCase):
         bashfile.compileBashFiles()
         self.assertFalse(os.path.isfile(Dotfiles.BASH_PROFILE.value))
 
+    def testWhenInputDirIsSetInConfigFileThenItIsStoredInEnv(self):
+        dotfilesmanager.setEnv()
+        self.assertTrue(env.inputDir == 'some_dir')
+
 suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)
