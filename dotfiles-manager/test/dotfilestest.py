@@ -12,7 +12,6 @@ sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import dotfilesmanager
 from constants import Systems, Dotfiles
-import env
 import testenv
 import testfilemocks
 import ioutils
@@ -22,7 +21,8 @@ class DotfilesTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        dotfilesmanager.init()
+        dotfilesmanager.env = testenv
+        dotfilesmanager.ioutils.env = testenv
         self.wasCalled = False
         dotfilesmanager.setArgs()
 
@@ -32,12 +32,12 @@ class DotfilesTest(unittest.TestCase):
     @mock.patch('platform.system', mock.MagicMock(return_value=Systems.DARWIN.value))
     def testWhenSystemIsDarwinInstallerIdentifiesSystemAsDarwin(self):
         dotfilesmanager.identifySystem()
-        self.assertEquals(env.platform, Systems.DARWIN.value)
+        self.assertEquals(testenv.platform, Systems.DARWIN.value)
 
     @mock.patch('platform.system', mock.MagicMock(return_value=Systems.LINUX.value))
     def testWhenSystemIsLinuxInstallerIdentifiesSystemAsLinux(self):
         dotfilesmanager.identifySystem()
-        self.assertEquals(env.platform, Systems.LINUX.value)
+        self.assertEquals(testenv.platform, Systems.LINUX.value)
 
     @mock.patch('platform.system', mock.MagicMock(return_value=Systems.WINDOWS.value))
     def testWhenSystemIsWindowsInstallerIdentifiesSystemAsWindowsAndExitsWithCode1(self):
@@ -50,28 +50,26 @@ class DotfilesTest(unittest.TestCase):
     def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self):
         with mock.patch('os.path.isdir', return_value=True):
             dotfilesmanager.identifySystem()
-            self.assertTrue(env.isGnu)
+            self.assertTrue(testenv.isGnu)
 
-    def testWhenUserPassesArg_r_thenCorrectLogicalBranchingOccurs(self):
-        env.args = env.parser.parse_args(['-r'])
-        dotfilesmanager.setEnv = testenv.setUp
-        dotfilesmanager.ioutils.revertDotfiles = methodstubs.methodCalled(self)
+    @mock.patch('dotfilesmanager.setArgs')
+    @mock.patch('dotfilesmanager.ioutils.revertDotfiles')
+    def testWhenUserPassesArg_r_thenCorrectLogicalBranchingOccurs(self, setArgs, revertDotFiles):
+        testenv.args = testenv.parser.parse_args(['-r'])
+        setArgs.side_effect = methodstubs.noop(self)
+        revertDotFiles.side_effect = methodstubs.methodCalled(self)
         dotfilesmanager.main()
         self.assertTrue(self.wasCalled)
 
     def testWhenUserPassesArg_o_thenCorrectOutputDirIsStoredInEnv(self):
-        env.args = env.parser.parse_args(['-o', 'some_dir'])
+        testenv.args = testenv.parser.parse_args(['-o', 'some_dir'])
         dotfilesmanager.setEnv()
-        self.assertTrue(env.outputDir == 'some_dir')
-
-    def testWhenUserDoesNotPassArg_o_thenOutputDirIsSetToUserHomeDir(self):
-        dotfilesmanager.setEnv()
-        self.assertTrue(env.outputDir == os.environ['HOME'])
+        self.assertTrue(testenv.outputDir == 'some_dir')
 
     def testWhenUserPassesArg_i_thenSpecifiedInputDirIsStoredInEnv(self):
-        env.args = env.parser.parse_args(['-i', 'some_dir'])
+        testenv.args = testenv.parser.parse_args(['-i', 'some_dir'])
         dotfilesmanager.setEnv()
-        self.assertTrue(env.inputDir == 'some_dir')
+        self.assertTrue(testenv.inputDir == 'some_dir/')
 
 #    def testWhenInputDirIsNotSetSetEnvPrintsUsageAndExitsWithCode1(self):
 #        with self.assertRaises(SystemExit) as cm:

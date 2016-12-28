@@ -7,7 +7,6 @@ import mock
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
-import env
 import testenv
 import dotfilesmanager
 import ioutils
@@ -20,7 +19,9 @@ class IOUtilsIntTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        dotfilesmanager.init()
+        dotfilesmanager.env = testenv
+        dotfilesmanager.ioutils.env = testenv
+        dotfilesmanager.setArgs()
         testenv.setUp()
 
     @classmethod
@@ -28,36 +29,37 @@ class IOUtilsIntTest(unittest.TestCase):
         testenv.tearDown()
 
     def testWhenUserPassesArg_r_AndEnters_Y_whenPromptedThenDotfilesAreRestoredToMostRecentBackedUpVersion(self):
-        with open(env.outputDir + self.fileName, 'w') as bash_profile:
+        with open(testenv.outputDir + self.fileName, 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
-        with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-40-00.bak', 'w') as bash_profile:
+        with open(testenv.backupsDir + self.bakFileName + '_2016-07-07_14-40-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
-        with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-43-00.bak', 'w') as bash_profile:
+        with open(testenv.backupsDir + self.bakFileName + '_2016-07-07_14-43-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_newer_alternate_value")
+
         with mock.patch('__builtin__.raw_input', return_value='y'):
             ioutils.revertDotfiles([self.fileName])
-        with open(env.outputDir + self.fileName) as bash_profile:
+        with open(testenv.outputDir + self.fileName) as bash_profile:
             contents = bash_profile.read()
             self.assertTrue("some_newer_alternate_value" in contents)
 
     def testWhenUserPassesArg_r_AndEnters_N_whenPromptedThenBackedUpDotfilesAreNotRestored(self):
-        with open(env.outputDir + self.fileName, 'w') as bash_profile:
+        with open(testenv.outputDir + self.fileName, 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
-        with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-40-00.bak', 'w') as bash_profile:
+        with open(testenv.backupsDir + self.bakFileName + '_2016-07-07_14-40-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_alternate_value")
-        with open(env.backupsDir + self.bakFileName + '_2016-07-07_14-43-00.bak', 'w') as bash_profile:
+        with open(testenv.backupsDir + self.bakFileName + '_2016-07-07_14-43-00.bak', 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_newer_alternate_value")
         with mock.patch('__builtin__.raw_input', return_value='n'):
             ioutils.revertDotfiles([self.fileName])
-        with open(env.outputDir + self.fileName) as bash_profile:
+        with open(testenv.outputDir + self.fileName) as bash_profile:
             self.assertTrue("some_newer_alternate_value" not in bash_profile.read())
 
     def testWhenUserPassesArg_no_localThenOutputFileDoesNotContainContentsOfLocalInputFile(self):
-        env.args = env.parser.parse_args(['--no-local'])
+        testenv.args = testenv.parser.parse_args(['--no-local'])
         ioutils.compileDotfile(Dotfiles.GITCONFIG.value)
-        with open(env.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
-            with open(env.inputDir + Srcfiles.GITCONFIG.value) as inputFile:
-                with open(env.inputDir + Srcfiles.GITCONFIG_LOCAL.value) as \
+        with open(testenv.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
+            with open(testenv.inputDir + Srcfiles.GITCONFIG.value) as inputFile:
+                with open(testenv.inputDir + Srcfiles.GITCONFIG_LOCAL.value) as \
                 localInputFile:
                     contents = outputFile.read()
                     self.assertTrue(inputFile.read() in contents)
@@ -65,9 +67,9 @@ class IOUtilsIntTest(unittest.TestCase):
 
     def testDotfileOutputFileContainsTheContentsOfDotfileAndLocalInputFile(self):
         ioutils.compileDotfile(Dotfiles.GITCONFIG.value)
-        with open(env.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
-            with open(env.inputDir + Srcfiles.GITCONFIG.value) as inputFile:
-                with open(env.inputDir + Srcfiles.GITCONFIG_LOCAL.value) as \
+        with open(testenv.outputDir + Dotfiles.GITCONFIG.value) as outputFile:
+            with open(testenv.inputDir + Srcfiles.GITCONFIG.value) as inputFile:
+                with open(testenv.inputDir + Srcfiles.GITCONFIG_LOCAL.value) as \
                 localInputFile:
                     contents = outputFile.read()
                     self.assertTrue(inputFile.read() in contents)

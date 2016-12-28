@@ -7,7 +7,6 @@ import argparse
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
-import env
 import testenv
 import dotfilesmanager
 import testfilemocks
@@ -18,7 +17,11 @@ class BashFileIntTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        dotfilesmanager.init()
+        dotfilesmanager.env = testenv
+        dotfilesmanager.ioutils.env = testenv
+        dotfilesmanager.bashfile.env = testenv
+        dotfilesmanager.identifySystem()
+        dotfilesmanager.setArgs()
         testenv.setUp()
 
     @classmethod
@@ -29,85 +32,93 @@ class BashFileIntTest(unittest.TestCase):
         testenv.clearArgs()
 
     def testBashCommonAndBashMacWrittenToBashProfile(self):
-        env.platform = Systems.DARWIN.value
+        testenv.platform = Systems.DARWIN.value
         bashfile.compileBashProfile()
-        with open(env.outputDir + Dotfiles.BASH_PROFILE.value) as bashProfile:
+        with open(testenv.outputDir + Dotfiles.BASH_PROFILE.value) as bashProfile:
             contents = bashProfile.read()
-            with open(env.inputDir + Srcfiles.BASH_COMMON.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_COMMON.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
-            with open(env.inputDir + Srcfiles.BASH_MAC_GNU.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_MAC_GNU.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashLinuxNotWrittenToBashProfile(self):
-        env.platform = Systems.DARWIN.value
+        testenv.platform = Systems.DARWIN.value
         bashfile.compileBashProfile()
-        with open(env.outputDir + Dotfiles.BASH_PROFILE.value) as bashProfile:
+        with open(testenv.outputDir + Dotfiles.BASH_PROFILE.value) as bashProfile:
             contents = bashProfile.read()
-            with open(env.inputDir + Srcfiles.BASH_LINUX.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_LINUX.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
     def testBashLocalWrittenToBashProfileWhenArg_no_local_notPassed(self):
-        env.platform = Systems.DARWIN.value
+        testenv.platform = Systems.DARWIN.value
         bashfile.compileBashProfile()
-        with open(env.outputDir + Dotfiles.BASH_PROFILE.value) as bashProfile:
+        with open(testenv.outputDir + Dotfiles.BASH_PROFILE.value) as bashProfile:
             contents = bashProfile.read()
-            with open(env.inputDir + Srcfiles.BASH_LOCAL.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashCommonAndBashLinuxWrittenToBashrc(self):
-        env.platform = Systems.LINUX.value
+        testenv.platform = Systems.LINUX.value
         bashfile.compileBashrc()
-        with open(env.outputDir + Dotfiles.BASHRC.value) as bashrc:
+        with open(testenv.outputDir + Dotfiles.BASHRC.value) as bashrc:
             contents = bashrc.read()
-            with open(env.inputDir + Srcfiles.BASH_COMMON.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_COMMON.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
-            with open(env.inputDir + Srcfiles.BASH_LINUX.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_LINUX.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashMacNotWrittenToBashrc(self):
-        env.platform = Systems.LINUX.value
+        testenv.platform = Systems.LINUX.value
         bashfile.compileBashrc()
-        with open(env.outputDir + Dotfiles.BASHRC.value) as bashrc:
+        with open(testenv.outputDir + Dotfiles.BASHRC.value) as bashrc:
             contents = bashrc.read()
-            with open(env.inputDir + Srcfiles.BASH_MAC_GNU.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_MAC_GNU.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
     def testBashLocalWrittenToBashrc(self):
-        env.platform = Systems.LINUX.value
+        testenv.platform = Systems.LINUX.value
         bashfile.compileBashrc()
-        with open(env.outputDir + Dotfiles.BASHRC.value) as bashrc:
+        with open(testenv.outputDir + Dotfiles.BASHRC.value) as bashrc:
             contents = bashrc.read()
-            with open(env.inputDir + Srcfiles.BASH_LOCAL.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashLocalNotWrittenToBashrcWhenUserPassesArg_no_local(self):
         testenv.setUp()
-        env.platform = Systems.LINUX.value
-        env.args = env.parser.parse_args(['--no-local'])
+        testenv.platform = Systems.LINUX.value
+        args = testenv.args
+        testenv.args = testenv.parser.parse_args(['--no-local'])
+
         bashfile.compileBashrc()
-        with open(env.outputDir + Dotfiles.BASHRC.value) as bashrc:
+        with open(testenv.outputDir + Dotfiles.BASHRC.value) as bashrc:
             contents = bashrc.read()
-            with open(env.inputDir + Srcfiles.BASH_LOCAL.value) as bashInput:
+            with open(testenv.inputDir + Srcfiles.BASH_LOCAL.value) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
+        testenv.args = args
+
     def testInputFileIsSkippedWhenNotPresent(self):
-        env.platform = Systems.DARWIN.value
-        env.args = env.parser.parse_args(['-v'])
-        with open(env.inputDir + Srcfiles.BASH_LOCAL.value) as bashLocal:
+        testenv.platform = Systems.DARWIN.value
+        args = testenv.args
+        testenv.args = testenv.parser.parse_args(['-v'])
+
+        with open(testenv.inputDir + Srcfiles.BASH_LOCAL.value) as bashLocal:
             bashLocalText = bashLocal.read()
-        testfilemocks.destroyFile(env.inputDir + Srcfiles.BASH_LOCAL.value)
+        testfilemocks.destroyFile(testenv.inputDir + Srcfiles.BASH_LOCAL.value)
         bashfile.compileBashProfile()
         self.assertTrue(Srcfiles.BASH_LOCAL.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
-        testfilemocks.createFile(env.inputDir + Srcfiles.BASH_LOCAL.value, bashLocalText)
+        testfilemocks.createFile(testenv.inputDir + Srcfiles.BASH_LOCAL.value, bashLocalText)
+
+        testenv.args = args
 
     def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
-        env.args = env.parser.parse_args(['-c'])
-        with open(env.outputDir + Dotfiles.BASH_PROFILE.value, 'w') as bash_profile:
+        testenv.args = testenv.parser.parse_args(['-c'])
+        with open(testenv.outputDir + Dotfiles.BASH_PROFILE.value, 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_value")
         bashfile.compileBashProfile()
         self.assertTrue("already exists. Renaming" not in sys.stdout.getvalue().strip())
-        self.assertFalse(os.path.isfile(env.outputDir + Dotfiles.BASH_PROFILE.value + '.bak'))
-        env.args = ''
+        self.assertFalse(os.path.isfile(testenv.outputDir + Dotfiles.BASH_PROFILE.value + '.bak'))
+        testenv.args = ''
 
 suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
 unittest.main(module=__name__, buffer=True, exit=False)

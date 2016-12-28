@@ -41,14 +41,12 @@ def setArgs():
 
 def setEnv():
     if env.args.input_dir:
-        env.inputDir = str(env.args.input_dir).strip('[]\'')
+        env.inputDir = env.args.input_dir[0] + '/'
     else:
         with open(env.configFile) as config:
-            env.inputDir = config.readline().split('=')[1]
+            env.inputDir = config.readline().split('=')[1] + '/'
     if env.args.output_dir:
-        env.outputDir = str(env.args.output_dir).strip('[]\'')
-    else:
-        env.outputDir = os.environ['HOME']
+        env.outputDir = env.args.output_dir[0]
     env.scriptsDir = env.inputDir + 'scripts/'
     env.backupsDir = env.inputDir + 'backups/'
 

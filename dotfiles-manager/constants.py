@@ -24,3 +24,5 @@ class Srcfiles(Enum):
     VIMRC = 'vimrc'
     VIMRC_LOCAL = 'vimrc_local'
 
+class Misc(Enum):
+    CONFIG_FILE = '.dotfilesrc'

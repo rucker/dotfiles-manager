@@ -12,7 +12,6 @@ sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 import dotfilesmanager
 from constants import Systems, Dotfiles
-import env
 import testenv
 import testfilemocks
 import ioutils
@@ -22,15 +21,18 @@ class IOUtilsTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        dotfilesmanager.init()
+        dotfilesmanager.env = testenv
+        dotfilesmanager.ioutils.env = testenv
+        dotfilesmanager.setArgs()
 
     def tearDown(self):
         testenv.clearArgs()
 
     def testWhenDotfilesIsRunWith_v_flagThenOutputIsVerbose(self):
-        env.args = env.parser.parse_args(['-v'])
+        testenv.args = testenv.parser.parse_args(['-v'])
         ioutils.output("Compiling dotfiles!")
         self.assertTrue("Compiling dotfiles!" in sys.stdout.getvalue().strip())
+        testenv.args = testenv.parser.parse_args([])
 
     def testWhenDotfilesIsRunWithout_v_flagThenOutputNotVerbose(self):
         ioutils.output("Compiling dotfiles!")

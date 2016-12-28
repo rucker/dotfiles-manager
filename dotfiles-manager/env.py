@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
 import os
-import platform
 
+from constants import Misc
+
+home = os.environ['HOME'] + '/'
 platform = ''
 inputDir = ''
-outputDir = ''
+outputDir = home
 backupsDir = ''
 isGnu = ''
-configFile = os.environ['HOME'] + '/.dotfilesrc'
+configFile = home + Misc.CONFIG_FILE.value
