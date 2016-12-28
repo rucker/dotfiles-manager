@@ -27,6 +27,7 @@ def createInputFiles():
         vimrcLocal.write('some_vimrc_local_token=some_vimrc_value')
     with open(testenv.inputDir + Srcfiles.VIMRC_LOCAL.value, 'w') as vimrcLocal:
         vimrcLocal.write('some_vimrc_local_token=some_local_vimrc_value')
+    createFile(env.configFile, 'inputDir=some_dir')
 
 def createFile(fileName, contents):
     with open(fileName, 'w') as file:
