@@ -64,7 +64,7 @@ class DotfilesTest(unittest.TestCase):
     def testWhenUserPassesArg_o_thenCorrectOutputDirIsStoredInEnv(self):
         testenv.args = testenv.parser.parse_args(['-o', 'some_dir'])
         dotfilesmanager.setEnv()
-        self.assertTrue(testenv.outputDir == 'some_dir')
+        self.assertTrue(testenv.outputDir == 'some_dir/')
 
     def testWhenUserPassesArg_i_thenSpecifiedInputDirIsStoredInEnv(self):
         testenv.args = testenv.parser.parse_args(['-i', 'some_dir'])

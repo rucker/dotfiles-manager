@@ -2,30 +2,45 @@
 
 import os
 import shutil
+import tempfile
+import argparse
 
-import env
 import testfilemocks
+from constants import Misc
+
+tmp = tempfile.gettempdir() + '/'
+inputDir = tmp + 'testsrc/'
+outputDir = tmp + 'testoutputfiles/'
+backupsDir = tmp + 'testbackups/'
+scriptsDir = ''
+configFile = tmp + Misc.CONFIG_FILE.value
+parser = argparse.ArgumentParser()
+args = ''
 
 def setUp():
-    thisDir = os.path.dirname(os.path.realpath(__file__)) + '/'
-    env.inputDir = thisDir + 'testsrc/'
-    env.outputDir = thisDir + 'testoutputfiles/'
-    env.backupsDir = thisDir + 'testbackups/'
-    env.configFile = thisDir + '.dotfilesrc'
     setUpDirs()
     testfilemocks.createInputFiles()
 
 def setUpDirs():
-    for dir in [env.outputDir, env.inputDir, env.outputDir, env.backupsDir]:
+    for dir in [inputDir, outputDir, backupsDir]:
         if not os.path.exists(dir):
             os.mkdir(dir)
+    testfilemocks.createFile(configFile, 'inputDir=' + inputDir)
 
 def clearArgs():
-    env.args = env.parser.parse_args([])
+    args = parser.parse_args([])
 
 def tearDown():
-    for dir in [env.inputDir, env.outputDir, env.backupsDir]:
+    for dir in [inputDir, outputDir, backupsDir]:
+        if tmp not in dir:
+            abort()
         if os.path.exists(dir):
             shutil.rmtree(dir)
-        if os.path.isfile(env.configFile):
-            os.remove(env.configFile)
+    if tmp not in configFile:
+        abort()
+    if os.path.isfile(configFile):
+        os.remove(configFile)
+
+def abort():
+    print "A test attempted to tear down the directory ", dir, "! Please check test set-up and be sure to use the testenv temp dir, ", tmp
+    exit(1)

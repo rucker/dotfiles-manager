@@ -46,7 +46,7 @@ def setEnv():
         with open(env.configFile) as config:
             env.inputDir = config.readline().split('=')[1] + '/'
     if env.args.output_dir:
-        env.outputDir = env.args.output_dir[0]
+        env.outputDir = env.args.output_dir[0] + '/'
     env.scriptsDir = env.inputDir + 'scripts/'
     env.backupsDir = env.inputDir + 'backups/'
 
