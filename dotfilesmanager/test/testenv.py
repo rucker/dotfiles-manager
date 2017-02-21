@@ -1,19 +1,21 @@
+import sys
 import os
 from os.path import join
 import shutil
 import tempfile
 import argparse
 
-import testfilemocks
-from constants import MISC
-import ioutils
-from ioutils import eprint
+from dotfilesmanager.test import testfilemocks
+from dotfilesmanager.constants import MISC
+from dotfilesmanager import ioutils
+from dotfilesmanager.ioutils import eprint
 
 TMP = join(tempfile.gettempdir(), 'dfm')
 INPUT_DIR = join(TMP, 'testsrc/')
 OUTPUT_DIR = join(TMP, 'testoutputfiles/')
 BACKUPS_DIR = join(TMP, 'testbackups/')
 CONFIG_FILE = join(TMP, MISC.CONFIG_FILE.value)
+IS_GNU = False
 parser = argparse.ArgumentParser()
 ARGS = ''
 

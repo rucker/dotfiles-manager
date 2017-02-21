@@ -1,7 +1,7 @@
 import os
 from os.path import join
 
-from constants import MISC
+from dotfilesmanager.constants import MISC
 
 ARGS = ''
 HOME = os.environ['HOME']

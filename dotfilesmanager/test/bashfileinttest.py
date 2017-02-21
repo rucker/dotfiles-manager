@@ -1,20 +1,20 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
 from os.path import join
 import unittest
 import argparse
-import mock
+import unittest.mock
 
-sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-import testenv
-import dfm
-import testfilemocks
-import bashfile
-from constants import SYSTEMS, SRCFILES, DOTFILES
-import ioutils
+from dotfilesmanager.test import testenv
+from dotfilesmanager.test import testfilemocks
+from dotfilesmanager import dfm
+from dotfilesmanager import bashfile
+from dotfilesmanager import ioutils
+from dotfilesmanager.constants import SYSTEMS, SRCFILES, DOTFILES
 
 class BashFileIntTest(unittest.TestCase):
 
@@ -40,7 +40,7 @@ class BashFileIntTest(unittest.TestCase):
             contents = bashProfile.read()
             with open(join(testenv.INPUT_DIR, SRCFILES.BASH_GLOBAL.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_MAC_GNU.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_MAC_BSD.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashLinuxNotWrittenToBashProfile(self):
@@ -127,5 +127,5 @@ class BashFileIntTest(unittest.TestCase):
         self.assertTrue(os.path.isfile(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value)))
         self.assertFalse(os.path.isfile(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value)))
 
-suite = unittest.TestLoader().loadTestsFromTestCase(BashFileIntTest)
-unittest.main(module=__name__, buffer=True, exit=False)
+if __name__ == '__main__':
+    unittest.main(module=__name__, buffer=True, exit=False)

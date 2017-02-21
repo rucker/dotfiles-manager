@@ -1,17 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
 from os.path import join
 import unittest
 
-sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-import env
-import testenv
-import dfm
-import bashfile
-from constants import SYSTEMS, SRCFILES, DOTFILES
+from dotfilesmanager import env
+from dotfilesmanager.test import testenv
+from dotfilesmanager import dfm
+from dotfilesmanager import bashfile
+from dotfilesmanager.constants import SYSTEMS, SRCFILES, DOTFILES
 
 class DotfilesManagerIntTest(unittest.TestCase):
 
@@ -42,5 +42,5 @@ class DotfilesManagerIntTest(unittest.TestCase):
         env.CONFIG_FILE = oldConfigFile
         dfm.env = testenv
 
-suite = unittest.TestLoader().loadTestsFromTestCase(DotfilesManagerIntTest)
-unittest.main(module=__name__, buffer=True, exit=False)
+if __name__ == '__main__':
+    unittest.main(module=__name__, buffer=True, exit=False)

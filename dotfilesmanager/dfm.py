@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import platform
 import sys
@@ -6,11 +6,13 @@ import os
 from os.path import join, exists
 import argparse
 
-import bashfile
-import env
-import ioutils
-from constants import SYSTEMS, DOTFILES
-from ioutils import output, eprint
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from dotfilesmanager import bashfile
+from dotfilesmanager import env
+from dotfilesmanager import ioutils
+from dotfilesmanager.constants import SYSTEMS, DOTFILES
+from dotfilesmanager.ioutils import output, eprint
 
 
 def _init():
@@ -107,8 +109,8 @@ def _print_completion_message():
         bash_file_name = DOTFILES.BASH_PROFILE.value
     else:
         bash_file_name = DOTFILES.BASHRC.value
-    print "Done. Recommend you source ~/{0} or start new a terminal session."\
-        .format(bash_file_name)
+    print("Done. Recommend you source ~/{0} or start new a terminal session."\
+        .format(bash_file_name))
 
 
 def main():

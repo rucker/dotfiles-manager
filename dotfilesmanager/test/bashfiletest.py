@@ -1,13 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
+import os
 import unittest
 import io
 
-sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-import bashfile
-from constants import SYSTEMS, DOTFILES
+from dotfilesmanager import bashfile
+from dotfilesmanager.constants import SYSTEMS, DOTFILES
 
 class BashFileTest(unittest.TestCase):
 
@@ -17,5 +18,5 @@ class BashFileTest(unittest.TestCase):
             self.assertTrue(fileBuffer.getvalue().startswith('#!/bin/bash'))
             self.assertTrue(fileBuffer.getvalue().index(DOTFILES.BASH_PROFILE.value) > -1)
 
-suite = unittest.TestLoader().loadTestsFromTestCase(BashFileTest)
-unittest.main(module=__name__, buffer=True, exit=False)
+if __name__ == '__main__':
+    unittest.main(module=__name__, buffer=True, exit=False)

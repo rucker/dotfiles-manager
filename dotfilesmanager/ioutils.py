@@ -1,4 +1,3 @@
-from __future__ import print_function
 import io
 import os
 import sys
@@ -7,9 +6,9 @@ import time
 import glob
 import shutil
 
-import env
-from constants import SRCFILES, DOTFILES
-import ioutils
+from dotfilesmanager import env
+from dotfilesmanager.constants import SRCFILES, DOTFILES
+from dotfilesmanager import ioutils
 
 
 def output(str):
@@ -91,7 +90,7 @@ def write_output_file(file_path, file_buffer):
 
 
 def write_to_output_buffer(output, file_buffer):
-    file_buffer.write(unicode(output))
+    file_buffer.write(str(output))
 
 
 def revert_dotfiles(file_names):
@@ -107,7 +106,7 @@ def revert_dotfile(dotfile):
         bak_file = results[0]
         choice = ''
         while choice not in (['Y', 'N']):
-            choice = raw_input(
+            choice = input(
                 "Revert {0} to backup located at {1}? (Y/N): "
                 .format(dotfile, bak_file)).upper()
             if choice == 'Y':

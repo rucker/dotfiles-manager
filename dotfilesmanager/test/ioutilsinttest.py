@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import io
@@ -6,15 +6,17 @@ import os
 from os.path import join
 import shutil
 import unittest
-import mock
+from unittest import mock
 
-sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-import testenv
-import dfm
-import ioutils
-import testfilemocks
-from constants import SYSTEMS, SRCFILES, DOTFILES
+from dotfilesmanager.test import testenv
+from dotfilesmanager.test import testfilemocks
+from dotfilesmanager import dfm
+from dotfilesmanager import ioutils
+from dotfilesmanager.constants import SYSTEMS, SRCFILES, DOTFILES
+
+
 class IOUtilsIntTest(unittest.TestCase):
     fileName = DOTFILES.BASH_PROFILE.value
     bakFileName = fileName[fileName.rfind('/') + 1 :].replace('.','')
@@ -40,7 +42,7 @@ class IOUtilsIntTest(unittest.TestCase):
     def testWhenUserDoesNotPassArg_c_andDotfileBeingWrittenAlreadyExistsThenItGetsBackedUp(self):
         self.createBashProfile()
         with io.StringIO() as buf:
-            buf.write(unicode("some_bash_token=some_newer_value"))
+            buf.write(str("some_bash_token=some_newer_value"))
             ioutils.write_output_file(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value), buf)
         backup_files = os.listdir(testenv.BACKUPS_DIR)
         self.assertTrue(len(backup_files) is 1)
@@ -53,7 +55,7 @@ class IOUtilsIntTest(unittest.TestCase):
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-40-00.bak'),  "some_bash_token=some_value")
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-43-00.bak'), "some_bash_token=some_newer_value")
 
-        with mock.patch('__builtin__.raw_input', return_value='y'):
+        with mock.patch('builtins.input', return_value='y'):
             ioutils.revert_dotfiles([self.fileName])
         with open(join(testenv.OUTPUT_DIR, self.fileName)) as bash_profile:
             contents = bash_profile.read()
@@ -64,7 +66,7 @@ class IOUtilsIntTest(unittest.TestCase):
         self.createBashProfile()
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-40-00.bak'), "some_bash_token=some_value")
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-43-00.bak'), "some_bash_token=some_newer_value")
-        with mock.patch('__builtin__.raw_input', return_value='n'):
+        with mock.patch('builtins.input', return_value='n'):
             ioutils.revert_dotfiles([self.fileName])
         with open(join(testenv.OUTPUT_DIR, self.fileName)) as bash_profile:
             self.assertTrue("some_newer_value" not in bash_profile.read())
@@ -91,5 +93,5 @@ class IOUtilsIntTest(unittest.TestCase):
                     self.assertTrue(inputFile.read() in contents)
                     self.assertTrue(localInputFile.read() in contents)
 
-suite = unittest.TestLoader().loadTestsFromTestCase(IOUtilsIntTest)
-unittest.main(module=__name__, buffer=True, exit=False)
+if __name__ == '__main__':
+    unittest.main(module=__name__, buffer=True, exit=False)
