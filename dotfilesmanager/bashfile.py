@@ -1,9 +1,9 @@
 import io
-from os.path import join, abspath
+from os.path import join
 
-import env
-import ioutils
-from constants import SYSTEMS, SRCFILES, DOTFILES
+from dotfilesmanager import env
+from dotfilesmanager import ioutils
+from dotfilesmanager.constants import SYSTEMS, SRCFILES, DOTFILES
 
 
 def _write_header(file_name, file_buffer):
@@ -17,7 +17,7 @@ def _write_header(file_name, file_buffer):
 def compile_bash_file(platform):
     if platform == SYSTEMS.DARWIN.value:
         bash_file = DOTFILES.BASH_PROFILE.value
-        if env.is_gnu:
+        if env.IS_GNU:
             bash_platform_file = SRCFILES.BASH_MAC_GNU.value
         else:
             bash_platform_file = SRCFILES.BASH_MAC_BSD.value

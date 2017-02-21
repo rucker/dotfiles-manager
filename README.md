@@ -103,10 +103,6 @@ Everything in this project is test-driven. The `test/testdriver.sh` script will 
 Unit tests: Exercise logic e.g. execution path.  
 Integration tests: Deal with file IO. Runtime environment is altered so as not to break 'prod' data (the real text files).
 
-## Dependencies
-`mock` >= 1.0.1  
-`enum34` >= 2.0.0
-
 ## TODO / Wishlist
 - Compile arbitrary dotfiles via `-f` using _global/_local convention.
 - Implement a priority-order scheme for input files compilation, e.g. rules.d style.

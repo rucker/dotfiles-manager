@@ -4,9 +4,9 @@ import sys
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
-import testenv
-from constants import SRCFILES, DOTFILES, SRCFILES
-from ioutils import create_file
+from dotfilesmanager.test import testenv
+from dotfilesmanager.constants import SRCFILES, DOTFILES, SRCFILES
+from dotfilesmanager.ioutils import create_file
 
 def createInputFiles():
     create_file(join(testenv.INPUT_DIR, SRCFILES.BASH_GLOBAL.value), 'some_global_token=some_global_value\n')
