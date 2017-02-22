@@ -5,7 +5,6 @@ import os
 from os.path import join
 import unittest
 import argparse
-import unittest.mock
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
@@ -34,7 +33,8 @@ class BashFileIntTest(unittest.TestCase):
         testenv.tearDown()
         testenv.clearArgs()
 
-    def testBashGlobalAndBashMacWrittenToBashProfile(self):
+    def testBashGlobalAndBashMacBsdWrittenToBashProfile(self):
+        testenv.IS_GNU = False
         bashfile.compile_bash_file(SYSTEMS.DARWIN.value)
         with open(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value)) as bashProfile:
             contents = bashProfile.read()

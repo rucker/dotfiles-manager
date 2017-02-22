@@ -28,7 +28,7 @@ def _identify_system():
         eprint("System not supported!")
         exit(1)
 
-    env.is_gnu = bool(env.PLATFORM == SYSTEMS.LINUX.value or os.path.isdir(
+    env.IS_GNU = bool(env.PLATFORM == SYSTEMS.LINUX.value or os.path.isdir(
         '/usr/local/opt/coreutils/libexec/gnubin/'))
 
 
