@@ -49,7 +49,7 @@ class DotfilesManagerTest(unittest.TestCase):
     def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self):
         with mock.patch('os.path.isdir', return_value=True):
             dfm._identify_system()
-            self.assertTrue(testenv.is_gnu)
+            self.assertTrue(testenv.IS_GNU)
 
     @mock.patch('builtins.open')
     @mock.patch('os.path.isdir', return_value=True)
