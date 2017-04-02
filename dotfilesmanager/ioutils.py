@@ -8,7 +8,6 @@ import shutil
 
 from dotfilesmanager import env
 from dotfilesmanager.constants import SRCFILES, DOTFILES
-from dotfilesmanager import ioutils
 
 
 def output(str):
@@ -31,15 +30,15 @@ def destroy_file(file_name):
 
 
 def compile_dotfile(file_name):
-    ioutils.output("Compiling file: " + file_name)
+    output("Compiling file: " + file_name)
     with io.StringIO() as file_buffer:
         input_file_name = file_name.replace('.', '')
         write_required_input_file_contents(input_file_name + "_global", file_buffer)
         if not env.ARGS.no_local:
-            ioutils.write_optional_input_file_contents(
+            write_optional_input_file_contents(
                 input_file_name + "_local", file_buffer)
         write_output_file(join(env.OUTPUT_DIR, file_name), file_buffer)
-        ioutils.output("File completed.\n")
+        output("File completed.\n")
 
 
 def backup_file(file_name):
