@@ -46,10 +46,10 @@ class DotfilesManagerTest(unittest.TestCase):
         self.assertEqual(cm.exception.code, 1)
 
     @mock.patch('platform.system', mock.MagicMock(return_value=SYSTEMS.DARWIN.value))
-    def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self):
-        with mock.patch('os.path.isdir', return_value=True):
-            dfm._identify_system()
-            self.assertTrue(testenv.IS_GNU)
+    @mock.patch('os.path.isdir', return_value=True)
+    def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self, isdir):
+        dfm._identify_system()
+        self.assertTrue(testenv.IS_GNU)
 
     @mock.patch('builtins.open')
     @mock.patch('os.path.isdir', return_value=True)
