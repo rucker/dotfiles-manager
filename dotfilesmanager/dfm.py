@@ -3,7 +3,7 @@
 import platform
 import sys
 import os
-from os.path import join, exists
+from os.path import join
 import argparse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -12,7 +12,7 @@ from dotfilesmanager import bashfile
 from dotfilesmanager import env
 from dotfilesmanager import ioutils
 from dotfilesmanager.constants import SYSTEMS, DOTFILES
-from dotfilesmanager.ioutils import output, eprint
+from dotfilesmanager.ioutils import sprint, eprint
 
 
 def _init():
@@ -35,6 +35,11 @@ def _identify_system():
 def _set_args():
     env.parser = argparse.ArgumentParser(
         description="Compile various dotfiles using their input files.")
+    env.parser.add_argument(
+        'input_dir',
+        nargs='?',
+        default=None,
+        help="input files directory")
     env.parser.add_argument(
         '-c',
         '--clobber',
@@ -61,47 +66,37 @@ def _set_args():
         nargs=1,
         help="Specify output directory (default value is $HOME).")
     env.parser.add_argument(
-        '-i',
-        '--input-dir',
-        nargs=1,
-        help="Specify input files directory.")
-    env.parser.add_argument(
         '-f',
         '--file',
         nargs=1,
         help="Process only the specified dotfile.")
     env.ARGS = env.parser.parse_args()
-    output("\nPreparing dotfiles with args: " + " ".join(sys.argv[1:]) + "\n")
+    sprint("\nPreparing dotfiles with args: " + " ".join(sys.argv[1:]) + "\n")
 
 
 def _set_env():
     if env.ARGS.input_dir:
-        input_dir = env.ARGS.input_dir[0]
+        input_dir = env.ARGS.input_dir
         if os.path.isdir(input_dir):
             env.INPUT_DIR = input_dir
         else:
             eprint("Specified input directory " + input_dir + " does not " \
             "exist.")
             exit(1)
-    elif exists(env.CONFIG_FILE):
-        with open(env.CONFIG_FILE) as config:
-            env.INPUT_DIR = config.readline().split('=')[1]
     else:
-        eprint("Please specify input files directory via -i --input-dir or " \
-                "input_dir= in ~/.dotfilesrc.\n")
         env.parser.print_help()
         exit(1)
     if env.ARGS.output_dir:
         env.OUTPUT_DIR = env.ARGS.output_dir[0]
     env.BACKUPS_DIR = join(env.INPUT_DIR, 'backups')
 
-    output("Environment:")
-    output("\tplatform: " + env.PLATFORM)
-    output("\tinput_dir: " + env.INPUT_DIR)
-    output("\tbackups_dir: " + env.BACKUPS_DIR)
-    output("\toutput_dir: " + env.OUTPUT_DIR)
-    output("\targs: " + str(env.ARGS))
-    output("")
+    sprint("Environment:")
+    sprint("\tplatform: " + env.PLATFORM)
+    sprint("\tinput_dir: " + env.INPUT_DIR)
+    sprint("\tbackups_dir: " + env.BACKUPS_DIR)
+    sprint("\toutput_dir: " + env.OUTPUT_DIR)
+    sprint("\targs: " + str(env.ARGS))
+    sprint("")
 
 
 def _print_completion_message():

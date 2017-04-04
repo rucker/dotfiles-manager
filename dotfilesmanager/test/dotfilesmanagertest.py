@@ -13,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 
 from dotfilesmanager import dfm
 from dotfilesmanager import ioutils
+from dotfilesmanager import bashfile
 from dotfilesmanager.constants import SYSTEMS, DOTFILES
 from dotfilesmanager.test import testenv
 from dotfilesmanager.test import testfilemocks
@@ -46,50 +47,33 @@ class DotfilesManagerTest(unittest.TestCase):
         self.assertEqual(cm.exception.code, 1)
 
     @mock.patch('platform.system', mock.MagicMock(return_value=SYSTEMS.DARWIN.value))
-    def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self):
-        with mock.patch('os.path.isdir', return_value=True):
-            dfm._identify_system()
-            self.assertTrue(testenv.IS_GNU)
-
-    @mock.patch('builtins.open')
     @mock.patch('os.path.isdir', return_value=True)
-    def testWhenUserPassesArg_i_thenSpecifiedInputDirIsStoredInEnvAndConfigFileIsNotRead(self, isdir, mopen):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir'])
-        dfm._set_env()
-        self.assertTrue(testenv.INPUT_DIR == 'some_dir')
-        mopen.assert_not_called()
+    def testWhenSystemIsDarwinAndGNUCoreUtilsAreInstalledThenEnvIsSetCorrectly(self, isdir):
+        dfm._identify_system()
+        self.assertTrue(testenv.IS_GNU)
 
     @mock.patch('dotfilesmanager.dfm._set_args')
     @mock.patch('dotfilesmanager.dfm.ioutils', autospec=True)
     @mock.patch('dotfilesmanager.dfm.bashfile', autospec=True)
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_r_thenCorrectLogicalBranchingOccurs(self, isdir, bashfile, ioutils, _set_args):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-r'])
+        testenv.ARGS = testenv.parser.parse_args(['some_dir', '-r'])
         dfm.main()
         ioutils.revert_dotfiles.assert_called_with([ df.value for df in DOTFILES ])
         bashfile.compile_bash_files.assert_not_called()
 
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_o_thenCorrectOutputDirIsStoredInEnv(self, isdir):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-o', 'some_dir'])
+        testenv.ARGS = testenv.parser.parse_args(['some_dir', '-o', 'some_dir'])
         dfm._set_env()
         self.assertTrue(testenv.OUTPUT_DIR == 'some_dir')
-
-    @mock.patch('argparse.ArgumentParser.print_help')
-    def testWhenInputDirIsNotSetSetEnvPrintsErrorMessageAndUsageAndExitsWithCode1(self, print_help):
-        dfm._identify_system()
-        with self.assertRaises(SystemExit) as se:
-            dfm._set_env()
-        self.assertTrue("Please specify input files directory" in sys.stderr.getvalue())
-        self.assertEqual(se.exception.code, 1)
-        print_help.assert_called_once()
 
     @mock.patch('dotfilesmanager.dfm._set_args')
     @mock.patch('dotfilesmanager.dfm.ioutils')
     @mock.patch('dotfilesmanager.dfm.bashfile')
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_f_bashrc_thenOnlyTheSpecifiedFileIsCompiled(self, isdir, bashfile, ioutils, _set_args):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-f', '.bashrc'])
+        testenv.ARGS = testenv.parser.parse_args(['some_dir', '-f', '.bashrc'])
         dfm.main()
         bashfile.compile_bashrc.assert_called_once()
         ioutils.compile_dotfile.assert_not_called()
@@ -99,7 +83,7 @@ class DotfilesManagerTest(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm.bashfile')
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_f_bash_profile_thenOnlyTheSpecifiedFileIsCompiled(self, isdir, bashfile, ioutils, _set_args):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-f', '.bash_profile'])
+        testenv.ARGS = testenv.parser.parse_args(['some_dir', '-f', '.bash_profile'])
         dfm.main()
         bashfile.compile_bash_profile.assert_called_once()
         bashfile.compile_bashrc.assert_not_called()
@@ -110,7 +94,7 @@ class DotfilesManagerTest(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm.bashfile')
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_f_vimrc_thenOnlyTheSpecifiedFileIsCompiled(self, isdir, bashfile, ioutils, _set_args):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-f', '.vimrc'])
+        testenv.ARGS = testenv.parser.parse_args(['some_dir', '-f', '.vimrc'])
         dfm.main()
         bashfile.compile_bashrc.assert_not_called()
         bashfile.compile_bash_profile.assert_not_called()
@@ -121,7 +105,7 @@ class DotfilesManagerTest(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm.bashfile')
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_f_gitconfig_thenOnlyTheSpecifiedFileIsCompiled(self, isdir, bashfile, ioutils, _set_args):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-f', '.gitconfig'])
+        testenv.ARGS = testenv.parser.parse_args(['some_dir', '-f', '.gitconfig'])
         dfm.main()
         bashfile.compile_bashrc.assert_not_called()
         bashfile.compile_bash_profile.assert_not_called()
@@ -130,7 +114,7 @@ class DotfilesManagerTest(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm._set_args')
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_f_andAnInvalidDotfileNameThenPrintAnErrorAndExitWithCode1(self, isdir, _set_args):
-        dfm.env.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-f', 'foobar'])
+        dfm.env.ARGS = testenv.parser.parse_args(['some_dir', '-f', 'foobar'])
         with self.assertRaises(SystemExit) as se:
             dfm.main()
         self.assertEqual(se.exception.code, 1)
@@ -141,7 +125,7 @@ class DotfilesManagerTest(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm.bashfile')
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArgs_rf_thenOnlyTheSpecifiedFileIsReverted(self, isdir, bashfile, ioutils, _set_args):
-        testenv.ARGS = testenv.parser.parse_args(['-i', 'some_dir', '-r', '-f', '.bash_profile'])
+        testenv.ARGS = testenv.parser.parse_args(['some_dir', '-r', '-f', '.bash_profile'])
         dfm.main()
         ioutils.revert_dotfile.assert_called_with(DOTFILES.BASH_PROFILE.value)
         bashfile.compile_bash_files.assert_not_called()
@@ -155,7 +139,7 @@ class DotfilesManagerTest(unittest.TestCase):
     @mock.patch('os.path.isdir', return_value=False)
     def testWhenUserSpecifiesNonExistentInputDirThenPrintAnErrorAndExitWithCode1(self, isdir, bashfile, ioutils, _set_args):
         input_dir = 'some_nonexistent_dir'
-        testenv.ARGS = testenv.parser.parse_args(['-r', '-i', input_dir])
+        testenv.ARGS = testenv.parser.parse_args(['-r', input_dir])
         with self.assertRaises(SystemExit) as se:
             dfm._set_env()
         self.assertEqual(se.exception.code, 1)
