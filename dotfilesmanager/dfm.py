@@ -36,6 +36,11 @@ def _set_args():
     env.parser = argparse.ArgumentParser(
         description="Compile various dotfiles using their input files.")
     env.parser.add_argument(
+        'input_dir',
+        nargs='?',
+        default=None,
+        help="input files directory")
+    env.parser.add_argument(
         '-c',
         '--clobber',
         action='store_true',
@@ -61,11 +66,6 @@ def _set_args():
         nargs=1,
         help="Specify output directory (default value is $HOME).")
     env.parser.add_argument(
-        '-i',
-        '--input-dir',
-        nargs=1,
-        help="Specify input files directory.")
-    env.parser.add_argument(
         '-f',
         '--file',
         nargs=1,
@@ -76,7 +76,7 @@ def _set_args():
 
 def _set_env():
     if env.ARGS.input_dir:
-        input_dir = env.ARGS.input_dir[0]
+        input_dir = env.ARGS.input_dir
         if os.path.isdir(input_dir):
             env.INPUT_DIR = input_dir
         else:
@@ -87,8 +87,6 @@ def _set_env():
         with open(env.CONFIG_FILE) as config:
             env.INPUT_DIR = config.readline().split('=')[1]
     else:
-        eprint("Please specify input files directory via -i --input-dir or " \
-                "input_dir= in ~/.dotfilesrc.\n")
         env.parser.print_help()
         exit(1)
     if env.ARGS.output_dir:
