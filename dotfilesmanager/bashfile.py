@@ -25,7 +25,7 @@ def compile_bash_file(platform):
         bash_file = DOTFILES.BASHRC.value
         bash_platform_file = SRCFILES.BASH_LINUX.value
 
-    ioutils.output("Compiling file: " + bash_file)
+    ioutils.sprint("Compiling file: " + bash_file)
     with io.StringIO() as file_buffer:
         _write_header(bash_file, file_buffer)
         ioutils.write_required_input_file_contents(
@@ -35,7 +35,7 @@ def compile_bash_file(platform):
             ioutils.write_optional_input_file_contents(
                 SRCFILES.BASH_LOCAL.value, file_buffer)
         ioutils.write_output_file(join(env.OUTPUT_DIR, bash_file), file_buffer)
-        ioutils.output("File completed.\n")
+        ioutils.sprint("File completed.\n")
 
 
 def compile_bash_profile():

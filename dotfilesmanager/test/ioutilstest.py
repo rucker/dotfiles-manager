@@ -3,19 +3,16 @@
 import sys
 import unittest
 from unittest import mock
-import platform
 import os
 from os.path import join
 import io
-import argparse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from dotfilesmanager.test import testenv
-from dotfilesmanager.test import testfilemocks
 from dotfilesmanager import dfm
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import SYSTEMS, DOTFILES
+from dotfilesmanager.constants import DOTFILES
 
 class IOUtilsTest(unittest.TestCase):
 
@@ -30,12 +27,12 @@ class IOUtilsTest(unittest.TestCase):
 
     def testWhenDOTFILESIsRunWith_v_flagThenOutputIsVerbose(self):
         testenv.ARGS = testenv.parser.parse_args(['-v'])
-        ioutils.output("Compiling dotfiles!")
+        ioutils.sprint("Compiling dotfiles!")
         self.assertTrue("Compiling dotfiles!" in sys.stdout.getvalue().strip())
         testenv.ARGS = testenv.parser.parse_args([])
 
     def testWhenDOTFILESIsRunWithout_v_flagThenOutputIsNotVerbose(self):
-        ioutils.output("Compiling dotfiles!")
+        ioutils.sprint("Compiling dotfiles!")
         self.assertFalse("Compiling dotfiles!" in sys.stdout.getvalue().strip())
 
     def testWhenRequiredInputFileDoesNotExistThenAnErrorIsPrintedAndProgramExitsWithStatus_1(self):

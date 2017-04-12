@@ -8,7 +8,7 @@ import io
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from dotfilesmanager import bashfile
-from dotfilesmanager.constants import SYSTEMS, DOTFILES
+from dotfilesmanager.constants import DOTFILES
 
 class BashFileTest(unittest.TestCase):
 

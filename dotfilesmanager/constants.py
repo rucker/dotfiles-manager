@@ -24,7 +24,3 @@ class SRCFILES(Enum):
     GITCONFIG_LOCAL = 'gitconfig_local'
     VIMRC_GLOBAL = 'vimrc_global'
     VIMRC_LOCAL = 'vimrc_local'
-
-
-class MISC(Enum):
-    CONFIG_FILE = '.dotfilesrc'

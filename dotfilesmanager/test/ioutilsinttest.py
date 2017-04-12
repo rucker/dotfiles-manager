@@ -14,7 +14,7 @@ from dotfilesmanager.test import testenv
 from dotfilesmanager.test import testfilemocks
 from dotfilesmanager import dfm
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import SYSTEMS, SRCFILES, DOTFILES
+from dotfilesmanager.constants import SRCFILES, DOTFILES
 
 
 class IOUtilsIntTest(unittest.TestCase):

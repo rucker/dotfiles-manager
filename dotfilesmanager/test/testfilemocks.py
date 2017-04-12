@@ -1,11 +1,10 @@
-import os
 from os.path import join
 import sys
 
 sys.path.insert(0, sys.path[0][:sys.path[0].rfind('test')])
 
 from dotfilesmanager.test import testenv
-from dotfilesmanager.constants import SRCFILES, DOTFILES, SRCFILES
+from dotfilesmanager.constants import SRCFILES, SRCFILES
 from dotfilesmanager.ioutils import create_file
 
 def createInputFiles():
@@ -18,5 +17,3 @@ def createInputFiles():
     create_file(join(testenv.INPUT_DIR, SRCFILES.GITCONFIG_LOCAL.value), 'some_gitconfig_local_token=some_local_git_value')
     create_file(join(testenv.INPUT_DIR, SRCFILES.VIMRC_GLOBAL.value), 'some_vimrc_local_token=some_vimrc_value')
     create_file(join(testenv.INPUT_DIR, SRCFILES.VIMRC_LOCAL.value), 'some_vimrc_local_token=some_local_vimrc_value')
-    create_file(testenv.CONFIG_FILE, 'input_dir=some_dir')
-

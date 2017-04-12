@@ -4,7 +4,6 @@ import sys
 import os
 from os.path import join
 import unittest
-import argparse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
