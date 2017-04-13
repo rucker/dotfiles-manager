@@ -3,20 +3,13 @@
 import sys
 import unittest
 from unittest import mock
-import platform
 import os
-import io
-import argparse
-import builtins
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from dotfilesmanager import dfm
-from dotfilesmanager import ioutils
-from dotfilesmanager import bashfile
-from dotfilesmanager.constants import SYSTEMS, DOTFILES
+from dotfilesmanager.constants import SYSTEMS, DOTFILES, BASHFILES
 from dotfilesmanager.test import testenv
-from dotfilesmanager.test import testfilemocks
 
 class DotfilesManagerTest(unittest.TestCase):
 
@@ -127,7 +120,7 @@ class DotfilesManagerTest(unittest.TestCase):
     def testWhenUserPassesArgs_rf_thenOnlyTheSpecifiedFileIsReverted(self, isdir, bashfile, ioutils, _set_args):
         testenv.ARGS = testenv.parser.parse_args(['some_dir', '-r', '-f', '.bash_profile'])
         dfm.main()
-        ioutils.revert_dotfile.assert_called_with(DOTFILES.BASH_PROFILE.value)
+        ioutils.revert_dotfile.assert_called_with(BASHFILES.BASH_PROFILE.value)
         bashfile.compile_bash_files.assert_not_called()
         bashfile.compile_bashrc.assert_not_called()
         bashfile.compile_bash_profile.assert_not_called()

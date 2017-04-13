@@ -14,12 +14,15 @@ from dotfilesmanager.test import testenv
 from dotfilesmanager.test import testfilemocks
 from dotfilesmanager import dfm
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import SRCFILES, DOTFILES
+from dotfilesmanager.constants import DOTFILES, BASHFILES
 
 
 class IOUtilsIntTest(unittest.TestCase):
-    fileName = DOTFILES.BASH_PROFILE.value
+    fileName = BASHFILES.BASH_PROFILE.value
     bakFileName = fileName[fileName.rfind('/') + 1 :].replace('.','')
+    gitconfig = '.gitconfig'
+    gitconfig_global = 'gitconfig_global'
+    gitconfig_local = 'gitconfig_local'
 
     @classmethod
     def setUpClass(self):
@@ -43,14 +46,14 @@ class IOUtilsIntTest(unittest.TestCase):
         self.createBashProfile()
         with io.StringIO() as buf:
             buf.write(str("some_bash_token=some_newer_value"))
-            ioutils.write_output_file(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value), buf)
+            ioutils.write_output_file(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value), buf)
         backup_files = os.listdir(testenv.BACKUPS_DIR)
         self.assertTrue(len(backup_files) is 1)
         with open(join(testenv.BACKUPS_DIR, backup_files[0])) as bakFile:
             self.assertTrue("some_value" in bakFile.read())
         self.cleanUpBackups()
 
-    def testWhenUserPassesArg_r_AndEnters_Y_whenPromptedThenDOTFILESAreRestoredToMostRecentBackedUpVersion(self):
+    def testWhenUserPassesArg_r_AndEnters_Y_whenPromptedThenDotfilesAreRestoredToMostRecentBackedUpVersion(self):
         self.createBashProfile()
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-40-00.bak'),  "some_bash_token=some_value")
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-43-00.bak'), "some_bash_token=some_newer_value")
@@ -62,7 +65,7 @@ class IOUtilsIntTest(unittest.TestCase):
             self.assertTrue("some_newer_value" in contents)
         self.cleanUpBackups()
 
-    def testWhenUserPassesArg_r_AndEnters_N_whenPromptedThenBackedUpDOTFILESAreNotRestored(self):
+    def testWhenUserPassesArg_r_AndEnters_N_whenPromptedThenBackedUpDotfilesAreNotRestored(self):
         self.createBashProfile()
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-40-00.bak'), "some_bash_token=some_value")
         ioutils.create_file(join(testenv.BACKUPS_DIR, self.bakFileName + '_2016-07-07_14-43-00.bak'), "some_bash_token=some_newer_value")
@@ -76,8 +79,8 @@ class IOUtilsIntTest(unittest.TestCase):
         testenv.ARGS = testenv.parser.parse_args(['--no-local'])
         ioutils.compile_dotfile(DOTFILES.GITCONFIG.value)
         with open(join(testenv.OUTPUT_DIR, DOTFILES.GITCONFIG.value)) as outputFile:
-            with open(join(testenv.INPUT_DIR, SRCFILES.GITCONFIG_GLOBAL.value)) as inputFile:
-                with open(join(testenv.INPUT_DIR, SRCFILES.GITCONFIG_LOCAL.value)) as \
+            with open(join(testenv.INPUT_DIR, self.gitconfig_global)) as inputFile:
+                with open(join(testenv.INPUT_DIR, self.gitconfig_local)) as \
                 localInputFile:
                     contents = outputFile.read()
                     self.assertTrue(inputFile.read() in contents)
@@ -86,8 +89,8 @@ class IOUtilsIntTest(unittest.TestCase):
     def testDotfileOutputFileContainsTheContentsOfDotfileAndLocalInputFile(self):
         ioutils.compile_dotfile(DOTFILES.GITCONFIG.value)
         with open(join(testenv.OUTPUT_DIR, DOTFILES.GITCONFIG.value)) as outputFile:
-            with open(join(testenv.INPUT_DIR, SRCFILES.GITCONFIG_GLOBAL.value)) as inputFile:
-                with open(join(testenv.INPUT_DIR, SRCFILES.GITCONFIG_LOCAL.value)) as \
+            with open(join(testenv.INPUT_DIR, self.gitconfig_global)) as inputFile:
+                with open(join(testenv.INPUT_DIR, self.gitconfig_local)) as \
                 localInputFile:
                     contents = outputFile.read()
                     self.assertTrue(inputFile.read() in contents)

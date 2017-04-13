@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from dotfilesmanager import bashfile
 from dotfilesmanager import env
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import SYSTEMS, DOTFILES
+from dotfilesmanager.constants import SYSTEMS, DOTFILES, BASHFILES
 from dotfilesmanager.ioutils import sprint, eprint
 
 
@@ -101,9 +101,9 @@ def _set_env():
 
 def _print_completion_message():
     if env.PLATFORM == SYSTEMS.DARWIN.value:
-        bash_file_name = DOTFILES.BASH_PROFILE.value
+        bash_file_name = BASHFILES.BASH_PROFILE.value
     else:
-        bash_file_name = DOTFILES.BASHRC.value
+        bash_file_name = BASHFILES.BASHRC.value
     print("Done. Recommend you source ~/{0} or start new a terminal session."\
         .format(bash_file_name))
 
@@ -117,28 +117,29 @@ def main():
         if env.ARGS.revert:
             ioutils.revert_dotfile(dotfile)
         else:
-            if dotfile == DOTFILES.BASHRC.value:
+            if dotfile == BASHFILES.BASHRC.value:
                 bashfile.compile_bashrc()
-            elif dotfile == DOTFILES.BASH_PROFILE.value:
+            elif dotfile == BASHFILES.BASH_PROFILE.value:
                 bashfile.compile_bash_profile()
-            elif dotfile == DOTFILES.VIMRC.value:
-                ioutils.compile_dotfile(DOTFILES.VIMRC.value)
-            elif dotfile == DOTFILES.GITCONFIG.value:
-                ioutils.compile_dotfile(DOTFILES.GITCONFIG.value)
             else:
-                dotfiles = str([df.value for df in DOTFILES])
-                eprint(
-                    "{0} is not a recognized dotfile. \
-                    Valid dotfile names are: {1}"
-                    .format(dotfile, dotfiles))
-                exit(1)
+                dotfiles = [df.value for df in DOTFILES]
+                if dotfile in dotfiles:
+                    ioutils.compile_dotfile(dotfile)
+                else:
+                    dotfiles = str([df.value for df in DOTFILES])
+                    eprint(
+                        "{0} is not a recognized dotfile. \
+                        Valid dotfile names are: {1}"
+                        .format(dotfile, dotfiles))
+                    exit(1)
     else:
         if env.ARGS.revert:
             ioutils.revert_dotfiles([df.value for df in DOTFILES])
         else:
             bashfile.compile_bash_file(env.PLATFORM)
-            ioutils.compile_dotfile(DOTFILES.VIMRC.value)
-            ioutils.compile_dotfile(DOTFILES.GITCONFIG.value)
+            dotfiles = [df.value for df in DOTFILES]
+            for df in DOTFILES:
+                ioutils.compile_dotfile(df.value)
     _print_completion_message()
 
 if __name__ == '__main__':

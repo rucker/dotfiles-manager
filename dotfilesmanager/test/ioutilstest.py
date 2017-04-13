@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from dotfilesmanager.test import testenv
 from dotfilesmanager import dfm
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import DOTFILES
+from dotfilesmanager.constants import BASHFILES
 
 class IOUtilsTest(unittest.TestCase):
 
@@ -46,7 +46,7 @@ class IOUtilsTest(unittest.TestCase):
     @mock.patch('builtins.open')
     def testWhenUserDoesNotPassArg_c_andDotfileBeingWrittenAlreadyExistsThenItGetsBackedUp(self, mopen, isfile, backup_file):
         with io.StringIO() as buf:
-            ioutils.write_output_file(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value), buf)
+            ioutils.write_output_file(join(testenv.OUTPUT_DIR, BASHFILES.BASHRC.value), buf)
         backup_file.assert_called_once()
 
 if __name__ == '__main__':
