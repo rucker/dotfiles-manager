@@ -12,7 +12,7 @@ from dotfilesmanager.test import testfilemocks
 from dotfilesmanager import dfm
 from dotfilesmanager import bashfile
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import SYSTEMS, SRCFILES, DOTFILES
+from dotfilesmanager.constants import SYSTEMS, BASHFILES
 
 class BashFileIntTest(unittest.TestCase):
 
@@ -35,50 +35,50 @@ class BashFileIntTest(unittest.TestCase):
     def testBashGlobalAndBashMacBsdWrittenToBashProfile(self):
         testenv.IS_GNU = False
         bashfile.compile_bash_file(SYSTEMS.DARWIN.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value)) as bashProfile:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value)) as bashProfile:
             contents = bashProfile.read()
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_GLOBAL.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_GLOBAL.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_MAC_BSD.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_MAC_BSD.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashLinuxNotWrittenToBashProfile(self):
         bashfile.compile_bash_file(SYSTEMS.DARWIN.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value)) as bashProfile:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value)) as bashProfile:
             contents = bashProfile.read()
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_LINUX.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_LINUX.value)) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
     def testBashLocalWrittenToBashProfileWhenArg_no_local_notPassed(self):
         bashfile.compile_bash_profile()
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value)) as bashProfile:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value)) as bashProfile:
             contents = bashProfile.read()
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_LOCAL.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashGlobalAndBashLinuxWrittenToBashrc(self):
         bashfile.compile_bash_file(SYSTEMS.LINUX.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value)) as bashrc:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASHRC.value)) as bashrc:
             contents = bashrc.read()
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_GLOBAL.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_GLOBAL.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_LINUX.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_LINUX.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashMacContentNotWrittenToBashrc(self):
         bashfile.compile_bash_file(SYSTEMS.LINUX.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value)) as bashrc:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASHRC.value)) as bashrc:
             contents = bashrc.read()
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_MAC_GNU.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_MAC_GNU.value)) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_MAC_BSD.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_MAC_BSD.value)) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
     def testBashLocalWrittenToBashrc(self):
         bashfile.compile_bash_file(SYSTEMS.LINUX.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value)) as bashrc:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASHRC.value)) as bashrc:
             contents = bashrc.read()
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_LOCAL.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value)) as bashInput:
                 self.assertTrue(bashInput.read() in contents)
 
     def testBashLocalNotWrittenToBashrcWhenUserPassesArg_no_local(self):
@@ -87,9 +87,9 @@ class BashFileIntTest(unittest.TestCase):
         testenv.ARGS = testenv.parser.parse_args(['--no-local'])
 
         bashfile.compile_bash_file(SYSTEMS.LINUX.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value)) as bashrc:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASHRC.value)) as bashrc:
             contents = bashrc.read()
-            with open(join(testenv.INPUT_DIR, SRCFILES.BASH_LOCAL.value)) as bashInput:
+            with open(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value)) as bashInput:
                 self.assertTrue(bashInput.read() not in contents)
 
         testenv.ARGS = args
@@ -98,33 +98,33 @@ class BashFileIntTest(unittest.TestCase):
         args = testenv.ARGS
         testenv.ARGS = testenv.parser.parse_args(['-v'])
 
-        with open(join(testenv.INPUT_DIR, SRCFILES.BASH_LOCAL.value)) as bashLocal:
+        with open(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value)) as bashLocal:
             bashLocalText = bashLocal.read()
-        ioutils.destroy_file(join(testenv.INPUT_DIR, SRCFILES.BASH_LOCAL.value))
+        ioutils.destroy_file(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value))
         bashfile.compile_bash_file(SYSTEMS.DARWIN.value)
-        self.assertTrue(SRCFILES.BASH_LOCAL.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
-        testfilemocks.create_file(join(testenv.INPUT_DIR, SRCFILES.BASH_LOCAL.value), bashLocalText)
+        self.assertTrue(BASHFILES.BASH_LOCAL.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
+        testfilemocks.create_file(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value), bashLocalText)
 
         testenv.ARGS = args
 
     def testWhenUserPassesArg_c_ThenExistingOutputFilesAreClobbered(self):
         testenv.ARGS = testenv.parser.parse_args(['-c'])
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value), 'w') as bash_profile:
+        with open(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value), 'w') as bash_profile:
             bash_profile.write("some_bash_token=some_value")
         bashfile.compile_bash_profile()
         self.assertTrue("already exists. Renaming" not in sys.stdout.getvalue().strip())
-        self.assertFalse(os.path.isfile(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value + '.bak')))
+        self.assertFalse(os.path.isfile(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value + '.bak')))
         testenv.ARGS = ''
 
     def testBashProfileNotCreatedInHomeDirOnLinuxSystem(self):
         bashfile.compile_bash_file(SYSTEMS.LINUX.value)
-        self.assertFalse(os.path.isfile(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value)))
-        self.assertTrue(os.path.isfile(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value)))
+        self.assertFalse(os.path.isfile(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value)))
+        self.assertTrue(os.path.isfile(join(testenv.OUTPUT_DIR, BASHFILES.BASHRC.value)))
 
     def testBashrcNotCreatedInHomeDirOnDarwinSystem(self):
         bashfile.compile_bash_file(SYSTEMS.DARWIN.value)
-        self.assertTrue(os.path.isfile(join(testenv.OUTPUT_DIR, DOTFILES.BASH_PROFILE.value)))
-        self.assertFalse(os.path.isfile(join(testenv.OUTPUT_DIR, DOTFILES.BASHRC.value)))
+        self.assertTrue(os.path.isfile(join(testenv.OUTPUT_DIR, BASHFILES.BASH_PROFILE.value)))
+        self.assertFalse(os.path.isfile(join(testenv.OUTPUT_DIR, BASHFILES.BASHRC.value)))
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)
