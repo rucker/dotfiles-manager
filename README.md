@@ -17,7 +17,7 @@ An example usage might be: `$ dfm.py -i ~/input-files -o ~` where:
 See `dfm.py --help` for more.
 
 ## Supported Dofiles
-Dotfiles Manager currently compiles `.bashrc/.bash_profile`, `.vimrc`, and `.gitconfig`.
+Dotfiles Manager currently compiles `.bashrc/.bash_profile`, `.vimrc`, `.gitconfig`, and `.inputrc`. Support for arbitrary dotfiles of the user's choosing is planned for a future release.
 
 ## Supported Operating Systems
 Linux, macOS  
@@ -25,7 +25,7 @@ I have not tested this in bash environments on Windows (e.g. Cygwin), although i
 
 ## Input Files
 
-Each dotfile is compiled from special input files with names ending in `_global` (indicating commonality across all platforms) and `_local` (indicating specific needs of the host machine only). In the cases of `.vimrc` and `.gitconfig`, it's as simple as those two input files. 
+Each dotfile is compiled from special input files with names ending in `_global` (indicating commonality across all platforms) and `_local` (indicating specific needs of the host machine only). For most dotfiles, it's as simple as those two input files. 
 
 The bash files (`.bashrc`/`.bash_profile`), however, require additional handling beyond the `_global` / `_local` input files because the specifics of what they do varies across operating systems and configurations.
 
@@ -88,11 +88,18 @@ Input files with respect to their corresponding dotfiles are described in the ta
         <td>Any parts of your .vimrc that can be generalized across individual machines.</td>
         <td>Y</td>
     </tr>
+    <tr>
+        <td>inputrc_global</td>
+        <td>.inputrc</td>
+        <td>All</td>
+        <td>Any parts of your .inputrc that can be generalized across individual machines.</td>
+        <td>Y</td>
+    </tr>
 </table>
 *Required when actually needed (e.g. `bash_linux` is required when on Linux systems and optional otherwise).
 
 ### Precedence
-Input files are compiled in the following order:  
+Input files for each dotfile are compiled in the following order:  
 1) `*_global`  
 2) [`bash_linux`/`bash_mac_bsd`/`bash_mac_gnu`]  
 3) `*_local`  
@@ -104,5 +111,6 @@ Unit tests: Exercise logic e.g. execution path.
 Integration tests: Deal with file IO. Runtime environment is altered so as not to break 'prod' data (the real text files).
 
 ## TODO / Wishlist
-- Compile arbitrary dotfiles via `-f` using _global/_local convention.
+- Warn, don't error, when an expected input file is not present (don't require specific input files).  
+- Compile arbitrary dotfiles using input file naming convention.
 - Implement a priority-order scheme for input files compilation, e.g. rules.d style.
