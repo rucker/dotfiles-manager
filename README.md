@@ -2,34 +2,32 @@
 Build scripts for your dotfiles!
 
 ## Purpose
-Dotfiles Manager allows for the management of dotfiles across various systems. The intention is to compile your dotfiles anywhere while considering 1) the host OS and 2) any machine-specific configurations you may need.
+Dotfiles Manager allows for the management of your dotfiles across various systems while considering 1) the host OS and 2) any machine-specific configurations you may need.
 
-Dotfiles are compiled line-by-line using a system of input files (more information below -- mine can be found [here](https://github.com/rucker/dotfiles/tree/master/src)).
+Dotfiles are compiled line-by-line using a system of input files (more information [below](#input-files) -- mine can be found [here](https://github.com/rucker/dotfiles/tree/master/src)).
 
-Any existing dotfiles are backed up to $INPUT_FILES/backups automatically.
+Existing dotfiles are backed up automatically before compilation.
 
-Typically, you would run `dfm.py` and provide it with your input files directory.
-
-An example usage might be: `$ dfm.py -i ~/input-files -o ~` where:  
-- `~/input-files` is the directory containing your input files
-- `~` is the directory where output should be written (e.g. `.bashrc`).
-
-See `dfm.py --help` for more.
-
-## Supported Dofiles
-Dotfiles Manager currently compiles `.bashrc/.bash_profile`, `.vimrc`, `.gitconfig`, and `.inputrc`. Support for arbitrary dotfiles of the user's choosing is planned for a future release.
+See `dfm.py --help` for usage.
 
 ## Supported Operating Systems
 Linux, macOS  
 I have not tested this in bash environments on Windows (e.g. Cygwin), although it might work there.
 
 ## Input Files
+Each dotfile is compiled from its input file to an output file of the corresponding name (e.g. a `gitconfig` file in the input directory  will be compiled to `.gitconfig` in the output directory). Additional files suffixed with `_local` -- indicating specific needs of the host machine only -- will also be included (e.g. a compiled `.gitconfig` file will include the contents of `gitconfig_local`).
 
-Each dotfile is compiled from special input files with names ending in `_global` (indicating commonality across all platforms) and `_local` (indicating specific needs of the host machine only). For most dotfiles, it's as simple as those two input files. 
+#### Example Scenario
+Your `gitconfig` file is under version control and it contains settings you want on any machine you use. You want to clone the file from your git repository and use it on multiple machines where you use git. However, some machines require different configurations than others (such as the git identity being used).
 
-The bash files (`.bashrc`/`.bash_profile`), however, require additional handling beyond the `_global` / `_local` input files because the specifics of what they do varies across operating systems and configurations.
+What this script will allow you to do is automate management of all your git configurations across all machines (including local changes). This can be done by putting the common bits in `$INPUT_DIR/gitconfig`, and the bits that vary from machine to machine in `$INPUT_DIR/gitconfig_local` as needed. Everything will then be compiled into to a single `.gitconfig` file on each machine according to your needs.
 
-Input files with respect to their corresponding dotfiles are described in the table below.
+Backups will be placed in `$INPUT_DIR/backups`.
+
+#### Bash Files
+The bash dotfiles (`.bashrc`/`.bash_profile`), require additional handling beyond the naming scheme described above because the specifics of what they do varies across operating systems and configurations.
+
+The table below explains the relationships between bash input files and output files.
 
 <table>
     <tr>
@@ -37,80 +35,50 @@ Input files with respect to their corresponding dotfiles are described in the ta
         <th>dotfile</th>
         <th>OS</th>
         <th>contains</th>
-        <th>required?</th>
     </tr>
     <tr>
-        <td>bash_global</td>
+        <td>bash</td>
         <td>.bashrc/.bash_profile</td>
         <td>All</td>
         <td>Anything common across platforms.</td>
-        <td>Y</td>
     </tr>
     <tr>
         <td>bash_local</td>
         <td>.bashrc/.bash_profile</td>
         <td>All</td>
         <td>Anything needed by the host machine only.</td>
-        <td>N</td>
     </tr>
     <tr>
         <td>bash_linux</td>
         <td>.bashrc</td>
         <td>Linux</td>
         <td>Anything specific to Linux.</td>
-        <td>Y*</td>
     </tr>
     <tr>
         <td>bash_mac_bsd</td>
         <td>.bash_profile</td>
         <td>macOS</td>
         <td>Anything specific to macOS systems where the BSD coreutils are used. If you're on a Mac and you're not sure what this means, you should probably use this file instead of bash_mac_gnu.</td>
-        <td>Y*</td>
     </tr>
     <tr>
         <td>bash_mac_gnu</td>
         <td>.bash_profile</td>
         <td>macOS</td>
         <td>Anything specific to macOS systems where the GNU coreutils are installed.</td>
-        <td>Y*</td>
-    </tr>
-    <tr>
-        <td>gitconfig_global</td>
-        <td>.gitconfig</td>
-        <td>All</td>
-        <td>Any parts of your .gitconfig that can be generalized across individual machines.</td>
-        <td>Y</td>
-    </tr>
-    <tr>
-        <td>vimrc_global</td>
-        <td>.vimrc</td>
-        <td>All</td>
-        <td>Any parts of your .vimrc that can be generalized across individual machines.</td>
-        <td>Y</td>
-    </tr>
-    <tr>
-        <td>inputrc_global</td>
-        <td>.inputrc</td>
-        <td>All</td>
-        <td>Any parts of your .inputrc that can be generalized across individual machines.</td>
-        <td>Y</td>
     </tr>
 </table>
-*Required when actually needed (e.g. `bash_linux` is required when on Linux systems and optional otherwise).
 
 ### Precedence
 Input files for each dotfile are compiled in the following order:  
-1) `*_global`  
+1) `$COMMON_FILE` e.g. `gitconfig` or `bash`
 2) [`bash_linux`/`bash_mac_bsd`/`bash_mac_gnu`]  
-3) `*_local`  
+3) `$LOCAL_FILE`
 This means that contents of `_local` input files will be at the bottom of compiled output files. **Pay special attention to this** when writing your bash files!
 
-## Testing  
-Everything in this project is test-driven. The `test/testdriver.sh` script will run all tests.  
+## Tests
+Everything in this project is test-driven. The `test/testdriver.sh` script will run all tests (Python 3.6 required).
 Unit tests: Exercise logic e.g. execution path.  
 Integration tests: Deal with file IO. Runtime environment is altered so as not to break 'prod' data (the real text files).
 
 ## TODO / Wishlist
-- Warn, don't error, when an expected input file is not present (don't require specific input files).  
-- Compile arbitrary dotfiles using input file naming convention.
 - Implement a priority-order scheme for input files compilation, e.g. rules.d style.

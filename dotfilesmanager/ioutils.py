@@ -1,12 +1,13 @@
 import io
 import os
-from os.path import join
+from os.path import join, isfile
 import sys
 import time
 import glob
 import shutil
 
 from dotfilesmanager import env
+from dotfilesmanager.constants import BASHFILES
 
 
 def sprint(message):
@@ -24,20 +25,8 @@ def create_file(file_name, contents):
 
 
 def destroy_file(file_name):
-    if os.path.isfile(file_name):
+    if isfile(file_name):
         os.remove(file_name)
-
-
-def compile_dotfile(file_name):
-    sprint("Compiling file: " + file_name)
-    with io.StringIO() as file_buffer:
-        input_file_name = file_name.replace('.', '')
-        write_required_input_file_contents(input_file_name + "_global", file_buffer)
-        if not env.ARGS.no_local:
-            write_optional_input_file_contents(
-                input_file_name + "_local", file_buffer)
-        write_output_file(join(env.OUTPUT_DIR, file_name), file_buffer)
-        sprint("File completed.\n")
 
 
 def backup_file(file_name):
@@ -52,39 +41,65 @@ def backup_file(file_name):
         os.mkdir(env.BACKUPS_DIR)
     shutil.move(file_name, bak_file)
 
-
-def write_optional_input_file_contents(file_name, file_buffer):
-    if os.path.isfile(join(env.INPUT_DIR, file_name)):
-        write_input_file_contents(file_name, file_buffer)
-    else:
-        sprint("\t" + file_name + " is not present. Skipping...")
-
-
-def write_required_input_file_contents(file_name, file_buffer):
-    if os.path.isfile(join(env.INPUT_DIR, file_name)):
-        write_input_file_contents(file_name, file_buffer)
-    else:
-        msg = "Required input file " + file_name + \
-            " is not present. Please replace the file and try again."
-        if env.ARGS.verbose:
-            msg = "\t" + msg
-        eprint(msg)
-        exit(1)
+def get_dotfile_name(file_name):
+    if '_' in file_name:
+        file_name = file_name[0:file_name.index('_')]
+    if file_name in [item.value for item in BASHFILES]:
+        return None
+    return '.' + file_name
 
 
-def write_input_file_contents(file_name, file_buffer):
-    with open(join(env.INPUT_DIR, file_name)) as input_file:
+def get_dotfiles_map(input_dir):
+    dotfiles = {}
+    for item in os.listdir(input_dir):
+        if os.path.isfile(join(input_dir, item)):
+            file_key = get_dotfile_name(item)
+            if file_key is not None:
+                if file_key in dotfiles:
+                    dotfiles[file_key].append(item)
+                else:
+                    dotfiles[file_key] = [item]
+    return dotfiles
+
+
+def compile_dotfiles(input_dir):
+    for dotfile in iter(get_dotfiles_map(input_dir)):
+        compile_dotfile(dotfile)
+
+
+def compile_dotfile(file_name):
+    sprint("Compiling file: " + file_name)
+    with io.StringIO() as file_buffer:
+        if file_name.startswith('.'):
+            input_file_name = file_name[1:]
+        else:
+            input_file_name = file_name
+        write_input_file_contents(input_file_name, file_buffer)
+        if not env.ARGS.no_local:
+            write_input_file_contents(
+                input_file_name + "_local", file_buffer)
+        write_output_file(join(env.OUTPUT_DIR, file_name), file_buffer)
+        sprint("File completed.\n")
+
+
+def write_input_file_contents(file_name, out_buffer):
+    file_name_with_path = join(env.INPUT_DIR, file_name)
+    if not isfile(file_name_with_path):
+        sprint(file_name_with_path + " is not present. Skipping...")
+        return
+    with open(file_name_with_path) as input_file:
         sprint("\tReading input file " + file_name)
         for line in input_file:
-            write_to_output_buffer(line, file_buffer)
+            write_to_output_buffer(line, out_buffer)
 
 
-def write_output_file(file_path, file_buffer):
+def write_output_file(file_path, contents):
+    #TODO changing this to isfile() breaks ioutilstest (mocking)
     if not env.ARGS.clobber and os.path.isfile(file_path):
         backup_file(file_path)
     sprint("\tWriting output file " + file_path)
     with open(file_path, 'w') as output_file:
-        output_file.write(file_buffer.getvalue())
+        output_file.write(contents.getvalue())
 
 
 def write_to_output_buffer(output, file_buffer):

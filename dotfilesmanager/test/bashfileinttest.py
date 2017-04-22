@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.6
 
 import sys
 import os
@@ -103,7 +103,7 @@ class BashFileIntTest(unittest.TestCase):
         ioutils.destroy_file(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value))
         bashfile.compile_bash_file(SYSTEMS.DARWIN.value)
         self.assertTrue(BASHFILES.BASH_LOCAL.value + " is not present. Skipping..." in sys.stdout.getvalue().strip())
-        testfilemocks.create_file(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value), bashLocalText)
+        ioutils.create_file(join(testenv.INPUT_DIR, BASHFILES.BASH_LOCAL.value), bashLocalText)
 
         testenv.ARGS = args
 
