@@ -1,6 +1,3 @@
 *.swp
 *.swo
 *.pyc
-bash_private
-git_private
-sourced-private

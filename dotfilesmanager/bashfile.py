@@ -28,11 +28,11 @@ def compile_bash_file(platform):
     ioutils.sprint("Compiling file: " + bash_file)
     with io.StringIO() as file_buffer:
         _write_header(bash_file, file_buffer)
-        ioutils.write_required_input_file_contents(
+        ioutils.write_input_file_contents(
             BASHFILES.BASH_GLOBAL.value, file_buffer)
-        ioutils.write_optional_input_file_contents(bash_platform_file, file_buffer)
+        ioutils.write_input_file_contents(bash_platform_file, file_buffer)
         if not env.ARGS.no_local:
-            ioutils.write_optional_input_file_contents(
+            ioutils.write_input_file_contents(
                 BASHFILES.BASH_LOCAL.value, file_buffer)
         ioutils.write_output_file(join(env.OUTPUT_DIR, bash_file), file_buffer)
         ioutils.sprint("File completed.\n")
@@ -44,8 +44,3 @@ def compile_bash_profile():
 
 def compile_bashrc():
     compile_bash_file(SYSTEMS.LINUX.value)
-
-
-def compile_bash_files():
-    compile_bash_profile()
-    compile_bashrc()

@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from dotfilesmanager import bashfile
 from dotfilesmanager import env
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import SYSTEMS, DOTFILES, BASHFILES
+from dotfilesmanager.constants import SYSTEMS, BASHFILES
 from dotfilesmanager.ioutils import sprint, eprint
 
 
@@ -122,24 +122,20 @@ def main():
             elif dotfile == BASHFILES.BASH_PROFILE.value:
                 bashfile.compile_bash_profile()
             else:
-                dotfiles = [df.value for df in DOTFILES]
-                if dotfile in dotfiles:
+                if dotfile in ioutils.get_dotfiles_map(env.INPUT_DIR):
                     ioutils.compile_dotfile(dotfile)
                 else:
-                    dotfiles = str([df.value for df in DOTFILES])
                     eprint(
-                        "{0} is not a recognized dotfile. \
-                        Valid dotfile names are: {1}"
-                        .format(dotfile, dotfiles))
-                    exit(1)
+                        "No input files found for {0}. Please double-check " \
+                         "the file name(s) and try again."
+                        .format(dotfile))
+                    exit(0)
     else:
         if env.ARGS.revert:
-            ioutils.revert_dotfiles([df.value for df in DOTFILES])
+            ioutils.revert_dotfiles([df for df in ioutils.get_dotfiles_map(env.INPUT_DIR)])
         else:
             bashfile.compile_bash_file(env.PLATFORM)
-            dotfiles = [df.value for df in DOTFILES]
-            for df in DOTFILES:
-                ioutils.compile_dotfile(df.value)
+            ioutils.compile_dotfiles(env.INPUT_DIR)
     _print_completion_message()
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.6
 
 import sys
 import io
@@ -14,14 +14,14 @@ from dotfilesmanager.test import testenv
 from dotfilesmanager.test import testfilemocks
 from dotfilesmanager import dfm
 from dotfilesmanager import ioutils
-from dotfilesmanager.constants import DOTFILES, BASHFILES
+from dotfilesmanager.constants import BASHFILES
 
 
 class IOUtilsIntTest(unittest.TestCase):
     fileName = BASHFILES.BASH_PROFILE.value
     bakFileName = fileName[fileName.rfind('/') + 1 :].replace('.','')
     gitconfig = '.gitconfig'
-    gitconfig_global = 'gitconfig_global'
+    gitconfig = 'gitconfig'
     gitconfig_local = 'gitconfig_local'
 
     @classmethod
@@ -77,9 +77,9 @@ class IOUtilsIntTest(unittest.TestCase):
 
     def testWhenUserPassesArg_no_localThenOutputFileDoesNotContainContentsOfLocalInputFile(self):
         testenv.ARGS = testenv.parser.parse_args(['--no-local'])
-        ioutils.compile_dotfile(DOTFILES.GITCONFIG.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.GITCONFIG.value)) as outputFile:
-            with open(join(testenv.INPUT_DIR, self.gitconfig_global)) as inputFile:
+        ioutils.compile_dotfile(self.gitconfig)
+        with open(join(testenv.OUTPUT_DIR, self.gitconfig)) as outputFile:
+            with open(join(testenv.INPUT_DIR, self.gitconfig)) as inputFile:
                 with open(join(testenv.INPUT_DIR, self.gitconfig_local)) as \
                 localInputFile:
                     contents = outputFile.read()
@@ -87,9 +87,9 @@ class IOUtilsIntTest(unittest.TestCase):
                     self.assertTrue(localInputFile.read() not in contents)
 
     def testDotfileOutputFileContainsTheContentsOfDotfileAndLocalInputFile(self):
-        ioutils.compile_dotfile(DOTFILES.GITCONFIG.value)
-        with open(join(testenv.OUTPUT_DIR, DOTFILES.GITCONFIG.value)) as outputFile:
-            with open(join(testenv.INPUT_DIR, self.gitconfig_global)) as inputFile:
+        ioutils.compile_dotfile(self.gitconfig)
+        with open(join(testenv.OUTPUT_DIR, self.gitconfig)) as outputFile:
+            with open(join(testenv.INPUT_DIR, self.gitconfig)) as inputFile:
                 with open(join(testenv.INPUT_DIR, self.gitconfig_local)) as \
                 localInputFile:
                     contents = outputFile.read()
