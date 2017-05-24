@@ -1,6 +1,11 @@
 # Dotfiles Manager
 Build scripts for your dotfiles!
 
+## Usage
+`dfm.py ${INPUT_DIR}`, where `${INPUT_DIR}` is the location of your [input files](#input-files).
+
+See `dfm.py --help` for more.
+
 ## Purpose
 Dotfiles Manager allows for the management of your dotfiles across various systems while considering 1) the host OS and 2) any machine-specific configurations you may need.
 
@@ -8,14 +13,12 @@ Dotfiles are compiled line-by-line using a system of input files (more informati
 
 Existing dotfiles are backed up automatically before compilation.
 
-See `dfm.py --help` for usage.
-
 ## Supported Operating Systems
 Linux, macOS  
 I have not tested this in bash environments on Windows (e.g. Cygwin), although it might work there.
 
 ## Input Files
-Each dotfile is compiled from its input file to an output file of the corresponding name (e.g. a `gitconfig` file in the input directory  will be compiled to `.gitconfig` in the output directory). Additional files suffixed with `_local` -- indicating specific needs of the host machine only -- will also be included (e.g. a compiled `.gitconfig` file will include the contents of `gitconfig_local`).
+Each dotfile is compiled from its input file to an output file of the corresponding name (e.g. a `gitconfig` file in the input directory  will be compiled to `.gitconfig` in the output directory (`$HOME` by default)). Additional files suffixed with `_local` -- indicating specific needs of the host machine only -- will also be included. (e.g. a compiled `.gitconfig` file will include the contents of `${INPUT_DIR}/gitconfig` as well as `${INPUT_DIR}/gitconfig_local`).
 
 #### Example Scenario
 Your `gitconfig` file is under version control and it contains settings you want on any machine you use. You want to clone the file from your git repository and use it on multiple machines where you use git. However, some machines require different configurations than others (such as the git identity being used).
