@@ -37,7 +37,7 @@ class IOUtilsTest(unittest.TestCase):
         self.assertFalse("Compiling dotfiles!" in sys.stdout.getvalue().strip())
 
     @mock.patch('dotfilesmanager.ioutils.backup_file')
-    @mock.patch('os.path.isfile', return_value=True)
+    @mock.patch('dotfilesmanager.ioutils.isfile', return_value=True)
     @mock.patch('builtins.open')
     def testWhenUserDoesNotPassArg_c_andDotfileBeingWrittenAlreadyExistsThenItGetsBackedUp(self, mopen, isfile, backup_file):
         with io.StringIO() as buf:

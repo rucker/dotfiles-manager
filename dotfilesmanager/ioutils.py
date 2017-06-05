@@ -94,8 +94,7 @@ def write_input_file_contents(file_name, out_buffer):
 
 
 def write_output_file(file_path, contents):
-    #TODO changing this to isfile() breaks ioutilstest (mocking)
-    if not env.ARGS.clobber and os.path.isfile(file_path):
+    if not env.ARGS.clobber and isfile(file_path):
         backup_file(file_path)
     sprint("\tWriting output file " + file_path)
     with open(file_path, 'w') as output_file:
