@@ -68,12 +68,12 @@ def compile_dotfiles(input_dir):
 
 
 def compile_dotfile(file_name):
-    sprint("Compiling file: " + file_name)
     with io.StringIO() as file_buffer:
         if file_name.startswith('.'):
             input_file_name = file_name[1:]
         else:
             input_file_name = file_name
+        sprint("Compiling file: " + file_name)
         write_input_file_contents(input_file_name, file_buffer)
         if not env.ARGS.no_local:
             write_input_file_contents(
@@ -85,12 +85,16 @@ def compile_dotfile(file_name):
 def write_input_file_contents(file_name, out_buffer):
     file_name_with_path = join(env.INPUT_DIR, file_name)
     if not isfile(file_name_with_path):
-        sprint(file_name_with_path + " is not present. Skipping...")
+        sprint("{0} is not present. Skipping...".format(file_name_with_path))
         return
     with open(file_name_with_path) as input_file:
         sprint("\tReading input file " + file_name)
-        for line in input_file:
-            write_to_output_buffer(line, out_buffer)
+        try:
+            for line in input_file:
+                write_to_output_buffer(line, out_buffer)
+        except UnicodeDecodeError:
+            eprint("Input file {0} is not a valid UTF-8 file. Skipping..."
+                .format(input_file))
 
 
 def write_output_file(file_path, contents):
