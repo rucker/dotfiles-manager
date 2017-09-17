@@ -47,16 +47,16 @@ class DotfilesManagerTest(unittest.TestCase):
         self.assertTrue(testenv.IS_GNU)
 
     @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.dfm.ioutils.get_dotfiles_map', \
+            return_value={'.fooconfig' : ['fooconfig', 'fooconfig_local'], '.barconfig' : ['barconfig']})
     @mock.patch('dotfilesmanager.dfm.ioutils', autospec=True)
     @mock.patch('dotfilesmanager.dfm.bashfile', autospec=True)
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.dfm.ioutils.get_dotfiles_map', \
-            return_value={'.fooconfig' : ['fooconfig', 'fooconfig_local'], '.barconfig' : ['barconfig']})
-    def testWhenUserPassesArg_r_thenCorrectLogicalBranchingOccurs(self, get_dotfiles_map, isdir, bashfile, ioutils, _set_args):
+    def testWhenUserPassesArg_r_thenCorrectLogicalBranchingOccurs(self, isdir, bashfile, ioutils, get_dotfiles_map, _set_args):
         testenv.ARGS = testenv.parser.parse_args(['some_dir', '-r'])
         dfm.main()
         ioutils.get_dotfiles_map.assert_called_with(testenv.INPUT_DIR)
-        ioutils.revert_dotfiles.assert_called_with([ df for dotfile in ioutils.get_dotfiles_map() ])
+        ioutils.revert_dotfiles.assert_called_with(['.fooconfig', '.barconfig', BASHFILES.BASHRC.value])
 
     @mock.patch('os.path.isdir', return_value=True)
     def testWhenUserPassesArg_o_thenCorrectOutputDirIsStoredInEnv(self, isdir):

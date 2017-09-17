@@ -115,8 +115,8 @@ def revert_dotfiles(file_names):
 
 
 def revert_dotfile(dotfile):
-    name = dotfile.replace('.', '')
-    search_pattern = '{0}*{1}*'.format(env.BACKUPS_DIR, name)
+    name = '*{0}*'.format(dotfile).replace('.', '')
+    search_pattern = join(env.BACKUPS_DIR, name)
     results = sorted(glob.glob(search_pattern), reverse=True)
     if results:
         bak_file = results[0]

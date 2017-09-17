@@ -132,7 +132,12 @@ def main():
                     exit(0)
     else:
         if env.ARGS.revert:
-            ioutils.revert_dotfiles([df for df in ioutils.get_dotfiles_map(env.INPUT_DIR)])
+            all_dotfiles = [df for df in ioutils.get_dotfiles_map(env.INPUT_DIR)]
+            if env.PLATFORM == SYSTEMS.LINUX.value:
+                all_dotfiles.append(BASHFILES.BASHRC.value)
+            else:
+                all_dotfiles.append(BASHFILES.BASH_PROFILE.value)
+            ioutils.revert_dotfiles(all_dotfiles)
         else:
             bashfile.compile_bash_file(env.PLATFORM)
             ioutils.compile_dotfiles(env.INPUT_DIR)
