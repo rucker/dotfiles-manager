@@ -1,87 +1,35 @@
 # Dotfiles Manager
-Build scripts for your dotfiles!
+Dotfiles Manager allows for the compilation of dotfiles using a convention of named input files. A simple use-case might be:
 
-## Usage
-`dfm.py ${INPUT_DIR}`, where `${INPUT_DIR}` is the location of your [input files](#input-files).
+`dfm.py ${INPUT_DIR}`
 
-See `dfm.py --help` for more.
+Where `${INPUT_DIR}` is the location of your [input files](#input-files).
 
-## Purpose
-Dotfiles Manager allows for the management of your dotfiles across various systems while considering 1) the host OS and 2) any machine-specific configurations you may need.
+See `dfm.py --help` for more information.
 
-Dotfiles are compiled line-by-line using a system of input files (more information [below](#input-files) -- mine can be found [here](https://github.com/rucker/dotfiles/tree/master/src)).
-
-Existing dotfiles are backed up automatically before compilation.
-
-## Supported Operating Systems
-Linux, macOS  
-I have not tested this in bash environments on Windows (e.g. Cygwin), although it might work there.
+Existing dotfiles are backed up automatically before new ones are compiled and placed in `${INPUT_DIR}/backups`.
 
 ## Input Files
-Each dotfile is compiled from its input file to an output file of the corresponding name (e.g. a `gitconfig` file in the input directory  will be compiled to `.gitconfig` in the output directory (`$HOME` by default)). Additional files suffixed with `_local` -- indicating specific needs of the host machine only -- will also be included. (e.g. a compiled `.gitconfig` file will include the contents of `${INPUT_DIR}/gitconfig` as well as `${INPUT_DIR}/gitconfig_local`).
+Each dotfile is compiled from its input file(s) to an output file of the corresponding name (e.g. a `gitconfig` file in the input directory  will be compiled to `.gitconfig` in the output directory (`$HOME` by   default)). Additionally, multiple input files can be compiled into a single dotfile using a naming scheme for input files.
 
-#### Example Scenario
-Your `gitconfig` file is under version control and it contains settings you want on any machine you use. You want to clone the file from your git repository and use it on multiple machines where you use git. However, some machines require different configurations than others (such as the git identity being used).
+That naming scheme is:
 
-What this script will allow you to do is automate management of all your git configurations across all machines (including local changes). This can be done by putting the common bits in `$INPUT_DIR/gitconfig`, and the bits that vary from machine to machine in `$INPUT_DIR/gitconfig_local` as needed. Everything will then be compiled into to a single `.gitconfig` file on each machine according to your needs.
+*xx-dotfile.ext_suffix*  
+WHERE:  
+*xx-* = input file priority (optional: the contents of highest-numbered input files will be placed in the output dotfile first, and other files matching *dotfile* will be inserted in lexographical order)  
+*dotfile* = output dotfile name  
+*.ext* = output dotfile extension (if applicable, e.g. tmux.conf)  
+*_suffix* = input filename suffix (optional, ignored) 
 
-Backups will be placed in `$INPUT_DIR/backups`.
+Note: Any *.ext* occurring after an underscore ( _ ) will be considered part of the input file suffix and ignored.
 
-#### Bash Files
-The bash dotfiles (`.bashrc`/`.bash_profile`), require additional handling beyond the naming scheme described above because the specifics of what they do varies across operating systems and configurations.
+For example: input files named `99-bashrc`, `98-bashrc_linux`, `bashrc_local.myaliases` will be compiled into a single `bashrc` output file (and in that order).
 
-The table below explains the relationships between bash input files and output files.
+For further illustration, my input files can be found [here](https://github.com/rucker/dotfiles/tree/master/src).
 
-<table>
-    <tr>
-        <th>input file</th>
-        <th>dotfile</th>
-        <th>OS</th>
-        <th>contains</th>
-    </tr>
-    <tr>
-        <td>bash</td>
-        <td>.bashrc/.bash_profile</td>
-        <td>All</td>
-        <td>Anything common across platforms.</td>
-    </tr>
-    <tr>
-        <td>bash_local</td>
-        <td>.bashrc/.bash_profile</td>
-        <td>All</td>
-        <td>Anything needed by the host machine only.</td>
-    </tr>
-    <tr>
-        <td>bash_linux</td>
-        <td>.bashrc</td>
-        <td>Linux</td>
-        <td>Anything specific to Linux.</td>
-    </tr>
-    <tr>
-        <td>bash_mac_bsd</td>
-        <td>.bash_profile</td>
-        <td>macOS</td>
-        <td>Anything specific to macOS systems where the BSD coreutils are used. If you're on a Mac and you're not sure what this means, you should probably use this file instead of bash_mac_gnu.</td>
-    </tr>
-    <tr>
-        <td>bash_mac_gnu</td>
-        <td>.bash_profile</td>
-        <td>macOS</td>
-        <td>Anything specific to macOS systems where the GNU coreutils are installed.</td>
-    </tr>
-</table>
+## Example Use-Case
+Your `.gitconfig` file is under version control and it contains your familiar global git configs. You want to clone the file from your git repository and use it on multiple machines where you use git. However, some machines require different configurations than others (such as the git identity being used). In addition, you want to easily be able to propagate any changes you make to your global `gitconfig` to all machines without manually copying and pasting anything.
 
-### Precedence
-Input files for each dotfile are compiled in the following order:  
-1) `$COMMON_FILE` e.g. `gitconfig` or `bash`
-2) [`bash_linux`/`bash_mac_bsd`/`bash_mac_gnu`]  
-3) `$LOCAL_FILE`
-This means that contents of `_local` input files will be at the bottom of compiled output files. **Pay special attention to this** when writing your bash files!
+What this script will allow you to do is automate management of all your git configurations across all machines, including local changes. This can be done by putting the common bits in a file called `gitconfig`, and the bits that vary from machine to machine in a second file, for example `gitconfig_local` as needed. Because Dotfiles Manager is able to infer the name of the dotfile being compiled from the names of the input files, the contents of `gitconfig` and `gitconfig_local` will be compiled into to a single `.gitconfig` file on each machine.
 
-## Tests
-Everything in this project is test-driven. The `test/testdriver.sh` script will run all tests (Python 3.6 required).
-Unit tests: Exercise logic e.g. execution path.  
-Integration tests: Deal with file IO. Runtime environment is altered so as not to break 'prod' data (the real text files).
-
-## TODO / Wishlist
-- Implement a priority-order scheme for input files compilation, e.g. rules.d style.
+When you commit a new change to your global `gitconfig` in one place, you can keep everything up-to-date by doing a `git pull` to get your latest source files and then running `dfm.py ${INPUT_DIR}`.
