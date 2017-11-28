@@ -1,9 +1,7 @@
 import os
 
-ARGS = ''
+ARGS = None
 HOME = os.environ['HOME']
-PLATFORM = ''
-INPUT_DIR = ''
+INPUT_DIR = None
 OUTPUT_DIR = HOME
-BACKUPS_DIR = ''
-IS_GNU = False
+BACKUPS_DIR = None
