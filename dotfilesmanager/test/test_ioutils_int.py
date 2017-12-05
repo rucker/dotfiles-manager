@@ -28,6 +28,7 @@ class TestIOUtilsInt(unittest.TestCase):
         dfm.env = env
         dfm.ioutils.env = env
         env.set_up()
+        dfm._set_args()
         cls.create_input_files(cls)
 
 

@@ -58,6 +58,11 @@ def _set_args():
         action='append',
         metavar='INPUT_FILE',
         help="Exclude the specified input file.")
+    env.parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help="Don't write anything to disk, but instead report what \
+                action(s) would be taken. Implies --verbose.")
     env.ARGS = env.parser.parse_args()
     sprint("\nPreparing dotfiles with args: " + " ".join(sys.argv[1:]) + "\n")
 
@@ -77,6 +82,9 @@ def _set_env():
             .format(env.INPUT_DIR, env.OUTPUT_DIR))
         exit(1)
     env.BACKUPS_DIR = join(env.INPUT_DIR, 'backups')
+
+    if env.ARGS.dry_run:
+        env.ARGS.verbose = True
 
     sprint("Environment:")
     sprint("\tinput_dir: " + env.INPUT_DIR)

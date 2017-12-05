@@ -179,10 +179,10 @@ class TestDotfilesManager(unittest.TestCase):
         stderr = sys.stderr
         err = io.StringIO()
         sys.stderr = err
-
         user_home_dir = 'my_home_dir'
         env.OUTPUT_DIR = user_home_dir
         env.ARGS = env.parser.parse_args([user_home_dir])
+
         with self.assertRaises(SystemExit) as sys_exit:
             dfm._set_env()
         self.assertEqual(sys_exit.exception.code, 1)
@@ -191,6 +191,21 @@ class TestDotfilesManager(unittest.TestCase):
 
         sys.stderr = stderr
 
+
+    @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isdir', return_value=True)
+    def test_arg_dry_run_implies_arg_verbose(self, isdir):
+        stdout = sys.stdout
+        out = io.StringIO()
+        sys.stdout = out
+        dfm._set_args()
+        env.ARGS = env.parser.parse_args(['some_dir', '--dry-run'])
+
+        dfm._set_env()
+
+        self.assertTrue(env.ARGS.dry_run)
+        self.assertTrue(env.ARGS.verbose)
+
+        sys.stdout = stdout
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)
