@@ -26,7 +26,7 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     def tearDown(self):
-        env.ARGS = None
+        env.tear_down()
 
 
     @mock.patch('dotfilesmanager.dfm._set_args')
@@ -46,11 +46,11 @@ class TestDotfilesManager(unittest.TestCase):
 
     @mock.patch('os.path.isdir', return_value=True)
     def test_output_dir_stored_in_env_when_arg_o(self, isdir):
-        env.ARGS = env.parser.parse_args(['some_dir', '-o', 'some_dir'])
+        env.ARGS = env.parser.parse_args(['some_dir', '-o', 'some_other_dir'])
 
         dfm._set_env()
 
-        self.assertTrue(env.OUTPUT_DIR == 'some_dir')
+        self.assertTrue(env.OUTPUT_DIR == 'some_other_dir')
 
 
     @mock.patch('dotfilesmanager.dfm._set_args')
@@ -172,6 +172,24 @@ class TestDotfilesManager(unittest.TestCase):
             dotfile_names.append(dfm._get_dotfile_name(input_file))
 
         self.assertEqual(set(dotfile_names), set(['.gitconfig', '.tmux.conf', '.vimrc', '.bashrc']))
+
+
+    @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isdir', return_value=True)
+    def test_error_when_input_dir_same_as_output_dir(self, isdir):
+        stderr = sys.stderr
+        err = io.StringIO()
+        sys.stderr = err
+
+        user_home_dir = 'my_home_dir'
+        env.OUTPUT_DIR = user_home_dir
+        env.ARGS = env.parser.parse_args([user_home_dir])
+        with self.assertRaises(SystemExit) as sys_exit:
+            dfm._set_env()
+        self.assertEqual(sys_exit.exception.code, 1)
+        self.assertTrue("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}"
+                .format(user_home_dir, user_home_dir) in err.getvalue())
+
+        sys.stderr = stderr
 
 
 if __name__ == '__main__':

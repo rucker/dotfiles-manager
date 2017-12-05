@@ -20,6 +20,7 @@ class TestIOUtils(unittest.TestCase):
     def setUpClass(cls):
         dfm.env = env
         dfm.ioutils.env = env
+        env.set_up()
         dfm._set_args()
 
 

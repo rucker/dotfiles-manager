@@ -67,11 +67,15 @@ def _set_env():
     if os.path.isdir(input_dir):
         env.INPUT_DIR = input_dir
     else:
-        eprint("Specified input directory " + input_dir + " does not " \
-        "exist.")
+        eprint("Specified input directory {0} does not exist."
+            .format(input_dir))
         exit(1)
     if env.ARGS.output_dir:
         env.OUTPUT_DIR = env.ARGS.output_dir[0]
+    if env.INPUT_DIR == env.OUTPUT_DIR:
+        eprint("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}"
+            .format(env.INPUT_DIR, env.OUTPUT_DIR))
+        exit(1)
     env.BACKUPS_DIR = join(env.INPUT_DIR, 'backups')
 
     sprint("Environment:")

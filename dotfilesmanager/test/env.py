@@ -32,3 +32,13 @@ def _set_up_dirs():
 
 def tear_down():
     shutil.rmtree(_TMP_DIR)
+    global INPUT_DIR
+    global OUTPUT_DIR
+    global BACKUPS_DIR
+    global parser
+    global ARGS
+    INPUT_DIR = None
+    OUTPUT_DIR = None
+    BACKUPS_DIR = None
+    parser = None
+    ARGS = None
