@@ -23,6 +23,8 @@ class TestDotfilesManagerInt(unittest.TestCase):
     def setUpClass(cls):
         dfm.env = env
         dfm.ioutils.env = env
+        env.set_up()
+        dfm._set_args()
         cls.create_input_files(cls)
 
 
@@ -31,8 +33,7 @@ class TestDotfilesManagerInt(unittest.TestCase):
         dfm._set_args()
 
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         env.tear_down()
 
 
