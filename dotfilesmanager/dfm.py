@@ -72,14 +72,14 @@ def _set_env():
     if os.path.isdir(input_dir):
         env.INPUT_DIR = input_dir
     else:
-        eprint("Specified input directory {0} does not exist."
-            .format(input_dir))
+        eprint("Specified input directory {0} does not exist." \
+                .format(input_dir))
         exit(1)
     if env.ARGS.output_dir:
         env.OUTPUT_DIR = env.ARGS.output_dir[0]
     if env.INPUT_DIR == env.OUTPUT_DIR:
-        eprint("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}"
-            .format(env.INPUT_DIR, env.OUTPUT_DIR))
+        eprint("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}" \
+                .format(env.INPUT_DIR, env.OUTPUT_DIR))
         exit(1)
     env.BACKUPS_DIR = join(env.INPUT_DIR, 'backups')
 
@@ -146,7 +146,8 @@ def _add_input_file_to_dict(dotfiles_dict, input_file):
 
 def _get_dotfiles_dict(input_dir):
     dotfiles = {}
-    all_input_files = [item for item in os.listdir(input_dir) if os.path.isfile(join(input_dir, item))]
+    all_input_files = [item for item in os.listdir(input_dir) \
+            if os.path.isfile(join(input_dir, item))]
     for input_file in all_input_files:
         _add_input_file_to_dict(dotfiles, input_file)
     for dotfile in dotfiles:

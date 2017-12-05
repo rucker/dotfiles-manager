@@ -30,7 +30,7 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict',
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', \
         return_value={'.fooconfig' : ['fooconfig', 'fooconfig_local'], '.barconfig' : ['barconfig']})
     @mock.patch('dotfilesmanager.dfm.ioutils', autospec=True)
     @mock.patch('os.path.isdir', return_value=True)
@@ -145,7 +145,7 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.os.listdir',
+    @mock.patch('dotfilesmanager.dfm.os.listdir', \
         return_value=['gitconfig', 'gitconfig_local', 'bashrc', 'bashrc_local'])
     @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isdir', return_value=True)
     @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isfile', return_value=True)
@@ -186,7 +186,7 @@ class TestDotfilesManager(unittest.TestCase):
         with self.assertRaises(SystemExit) as sys_exit:
             dfm._set_env()
         self.assertEqual(sys_exit.exception.code, 1)
-        self.assertTrue("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}"
+        self.assertTrue("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}" \
                 .format(user_home_dir, user_home_dir) in err.getvalue())
 
         sys.stderr = stderr

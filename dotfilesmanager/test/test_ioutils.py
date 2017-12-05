@@ -65,7 +65,7 @@ class TestIOUtils(unittest.TestCase):
         _back_up_file.assert_called_once()
 
 
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict',
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', \
         return_value={'.fooconfig' : ['99-fooconfig', '98-fooconfig_local']})
     @mock.patch('dotfilesmanager.ioutils._write_output_file')
     def test_correct_output_file_name_written(self, _write_output_file, _get_dotfiles_dict):

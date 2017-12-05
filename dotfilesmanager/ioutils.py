@@ -61,7 +61,7 @@ def _write_input_file_contents(file_name, out_buffer):
             for line in input_file:
                 _write_to_output_buffer(line, out_buffer)
         except UnicodeDecodeError:
-            sprint("Input file {0} is not a valid UTF-8 file. Skipping..."
+            sprint("Input file {0} is not a valid UTF-8 file. Skipping..." \
                 .format(input_file))
 
 
@@ -87,11 +87,11 @@ def revert_dotfile(dotfile):
         choice = ''
         while choice not in (['Y', 'N']):
             choice = input(
-                "Revert {0} to backup located at {1}? (Y/N): "
-                    .format(dotfile, bak_file)).upper()
+                "Revert {0} to backup located at {1}? (Y/N): " \
+                        .format(dotfile, bak_file)).upper()
             if choice == 'Y':
                 existing_dotfile = join(env.OUTPUT_DIR, dotfile)
-                sprint("Removing dotfile {0} and replacing with backup named {1}"
+                sprint("Removing dotfile {0} and replacing with backup named {1}" \
                         .format(existing_dotfile, bak_file))
                 if not env.ARGS.dry_run:
                     os.remove(existing_dotfile)
