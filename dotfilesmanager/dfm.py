@@ -174,12 +174,12 @@ def main():
         if not dotfile.startswith("."):
             dotfile = "." + dotfile
         if env.ARGS.revert:
-            processed_dotfiles.append(dotfile)
             ioutils.revert_dotfile(dotfile)
+            processed_dotfiles.append(dotfile)
         else:
             if dotfile in all_dotfiles_dict:
-                processed_dotfiles.append(dotfile)
                 ioutils.compile_dotfile(dotfile, all_dotfiles_dict[dotfile])
+                processed_dotfiles.append(dotfile)
             else:
                 eprint(
                     "No input files found for {0}. Please double-check " \
@@ -188,11 +188,11 @@ def main():
                 exit(1)
     else:
         all_dotfiles = [df for df in all_dotfiles_dict]
-        processed_dotfiles.extend(all_dotfiles)
         if env.ARGS.revert:
             _revert_dotfiles(all_dotfiles)
         else:
             _compile_dotfiles(all_dotfiles_dict)
+        processed_dotfiles.extend(all_dotfiles)
     _print_completion_message(processed_dotfiles)
 
 if __name__ == '__main__':
