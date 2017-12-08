@@ -155,9 +155,17 @@ def _get_dotfiles_dict(input_dir):
     return dotfiles
 
 
-def _compile_dotfiles(all_dotfiles_dict):
+def _process_dotfile(dotfile, input_files):
+    if len(input_files) > 1:
+        ioutils.compile_dotfile(dotfile, input_files)
+    else:
+        ioutils.create_symlink(join(env.INPUT_DIR, input_files[0]), \
+                join(env.OUTPUT_DIR, dotfile))
+
+
+def _process_dotfiles(all_dotfiles_dict):
     for dotfile in all_dotfiles_dict:
-        ioutils.compile_dotfile(dotfile, all_dotfiles_dict[dotfile])
+        _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
 
 
 def _revert_dotfiles(file_names):
@@ -178,7 +186,7 @@ def main():
             processed_dotfiles.append(dotfile)
         else:
             if dotfile in all_dotfiles_dict:
-                ioutils.compile_dotfile(dotfile, all_dotfiles_dict[dotfile])
+                _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
                 processed_dotfiles.append(dotfile)
             else:
                 eprint(
@@ -191,7 +199,7 @@ def main():
         if env.ARGS.revert:
             _revert_dotfiles(all_dotfiles)
         else:
-            _compile_dotfiles(all_dotfiles_dict)
+            _process_dotfiles(all_dotfiles_dict)
         processed_dotfiles.extend(all_dotfiles)
     _print_completion_message(processed_dotfiles)
 

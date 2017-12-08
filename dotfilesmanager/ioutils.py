@@ -98,3 +98,7 @@ def revert_dotfile(dotfile):
                     shutil.copy(bak_file, join(env.OUTPUT_DIR, dotfile))
     else:
         eprint("No backup files found matching {0}".format(dotfile))
+
+
+def create_symlink(target, source):
+    os.symlink(target, source)

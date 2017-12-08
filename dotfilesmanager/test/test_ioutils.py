@@ -69,7 +69,7 @@ class TestIOUtils(unittest.TestCase):
         return_value={'.fooconfig' : ['99-fooconfig', '98-fooconfig_local']})
     @mock.patch('dotfilesmanager.ioutils._write_output_file')
     def test_correct_output_file_name_written(self, _write_output_file, _get_dotfiles_dict):
-        dfm._compile_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
+        dfm._process_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
 
         _write_output_file.assert_called_with(join(env.OUTPUT_DIR, '.fooconfig'), ANY)
 

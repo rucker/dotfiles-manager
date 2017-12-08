@@ -2,12 +2,13 @@
 
 import io
 import os
+from os.path import join
 import sys
 import unittest
 from unittest import mock
 from unittest.mock import call
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(join(os.path.dirname(__file__), '../..')))
 
 from dotfilesmanager import dfm, ioutils
 from dotfilesmanager.test import env
@@ -121,11 +122,12 @@ class TestDotfilesManager(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm._set_args')
     @mock.patch('os.path.isdir', return_value=True)
     @mock.patch('os.path.isfile', return_value=True)
-    @mock.patch('os.listdir', return_value=['foorc', 'foorc_local', 'bar.config'])
+    @mock.patch('os.listdir', return_value=['foorc', 'foorc_local', '99-bar.config', 'bar.config'])
     @mock.patch('dotfilesmanager.ioutils.compile_dotfile')
     def test_dotfiles_compiled_by_input_file_name_convention(self, compile_dotfile, listdir, isfile, isdir, set_args):
         env.ARGS = env.parser.parse_args(['some_dir'])
-        expected_calls = [call('.foorc', ['foorc', 'foorc_local']), call('.bar.config', ['bar.config'])]
+        expected_calls = [call('.foorc', ['foorc', 'foorc_local']), \
+                call('.bar.config', ['99-bar.config', 'bar.config'])]
 
         dfm.main()
 
@@ -206,6 +208,19 @@ class TestDotfilesManager(unittest.TestCase):
         self.assertTrue(env.ARGS.verbose)
 
         sys.stdout = stdout
+
+
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    def test_symlink_created_when_single_input_file(self, get_dotfiles_dict, create_symlink, set_args, isdir):
+        env.ARGS = env.parser.parse_args(['some_dir'])
+        dfm.main()
+
+        create_symlink.assert_called_once_with(join(env.INPUT_DIR, 'fooconfig'), \
+                join(env.OUTPUT_DIR, '.fooconfig'))
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)
