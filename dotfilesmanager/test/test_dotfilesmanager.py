@@ -216,10 +216,28 @@ class TestDotfilesManager(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
     def test_symlink_created_when_single_input_file(self, get_dotfiles_dict, create_symlink, set_args, isdir):
         env.ARGS = env.parser.parse_args(['some_dir'])
+
         dfm.main()
 
         create_symlink.assert_called_once_with(join(env.INPUT_DIR, 'fooconfig'), \
                 join(env.OUTPUT_DIR, '.fooconfig'))
+
+
+    @mock.patch('builtins.open')
+    @mock.patch('dotfilesmanager.ioutils._remove_symlink')
+    @mock.patch('dotfilesmanager.ioutils.islink', return_value=True)
+    @mock.patch('dotfilesmanager.dfm.ioutils._back_up_file')
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['99-fooconfig', 'fooconfig']})
+    def test_existing_symlink_removed_when_multiple_input_files(self, get_dotfiles_dict, create_symlink, set_args, isdir, back_up_file, islink, remove_symlink, m_open):
+        env.ARGS = env.parser.parse_args(['some_dir'])
+
+        dfm.main()
+
+        back_up_file.assert_not_called()
+        remove_symlink.assert_called_once()
 
 
 if __name__ == '__main__':

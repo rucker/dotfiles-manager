@@ -1,7 +1,7 @@
 import glob
 import io
 import os
-from os.path import join, isfile
+from os.path import join, isfile, islink
 import shutil
 import sys
 import time
@@ -66,8 +66,11 @@ def _write_input_file_contents(file_name, out_buffer):
 
 
 def _write_output_file(file_path, contents):
-    if not env.ARGS.clobber and isfile(file_path):
-        _back_up_file(file_path)
+    if not env.ARGS.clobber:
+        if islink(file_path):
+            _remove_symlink(file_path)
+        elif isfile(file_path):
+            _back_up_file(file_path)
     sprint("\tWriting input file contents to output file " + file_path)
     if not env.ARGS.dry_run:
         with open(file_path, 'w') as output_file:
@@ -102,3 +105,7 @@ def revert_dotfile(dotfile):
 
 def create_symlink(target, source):
     os.symlink(target, source)
+
+
+def _remove_symlink(link):
+    os.unlink(link)
