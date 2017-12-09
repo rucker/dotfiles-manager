@@ -259,5 +259,22 @@ class TestDotfilesManager(unittest.TestCase):
         symlink.assert_called_once_with(input_file, output_file)
 
 
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.dfm.ioutils.compile_dotfile')
+    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    def test_symlinks_not_created_when_arg_no_symlinks(self, get_dotfiles_dict, create_symlink, compile_dotfile, set_args, isdir):
+        env.ARGS = env.parser.parse_args(['some_dir', '--no-symlinks'])
+
+        dfm.main()
+
+        dotfile = '.fooconfig'
+        input_files = ['fooconfig']
+
+        create_symlink.assert_not_called()
+        compile_dotfile.assert_called_once_with(dotfile, input_files)
+
+
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)

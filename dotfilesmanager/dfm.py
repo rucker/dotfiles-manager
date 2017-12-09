@@ -63,6 +63,10 @@ def _set_args():
         action='store_true',
         help="Don't write anything to disk, but instead report what \
                 action(s) would be taken. Implies --verbose.")
+    env.parser.add_argument(
+        '--no-symlinks',
+        action='store_true',
+        help="Don't symlink output dotfiles (compile a new file instead)")
     env.ARGS = env.parser.parse_args()
     sprint("\nPreparing dotfiles with args: " + " ".join(sys.argv[1:]) + "\n")
 
@@ -157,7 +161,7 @@ def _get_dotfiles_dict(input_dir):
 
 def _process_dotfile(dotfile, input_files):
     sprint("Processing file: " + dotfile)
-    if len(input_files) > 1:
+    if env.ARGS.no_symlinks or len(input_files) > 1:
         ioutils.compile_dotfile(dotfile, input_files)
     else:
         ioutils.create_symlink(join(env.INPUT_DIR, input_files[0]), \
