@@ -89,8 +89,9 @@ class TestIOUtilsInt(unittest.TestCase):
 
     def test_when_arg_e_then_specified_file_is_excluded(self):
         env.ARGS = env.parser.parse_args(['some_dir', '-e', self.SECOND_INPUT_FILE])
-        ioutils._create_file(join(env.OUTPUT_DIR, self.FIRST_INPUT_FILE), "some_token=some_value")
-        ioutils._create_file(join(env.OUTPUT_DIR, self.SECOND_INPUT_FILE), "some_local_token=some_value")
+        ioutils._create_file(join(env.INPUT_DIR, self.FIRST_INPUT_FILE), "some_token=some_value")
+        ioutils._create_file(join(env.INPUT_DIR, self.SECOND_INPUT_FILE), "some_local_token=some_value")
+        ioutils._create_file(join(env.INPUT_DIR, 'fooconfig'), "some_additional_token=some_value")
 
         dfm._process_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
 
@@ -101,8 +102,14 @@ class TestIOUtilsInt(unittest.TestCase):
                     contents = output_file.read()
                     self.assertTrue(input_file.read() in contents)
                     self.assertTrue(local_input_file.read() not in contents)
-        env.ARGS = None
 
+
+    def test_backing_up_file_removes_original(self):
+        ioutils._create_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME), "some_token=some_value")
+
+        ioutils._back_up_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME))
+
+        self.assertFalse(os.path.isfile(join(env.OUTPUT_DIR, self.DOTFILE_NAME)))
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)

@@ -43,11 +43,9 @@ def _back_up_file(file_name):
 
 def compile_dotfile(file_name, input_files):
     with io.StringIO() as file_buffer:
-        sprint("Compiling file: " + file_name)
         for input_file in input_files:
             _write_input_file_contents(input_file, file_buffer)
         _write_output_file(join(env.OUTPUT_DIR, file_name), file_buffer)
-        sprint("File completed.\n")
 
 
 def _write_input_file_contents(file_name, out_buffer):
@@ -66,11 +64,10 @@ def _write_input_file_contents(file_name, out_buffer):
 
 
 def _write_output_file(file_path, contents):
-    if not env.ARGS.clobber:
-        if islink(file_path):
-            _remove_symlink(file_path)
-        elif isfile(file_path):
-            _back_up_file(file_path)
+    if islink(file_path):
+        _remove_symlink(file_path)
+    if not env.ARGS.clobber and isfile(file_path):
+        _back_up_file(file_path)
     sprint("\tWriting input file contents to output file " + file_path)
     if not env.ARGS.dry_run:
         with open(file_path, 'w') as output_file:
@@ -104,8 +101,24 @@ def revert_dotfile(dotfile):
 
 
 def create_symlink(target, source):
-    os.symlink(target, source)
+    if isfile(source):
+        _back_up_file(source)
+    else:
+        existing_target = os.readlink(source)
+        if not isfile(existing_target):
+            sprint("\tExisting symlink {0} -> {1} is broken"\
+                    .format(source, existing_target))
+            _remove_symlink(source)
+        if target == existing_target:
+            sprint("\tSymlink {0} -> {1} already in place"\
+                    .format(source, target))
+            return
+    sprint("\tSymlinking {0} -> {1}".format(source, target))
+    if not env.ARGS.dry_run:
+        os.symlink(target, source)
 
 
 def _remove_symlink(link):
-    os.unlink(link)
+    sprint("\tRemoving symlink " + link)
+    if not env.ARGS.dry_run:
+        os.unlink(link)

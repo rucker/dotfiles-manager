@@ -156,11 +156,13 @@ def _get_dotfiles_dict(input_dir):
 
 
 def _process_dotfile(dotfile, input_files):
+    sprint("Processing file: " + dotfile)
     if len(input_files) > 1:
         ioutils.compile_dotfile(dotfile, input_files)
     else:
         ioutils.create_symlink(join(env.INPUT_DIR, input_files[0]), \
                 join(env.OUTPUT_DIR, dotfile))
+    sprint("Done with {0}\n".format(dotfile))
 
 
 def _process_dotfiles(all_dotfiles_dict):

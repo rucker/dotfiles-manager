@@ -240,5 +240,24 @@ class TestDotfilesManager(unittest.TestCase):
         remove_symlink.assert_called_once()
 
 
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.ioutils.os.readlink', return_value='vimrc')
+    @mock.patch('dotfilesmanager.dfm.ioutils._back_up_file')
+    @mock.patch('dotfilesmanager.dfm.ioutils.islink', return_value=False)
+    @mock.patch('dotfilesmanager.dfm.ioutils.isfile', return_value=True)
+    @mock.patch('dotfilesmanager.dfm.ioutils.os.symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    def test_existing_dotfile_replaced_with_symlink_when_single_input_file(self, get_dotfiles_dict, symlink, isfile, islink, back_up_file, readlink, set_args, isdir):
+        env.ARGS = env.parser.parse_args(['some_dir'])
+
+        dfm.main()
+
+        input_file = join(env.INPUT_DIR, 'fooconfig')
+        output_file = join(env.OUTPUT_DIR, '.fooconfig')
+        back_up_file.assert_called_once_with(output_file)
+        symlink.assert_called_once_with(input_file, output_file)
+
+
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)
