@@ -63,6 +63,10 @@ def _set_args():
         action='store_true',
         help="Don't write anything to disk, but instead report what \
                 action(s) would be taken. Implies --verbose.")
+    env.parser.add_argument(
+        '--no-symlinks',
+        action='store_true',
+        help="Don't symlink output dotfiles (compile a new file instead)")
     env.ARGS = env.parser.parse_args()
     sprint("\nPreparing dotfiles with args: " + " ".join(sys.argv[1:]) + "\n")
 
@@ -155,9 +159,19 @@ def _get_dotfiles_dict(input_dir):
     return dotfiles
 
 
-def _compile_dotfiles(all_dotfiles_dict):
+def _process_dotfile(dotfile, input_files):
+    sprint("Processing file: " + dotfile)
+    if env.ARGS.no_symlinks or len(input_files) > 1:
+        ioutils.compile_dotfile(dotfile, input_files)
+    else:
+        ioutils.create_symlink(join(env.INPUT_DIR, input_files[0]), \
+                join(env.OUTPUT_DIR, dotfile))
+    sprint("Done with {0}\n".format(dotfile))
+
+
+def _process_dotfiles(all_dotfiles_dict):
     for dotfile in all_dotfiles_dict:
-        ioutils.compile_dotfile(dotfile, all_dotfiles_dict[dotfile])
+        _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
 
 
 def _revert_dotfiles(file_names):
@@ -174,12 +188,12 @@ def main():
         if not dotfile.startswith("."):
             dotfile = "." + dotfile
         if env.ARGS.revert:
-            processed_dotfiles.append(dotfile)
             ioutils.revert_dotfile(dotfile)
+            processed_dotfiles.append(dotfile)
         else:
             if dotfile in all_dotfiles_dict:
+                _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
                 processed_dotfiles.append(dotfile)
-                ioutils.compile_dotfile(dotfile, all_dotfiles_dict[dotfile])
             else:
                 eprint(
                     "No input files found for {0}. Please double-check " \
@@ -188,11 +202,11 @@ def main():
                 exit(1)
     else:
         all_dotfiles = [df for df in all_dotfiles_dict]
-        processed_dotfiles.extend(all_dotfiles)
         if env.ARGS.revert:
             _revert_dotfiles(all_dotfiles)
         else:
-            _compile_dotfiles(all_dotfiles_dict)
+            _process_dotfiles(all_dotfiles_dict)
+        processed_dotfiles.extend(all_dotfiles)
     _print_completion_message(processed_dotfiles)
 
 if __name__ == '__main__':

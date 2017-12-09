@@ -2,12 +2,13 @@
 
 import io
 import os
+from os.path import join
 import sys
 import unittest
 from unittest import mock
 from unittest.mock import call
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(join(os.path.dirname(__file__), '../..')))
 
 from dotfilesmanager import dfm, ioutils
 from dotfilesmanager.test import env
@@ -121,11 +122,12 @@ class TestDotfilesManager(unittest.TestCase):
     @mock.patch('dotfilesmanager.dfm._set_args')
     @mock.patch('os.path.isdir', return_value=True)
     @mock.patch('os.path.isfile', return_value=True)
-    @mock.patch('os.listdir', return_value=['foorc', 'foorc_local', 'bar.config'])
+    @mock.patch('os.listdir', return_value=['foorc', 'foorc_local', '99-bar.config', 'bar.config'])
     @mock.patch('dotfilesmanager.ioutils.compile_dotfile')
     def test_dotfiles_compiled_by_input_file_name_convention(self, compile_dotfile, listdir, isfile, isdir, set_args):
         env.ARGS = env.parser.parse_args(['some_dir'])
-        expected_calls = [call('.foorc', ['foorc', 'foorc_local']), call('.bar.config', ['bar.config'])]
+        expected_calls = [call('.foorc', ['foorc', 'foorc_local']), \
+                call('.bar.config', ['99-bar.config', 'bar.config'])]
 
         dfm.main()
 
@@ -206,6 +208,73 @@ class TestDotfilesManager(unittest.TestCase):
         self.assertTrue(env.ARGS.verbose)
 
         sys.stdout = stdout
+
+
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    def test_symlink_created_when_single_input_file(self, get_dotfiles_dict, create_symlink, set_args, isdir):
+        env.ARGS = env.parser.parse_args(['some_dir'])
+
+        dfm.main()
+
+        create_symlink.assert_called_once_with(join(env.INPUT_DIR, 'fooconfig'), \
+                join(env.OUTPUT_DIR, '.fooconfig'))
+
+
+    @mock.patch('builtins.open')
+    @mock.patch('dotfilesmanager.ioutils._remove_symlink')
+    @mock.patch('dotfilesmanager.ioutils.islink', return_value=True)
+    @mock.patch('dotfilesmanager.dfm.ioutils._back_up_file')
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['99-fooconfig', 'fooconfig']})
+    def test_existing_symlink_removed_when_multiple_input_files(self, get_dotfiles_dict, create_symlink, set_args, isdir, back_up_file, islink, remove_symlink, m_open):
+        env.ARGS = env.parser.parse_args(['some_dir'])
+
+        dfm.main()
+
+        back_up_file.assert_not_called()
+        remove_symlink.assert_called_once()
+
+
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.ioutils.os.readlink', return_value='vimrc')
+    @mock.patch('dotfilesmanager.dfm.ioutils._back_up_file')
+    @mock.patch('dotfilesmanager.dfm.ioutils.islink', return_value=False)
+    @mock.patch('dotfilesmanager.dfm.ioutils.isfile', return_value=True)
+    @mock.patch('dotfilesmanager.dfm.ioutils.os.symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    def test_existing_dotfile_replaced_with_symlink_when_single_input_file(self, get_dotfiles_dict, symlink, isfile, islink, back_up_file, readlink, set_args, isdir):
+        env.ARGS = env.parser.parse_args(['some_dir'])
+
+        dfm.main()
+
+        input_file = join(env.INPUT_DIR, 'fooconfig')
+        output_file = join(env.OUTPUT_DIR, '.fooconfig')
+        back_up_file.assert_called_once_with(output_file)
+        symlink.assert_called_once_with(input_file, output_file)
+
+
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dotfilesmanager.dfm.ioutils.compile_dotfile')
+    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
+    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    def test_symlinks_not_created_when_arg_no_symlinks(self, get_dotfiles_dict, create_symlink, compile_dotfile, set_args, isdir):
+        env.ARGS = env.parser.parse_args(['some_dir', '--no-symlinks'])
+
+        dfm.main()
+
+        dotfile = '.fooconfig'
+        input_files = ['fooconfig']
+
+        create_symlink.assert_not_called()
+        compile_dotfile.assert_called_once_with(dotfile, input_files)
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)

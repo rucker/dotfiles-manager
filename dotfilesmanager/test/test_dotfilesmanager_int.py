@@ -25,12 +25,12 @@ class TestDotfilesManagerInt(unittest.TestCase):
         dfm.ioutils.env = env
         env.set_up()
         dfm._set_args()
-        cls.create_input_files(cls)
 
 
     def setUp(self):
         env.set_up()
         dfm._set_args()
+        self.create_input_files()
 
 
     def tearDown(self):
@@ -78,6 +78,7 @@ class TestDotfilesManagerInt(unittest.TestCase):
             self.assertTrue("some_newer_value" not in bashrc.read())
 
         self.clean_up_backups()
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)
