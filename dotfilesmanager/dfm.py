@@ -4,10 +4,10 @@ import itertools
 import re
 import sys
 import os
-from os.path import join
+from os.path import join, abspath, dirname
 import argparse
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(abspath(dirname(dirname(__file__))))
 
 from dotfilesmanager import env
 from dotfilesmanager import ioutils

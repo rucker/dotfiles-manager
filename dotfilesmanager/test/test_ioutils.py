@@ -1,14 +1,12 @@
-#!/usr/bin/env python3.6
-
 import io
 import os
-from os.path import join
+from os.path import join, abspath, dirname
 import sys
 import unittest
 from unittest import mock
 from unittest.mock import ANY
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(abspath(dirname(dirname(dirname(__file__)))))
 
 from dotfilesmanager.test import env
 from dotfilesmanager import dfm

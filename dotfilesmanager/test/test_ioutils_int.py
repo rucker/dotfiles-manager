@@ -1,13 +1,11 @@
-#!/usr/bin/env python3.6
-
 import io
 import os
-from os.path import join
+from os.path import join, abspath, dirname
 import shutil
 import sys
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(abspath(dirname(dirname(__file__))))
 
 from dotfilesmanager.test import env
 from dotfilesmanager import dfm
@@ -20,7 +18,7 @@ class TestIOUtilsInt(unittest.TestCase):
     SECOND_INPUT_FILE = '98-fooconfig_local'
 
     DOTFILE_NAME = '.fooconfig'
-    BACKUP_FILE_NAME = DOTFILE_NAME[DOTFILE_NAME.rfind('/') + 1 :].replace('.', '')
+    BACKUP_FILE_NAME = DOTFILE_NAME[DOTFILE_NAME.rfind(os.sep) + 1 :].replace('.', '')
 
 
     @classmethod
