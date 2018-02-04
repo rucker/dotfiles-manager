@@ -1,7 +1,7 @@
 import glob
 import io
 import os
-from os.path import join, isfile, islink
+from os.path import join, isfile, islink, exists
 import shutil
 import sys
 import time
@@ -32,7 +32,7 @@ def _back_up_file(file_name):
         file_name[file_name.rfind('/') + 1:]
         .replace('.', '') + '_' +
         timestamp + '.bak')
-    if not os.path.exists(env.BACKUPS_DIR):
+    if not exists(env.BACKUPS_DIR):
         sprint("Creating backups dir {0}".format(env.BACKUPS_DIR))
         if not env.ARGS.dry_run:
             os.mkdir(env.BACKUPS_DIR)
@@ -101,18 +101,19 @@ def revert_dotfile(dotfile):
 
 
 def create_symlink(target, source):
-    if isfile(source):
-        _back_up_file(source)
-    else:
-        existing_target = os.readlink(source)
-        if not isfile(existing_target):
-            sprint("\tExisting symlink {0} -> {1} is broken"\
-                    .format(source, existing_target))
-            _remove_symlink(source)
-        if target == existing_target:
-            sprint("\tSymlink {0} -> {1} already in place"\
-                    .format(source, target))
-            return
+    if exists(source):
+        if isfile(source):
+            _back_up_file(source)
+        else:
+            existing_target = os.readlink(source)
+            if not isfile(existing_target):
+                sprint("\tExisting symlink {0} -> {1} is broken"\
+                        .format(source, existing_target))
+                _remove_symlink(source)
+            if target == existing_target:
+                sprint("\tSymlink {0} -> {1} already in place"\
+                        .format(source, target))
+                return
     sprint("\tSymlinking {0} -> {1}".format(source, target))
     if not env.ARGS.dry_run:
         os.symlink(target, source)

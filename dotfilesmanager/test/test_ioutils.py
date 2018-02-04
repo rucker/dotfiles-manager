@@ -158,7 +158,8 @@ class TestIOUtils(unittest.TestCase):
     @mock.patch('dotfilesmanager.ioutils._remove_symlink')
     @mock.patch('dotfilesmanager.ioutils.os.readlink', return_value='some_nonexistent_file')
     @mock.patch('dotfilesmanager.ioutils.isfile', return_value=False)
-    def test_existing_broken_symlink_is_removed(self, isfile, readlink, remove_symlink, symlink):
+    @mock.patch('dotfilesmanager.ioutils.exists', return_value=True)
+    def test_existing_broken_symlink_is_removed(self, exists, isfile, readlink, remove_symlink, symlink):
         link_target = join(env.INPUT_DIR, 'vimrc')
         link_source = join(env.OUTPUT_DIR, '.vimrc')
 
@@ -172,7 +173,8 @@ class TestIOUtils(unittest.TestCase):
     @mock.patch('dotfilesmanager.ioutils._remove_symlink')
     @mock.patch('dotfilesmanager.ioutils.os.readlink', return_value='vimrc')
     @mock.patch('dotfilesmanager.ioutils.isfile', side_effect=[False, True])
-    def test_dont_try_to_recreate_existing_valid_symlink(self, isfile, readlink, remove_symlink, symlink):
+    @mock.patch('dotfilesmanager.ioutils.exists', return_value=True)
+    def test_dont_try_to_recreate_existing_valid_symlink(self, exists, isfile, readlink, remove_symlink, symlink):
         link_target = 'vimrc'
         link_source = join(env.OUTPUT_DIR, '.vimrc')
 
@@ -180,6 +182,19 @@ class TestIOUtils(unittest.TestCase):
 
         remove_symlink.assert_not_called()
         symlink.assert_not_called()
+
+
+    @mock.patch('dotfilesmanager.ioutils.os.symlink')
+    @mock.patch('dotfilesmanager.ioutils._remove_symlink')
+    @mock.patch('dotfilesmanager.ioutils.exists', return_value=False)
+    def test_no_existing_symlink_source(self, exists, remove_symlink, symlink):
+        link_target = 'vimrc'
+        link_source = join(env.OUTPUT_DIR, '.vimrc')
+
+        ioutils.create_symlink(link_target, link_source)
+
+        remove_symlink.assert_not_called()
+        symlink.assert_called_once()
 
 
 if __name__ == '__main__':
