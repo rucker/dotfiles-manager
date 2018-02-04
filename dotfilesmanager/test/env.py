@@ -18,9 +18,9 @@ def set_up():
     global BACKUPS_DIR
     global parser
     global ARGS
-    INPUT_DIR = join(_TMP_DIR, 'testsrc/')
-    OUTPUT_DIR = join(_TMP_DIR, 'testoutputfiles/')
-    BACKUPS_DIR = join(_TMP_DIR, 'testbackups/')
+    INPUT_DIR = join(_TMP_DIR, 'testsrc')
+    OUTPUT_DIR = join(_TMP_DIR, 'testoutputfiles')
+    BACKUPS_DIR = join(_TMP_DIR, 'testbackups')
     parser = argparse.ArgumentParser()
     ARGS = None
     _set_up_dirs()

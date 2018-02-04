@@ -29,7 +29,7 @@ def _back_up_file(file_name):
     timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
     bak_file = join(
         env.BACKUPS_DIR,
-        file_name[file_name.rfind('/') + 1:]
+        file_name[file_name.rfind(os.sep) + 1:]
         .replace('.', '') + '_' +
         timestamp + '.bak')
     if not exists(env.BACKUPS_DIR):
