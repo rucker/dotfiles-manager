@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
+import argparse
 import itertools
 import re
 import sys
+from pathlib import Path
 import os
-from os.path import join, abspath, dirname
-import argparse
+from os.path import join, dirname, realpath
 
-sys.path.append(abspath(dirname(dirname(__file__))))
+PROJECT_DIR = str(Path(dirname(realpath(__file__))).parent)
+sys.path.append(PROJECT_DIR)
 
 from dotfilesmanager import env
 from dotfilesmanager import ioutils
