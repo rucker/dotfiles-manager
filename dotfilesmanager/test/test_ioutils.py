@@ -1,16 +1,17 @@
 import io
-import os
-from os.path import join, abspath, dirname
+from os.path import join, realpath, dirname
+from pathlib import Path
 import sys
 import unittest
 from unittest import mock
 from unittest.mock import ANY
 
-sys.path.append(abspath(dirname(dirname(dirname(__file__)))))
+TEST_DIR = str(Path(dirname(realpath(__file__))).parent)
+sys.path.insert(0, TEST_DIR)
 
-from dotfilesmanager.test import env
-from dotfilesmanager import dfm
-from dotfilesmanager import ioutils
+from test.env import env
+import dfm
+from ioutils import ioutils
 
 class TestIOUtils(unittest.TestCase):
 
@@ -53,8 +54,8 @@ class TestIOUtils(unittest.TestCase):
         sys.stdout = stdout
 
 
-    @mock.patch('dotfilesmanager.ioutils._back_up_file')
-    @mock.patch('dotfilesmanager.ioutils.isfile', return_value=True)
+    @mock.patch('ioutils.ioutils._back_up_file')
+    @mock.patch('ioutils.ioutils.isfile', return_value=True)
     @mock.patch('builtins.open')
     def test_existing_dotfile_file_backed_up_when_not_arg_c(self, m_open, isfile, _back_up_file):
         with io.StringIO() as buf:
@@ -63,9 +64,9 @@ class TestIOUtils(unittest.TestCase):
         _back_up_file.assert_called_once()
 
 
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', \
+    @mock.patch('dfm._get_dotfiles_dict', \
         return_value={'.fooconfig' : ['99-fooconfig', '98-fooconfig_local']})
-    @mock.patch('dotfilesmanager.ioutils._write_output_file')
+    @mock.patch('ioutils.ioutils._write_output_file')
     def test_correct_output_file_name_written(self, _write_output_file, _get_dotfiles_dict):
         dfm._process_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
 
@@ -87,9 +88,9 @@ class TestIOUtils(unittest.TestCase):
         sys.stdout = stdout
 
 
-    @mock.patch('ioutils.os.path.exists', return_value=False)
-    @mock.patch('ioutils.os.mkdir')
-    @mock.patch('ioutils.shutil.move')
+    @mock.patch('ioutils.ioutils.os.path.exists', return_value=False)
+    @mock.patch('ioutils.ioutils.os.mkdir')
+    @mock.patch('ioutils.ioutils.shutil.move')
     def test_file_not_backed_up_when_arg_dry_run(self, move, mkdir, path_exists):
         env.ARGS.dry_run = True
 
@@ -99,9 +100,9 @@ class TestIOUtils(unittest.TestCase):
         move.assert_not_called()
 
 
-    @mock.patch('ioutils.glob.glob', return_value=['backup_file'])
-    @mock.patch('ioutils.os.remove')
-    @mock.patch('ioutils.shutil.copy')
+    @mock.patch('ioutils.ioutils.glob.glob', return_value=['backup_file'])
+    @mock.patch('ioutils.ioutils.os.remove')
+    @mock.patch('ioutils.ioutils.shutil.copy')
     def test_file_not_reverted_when_arg_dry_run(self, copy, remove, glob):
         stdout = sys.stdout
         out = io.StringIO()
@@ -135,9 +136,9 @@ class TestIOUtils(unittest.TestCase):
         sys.stdout = stdout
 
 
-    @mock.patch('dotfilesmanager.ioutils._back_up_file')
-    @mock.patch('dotfilesmanager.ioutils.isfile', return_value=True)
-    @mock.patch('dotfilesmanager.ioutils.os.symlink')
+    @mock.patch('ioutils.ioutils._back_up_file')
+    @mock.patch('os.path.isfile', return_value=True)
+    @mock.patch('os.symlink')
     def test_symlink_not_created_when_arg_dry_run(self, symlink, isfile, back_up_file):
         stdout = sys.stdout
         out = io.StringIO()
@@ -152,11 +153,11 @@ class TestIOUtils(unittest.TestCase):
         sys.stdout = stdout
 
 
-    @mock.patch('dotfilesmanager.ioutils.os.symlink')
-    @mock.patch('dotfilesmanager.ioutils._remove_symlink')
-    @mock.patch('dotfilesmanager.ioutils.os.readlink', return_value='some_nonexistent_file')
-    @mock.patch('dotfilesmanager.ioutils.isfile', return_value=False)
-    @mock.patch('dotfilesmanager.ioutils.exists', return_value=True)
+    @mock.patch('os.symlink')
+    @mock.patch('ioutils.ioutils._remove_symlink')
+    @mock.patch('os.readlink', return_value='some_nonexistent_file')
+    @mock.patch('ioutils.ioutils.isfile', return_value=False)
+    @mock.patch('ioutils.ioutils.exists', return_value=True)
     def test_existing_broken_symlink_is_removed(self, exists, isfile, readlink, remove_symlink, symlink):
         link_target = join(env.INPUT_DIR, 'vimrc')
         link_source = join(env.OUTPUT_DIR, '.vimrc')
@@ -167,11 +168,11 @@ class TestIOUtils(unittest.TestCase):
         symlink.assert_called_with(link_target, link_source)
 
 
-    @mock.patch('dotfilesmanager.ioutils.os.symlink')
-    @mock.patch('dotfilesmanager.ioutils._remove_symlink')
-    @mock.patch('dotfilesmanager.ioutils.os.readlink', return_value='vimrc')
-    @mock.patch('dotfilesmanager.ioutils.isfile', side_effect=[False, True])
-    @mock.patch('dotfilesmanager.ioutils.exists', return_value=True)
+    @mock.patch('ioutils.ioutils.os.symlink')
+    @mock.patch('ioutils.ioutils._remove_symlink')
+    @mock.patch('ioutils.ioutils.os.readlink', return_value='vimrc')
+    @mock.patch('ioutils.ioutils.isfile', side_effect=[False, True])
+    @mock.patch('ioutils.ioutils.exists', return_value=True)
     def test_dont_try_to_recreate_existing_valid_symlink(self, exists, isfile, readlink, remove_symlink, symlink):
         link_target = 'vimrc'
         link_source = join(env.OUTPUT_DIR, '.vimrc')
@@ -182,10 +183,10 @@ class TestIOUtils(unittest.TestCase):
         symlink.assert_not_called()
 
 
-    @mock.patch('dotfilesmanager.ioutils.os.symlink')
-    @mock.patch('dotfilesmanager.ioutils._remove_symlink')
-    @mock.patch('dotfilesmanager.ioutils.exists', return_value=False)
-    def test_no_existing_symlink_source(self, exists, remove_symlink, symlink):
+    @mock.patch('ioutils.ioutils.os.symlink')
+    @mock.patch('ioutils.ioutils._remove_symlink')
+    @mock.patch('ioutils.ioutils.exists', return_value=False)
+    def test_create_symlink_when_no_existing_symlink_source(self, exists, remove_symlink, symlink):
         link_target = 'vimrc'
         link_source = join(env.OUTPUT_DIR, '.vimrc')
 

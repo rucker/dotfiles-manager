@@ -6,7 +6,7 @@ import shutil
 import sys
 import time
 
-from dotfilesmanager import env
+from env import env
 
 
 def sprint(message):
