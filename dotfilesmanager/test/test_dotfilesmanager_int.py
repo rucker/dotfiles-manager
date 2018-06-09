@@ -1,12 +1,18 @@
 import os
-from os.path import join
+from os.path import join, realpath, dirname
+from pathlib import Path
 import shutil
+import sys
 import unittest
 from unittest import mock
 
-from dotfilesmanager.test import env
-from dotfilesmanager import dfm
-from dotfilesmanager import ioutils
+TEST_DIR = str(Path(dirname(realpath(__file__))).parent)
+sys.path.insert(0, TEST_DIR)
+
+from test.env import env
+import dfm
+from ioutils import ioutils
+
 
 class TestDotfilesManagerInt(unittest.TestCase):
 

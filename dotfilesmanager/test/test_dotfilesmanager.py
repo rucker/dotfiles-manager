@@ -1,15 +1,18 @@
 import io
-import os
-from os.path import join, abspath, dirname
+from os.path import join, realpath, dirname
+from pathlib import Path
 import sys
 import unittest
 from unittest import mock
 from unittest.mock import call
 
-sys.path.append(abspath(dirname(dirname(dirname(__file__)))))
+TEST_DIR = str(Path(dirname(realpath(__file__))).parent)
+sys.path.insert(0, TEST_DIR)
 
-from dotfilesmanager import dfm, ioutils
-from dotfilesmanager.test import env
+from test.env import env
+import dfm
+from ioutils import ioutils
+
 
 class TestDotfilesManager(unittest.TestCase):
 
@@ -28,10 +31,10 @@ class TestDotfilesManager(unittest.TestCase):
         env.tear_down()
 
 
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', \
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm._get_dotfiles_dict', \
         return_value={'.fooconfig' : ['fooconfig', 'fooconfig_local'], '.barconfig' : ['barconfig']})
-    @mock.patch('dotfilesmanager.dfm.ioutils', autospec=True)
+    @mock.patch('dfm.ioutils', autospec=True)
     @mock.patch('os.path.isdir', return_value=True)
     def test_correct_branching_when_arg_r(self, isdir, ioutils, _get_dotfiles_dict, _set_args):
         env.ARGS = env.parser.parse_args(['some_dir', '-r'])
@@ -52,10 +55,10 @@ class TestDotfilesManager(unittest.TestCase):
         self.assertTrue(env.OUTPUT_DIR == 'some_other_dir')
 
 
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.ioutils.compile_dotfile')
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils.compile_dotfile')
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.gitconfig' : ['99-gitconfig', '99-gitconfig.local']})
+    @mock.patch('dfm._get_dotfiles_dict', return_value={'.gitconfig' : ['99-gitconfig', '99-gitconfig.local']})
     def test_only_specified_dotfile_compiled_when_arg_f(self, _get_dotfiles_dict, isdir, compile_dotfile, _set_args):
         dotfile = '.gitconfig'
         input_files = ['99-gitconfig', '99-gitconfig.local']
@@ -67,9 +70,9 @@ class TestDotfilesManager(unittest.TestCase):
         ioutils.compile_dotfile.assert_called_with(dotfile, input_files)
 
 
-    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dfm._set_args')
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.gitconfig' : ['gitconfig', 'gitconfig_local']})
+    @mock.patch('dfm._get_dotfiles_dict', return_value={'.gitconfig' : ['gitconfig', 'gitconfig_local']})
     def test_print_error_exit_1_when_arg_f_and_invalid_dotfile_name(self, _get_dotfiles_dict, isdir, _set_args):
         stderr = sys.stderr
         err = io.StringIO()
@@ -85,9 +88,9 @@ class TestDotfilesManager(unittest.TestCase):
         sys.stderr = stderr
 
 
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.ioutils')
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={})
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils')
+    @mock.patch('dfm._get_dotfiles_dict', return_value={})
     @mock.patch('os.path.isdir', return_value=True)
     def test_only_specified_file_reverted_when_args_rf(self, isdir, _get_dotfiles_dict, ioutils, _set_args):
         env.ARGS = env.parser.parse_args(['some_dir', '-r', '-f', '.bashrc'])
@@ -98,8 +101,8 @@ class TestDotfilesManager(unittest.TestCase):
         ioutils.compile_dotfile.assert_not_called()
 
 
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.ioutils')
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils')
     @mock.patch('os.path.isdir', return_value=False)
     def test_print_error_exit_1_when_invalid_input_dir(self, isdir, ioutils, _set_args):
         stderr = sys.stderr
@@ -117,11 +120,11 @@ class TestDotfilesManager(unittest.TestCase):
         sys.stderr = stderr
 
 
-    @mock.patch('dotfilesmanager.dfm._set_args')
+    @mock.patch('dfm._set_args')
     @mock.patch('os.path.isdir', return_value=True)
     @mock.patch('os.path.isfile', return_value=True)
     @mock.patch('os.listdir', return_value=['foorc', 'foorc_local', '99-bar.config', 'bar.config'])
-    @mock.patch('dotfilesmanager.ioutils.compile_dotfile')
+    @mock.patch('ioutils.ioutils.compile_dotfile')
     def test_dotfiles_compiled_by_input_file_name_convention(self, compile_dotfile, listdir, isfile, isdir, set_args):
         env.ARGS = env.parser.parse_args(['some_dir'])
         expected_calls = [call('.foorc', ['foorc', 'foorc_local']), \
@@ -132,8 +135,8 @@ class TestDotfilesManager(unittest.TestCase):
         ioutils.compile_dotfile.assert_has_calls(expected_calls)
 
 
-    @mock.patch('dotfilesmanager.ioutils.os.listdir', return_value=['99-gitconfig', '98-gitconfig_local', 'vimrc', '99-bashrc', 'bashrc_local'])
-    @mock.patch('dotfilesmanager.ioutils.os.path.isfile', return_value=True)
+    @mock.patch('ioutils.ioutils.os.listdir', return_value=['99-gitconfig', '98-gitconfig_local', 'vimrc', '99-bashrc', 'bashrc_local'])
+    @mock.patch('ioutils.ioutils.os.path.isfile', return_value=True)
     def test_get_dotfiles_dict(self, listdir, isfile):
         expected = set({
             '.gitconfig' : ['.gitconfig'],
@@ -144,12 +147,12 @@ class TestDotfilesManager(unittest.TestCase):
         self.assertEqual(set(dfm._get_dotfiles_dict(env.INPUT_DIR)), expected)
 
 
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.os.listdir', \
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.os.listdir', \
         return_value=['gitconfig', 'gitconfig_local', 'bashrc', 'bashrc_local'])
-    @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isfile', return_value=True)
-    @mock.patch('ioutils._write_input_file_contents')
+    @mock.patch('dfm.ioutils.os.path.isdir', return_value=True)
+    @mock.patch('dfm.ioutils.os.path.isfile', return_value=True)
+    @mock.patch('ioutils.ioutils._write_input_file_contents')
     def test_when_arg_e_then_specified_files_are_excluded(self, _write_input_file_contents, isfile, isdir, listdir, _set_args):
         env.ARGS = env.parser.parse_args([
             'some_dir',
@@ -174,7 +177,7 @@ class TestDotfilesManager(unittest.TestCase):
         self.assertEqual(set(dotfile_names), set(['.gitconfig', '.tmux.conf', '.vimrc', '.bashrc']))
 
 
-    @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isdir', return_value=True)
+    @mock.patch('dfm.ioutils.os.path.isdir', return_value=True)
     def test_error_when_input_dir_same_as_output_dir(self, isdir):
         stderr = sys.stderr
         err = io.StringIO()
@@ -192,7 +195,7 @@ class TestDotfilesManager(unittest.TestCase):
         sys.stderr = stderr
 
 
-    @mock.patch('dotfilesmanager.dfm.ioutils.os.path.isdir', return_value=True)
+    @mock.patch('dfm.ioutils.os.path.isdir', return_value=True)
     def test_arg_dry_run_implies_arg_verbose(self, isdir):
         stdout = sys.stdout
         out = io.StringIO()
@@ -209,9 +212,9 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils.create_symlink')
+    @mock.patch('dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
     def test_symlink_created_when_single_input_file(self, get_dotfiles_dict, create_symlink, set_args, isdir):
         env.ARGS = env.parser.parse_args(['some_dir'])
 
@@ -222,13 +225,13 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     @mock.patch('builtins.open')
-    @mock.patch('dotfilesmanager.ioutils._remove_symlink')
-    @mock.patch('dotfilesmanager.ioutils.islink', return_value=True)
-    @mock.patch('dotfilesmanager.dfm.ioutils._back_up_file')
+    @mock.patch('ioutils.ioutils._remove_symlink')
+    @mock.patch('ioutils.ioutils.islink', return_value=True)
+    @mock.patch('dfm.ioutils._back_up_file')
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['99-fooconfig', 'fooconfig']})
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils.create_symlink')
+    @mock.patch('dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['99-fooconfig', 'fooconfig']})
     def test_existing_symlink_removed_when_multiple_input_files(self, get_dotfiles_dict, create_symlink, set_args, isdir, back_up_file, islink, remove_symlink, m_open):
         env.ARGS = env.parser.parse_args(['some_dir'])
 
@@ -239,14 +242,14 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.ioutils.exists', return_value=True)
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.ioutils.os.readlink', return_value='vimrc')
-    @mock.patch('dotfilesmanager.dfm.ioutils._back_up_file')
-    @mock.patch('dotfilesmanager.dfm.ioutils.islink', return_value=False)
-    @mock.patch('dotfilesmanager.dfm.ioutils.isfile', return_value=True)
-    @mock.patch('dotfilesmanager.dfm.ioutils.os.symlink')
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    @mock.patch('ioutils.ioutils.exists', return_value=True)
+    @mock.patch('dfm._set_args')
+    @mock.patch('ioutils.ioutils.os.readlink', return_value='vimrc')
+    @mock.patch('dfm.ioutils._back_up_file')
+    @mock.patch('dfm.ioutils.islink', return_value=False)
+    @mock.patch('dfm.ioutils.isfile', return_value=True)
+    @mock.patch('dfm.ioutils.os.symlink')
+    @mock.patch('dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
     def test_existing_dotfile_replaced_with_symlink_when_single_input_file(self, get_dotfiles_dict, symlink, isfile, islink, back_up_file, readlink, set_args, exists, isdir):
         env.ARGS = env.parser.parse_args(['some_dir'])
 
@@ -259,10 +262,10 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('dotfilesmanager.dfm._set_args')
-    @mock.patch('dotfilesmanager.dfm.ioutils.compile_dotfile')
-    @mock.patch('dotfilesmanager.dfm.ioutils.create_symlink')
-    @mock.patch('dotfilesmanager.dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils.compile_dotfile')
+    @mock.patch('dfm.ioutils.create_symlink')
+    @mock.patch('dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
     def test_symlinks_not_created_when_arg_no_symlinks(self, get_dotfiles_dict, create_symlink, compile_dotfile, set_args, isdir):
         env.ARGS = env.parser.parse_args(['some_dir', '--no-symlinks'])
 

@@ -1,15 +1,17 @@
 import io
 import os
-from os.path import join, abspath, dirname
+from os.path import join, realpath, dirname
+from pathlib import Path
 import shutil
 import sys
 import unittest
 
-sys.path.append(abspath(dirname(dirname(__file__))))
+TEST_DIR = str(Path(dirname(realpath(__file__))).parent)
+sys.path.insert(0, TEST_DIR)
 
-from dotfilesmanager.test import env
-from dotfilesmanager import dfm
-from dotfilesmanager import ioutils
+from test.env import env
+import dfm
+from ioutils import ioutils
 
 
 class TestIOUtilsInt(unittest.TestCase):

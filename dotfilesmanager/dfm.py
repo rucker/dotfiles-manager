@@ -4,16 +4,12 @@ import argparse
 import itertools
 import re
 import sys
-from pathlib import Path
 import os
-from os.path import join, dirname, realpath
+from os.path import join
 
-PROJECT_DIR = str(Path(dirname(realpath(__file__))).parent)
-sys.path.append(PROJECT_DIR)
-
-from dotfilesmanager import env
-from dotfilesmanager import ioutils
-from dotfilesmanager.ioutils import sprint, eprint
+from env import env
+from ioutils import ioutils
+from ioutils.ioutils import sprint, eprint
 
 
 def _init():
