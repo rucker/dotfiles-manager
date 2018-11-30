@@ -5,16 +5,16 @@ Dotfiles Manager allows for the compilation of dotfiles using a convention of [n
 
 Where `${INPUT_DIR}` is the location of your input files.
 
-See `dfm.py --help` for more information.
+See `dfm.py --help` for usage.
 
 Existing dotfiles are backed up automatically before new ones are compiled and placed in `${INPUT_DIR}/backups`.
 
 ## Example Use-Case
-You have a personal dotfiles repository containing your `.bashrc` and you want to use your familiar setup on multiple machines. You want to easily propagate any changes you make to your global `.bashrc` to all machines without manually copying and pasting changes. However, some machines require different configurations than others (such as aliases or environment variables). You want to do this while keeping your dotfiles repo in a clean state, and without losing track of those local changes you need.
+You have a personal dotfiles repository containing your `.bashrc` and you want to use your familiar setup on multiple machines. You want to easily propagate any changes you make to your global `.bashrc` to all machines you use. However, some machines require different configurations (such as aliases, environment variables, or even sensitive data like access tokens, which you would not want to commit to your repo) than others. You want to keep your dotfiles repo in a clean state so you can easily `pull` global changes without losing track of those local changes you need (and without copying and pasting anything by hand). 
 
-What Dotfiles Manager will allow you to do is automate management of your dotfiles across all machines, including local per-machine changes. This can be done by putting the common bits in a file called `bashrc`, and the bits that vary from machine to machine in a second file, for example called `bashrc_local` as needed. Because Dotfiles Manager is able to infer the name of the dotfile being compiled from the names of [input files](#input-files), the contents of `bashrc` and `bashrc_local` will be compiled into to a single `.bashrc` file on each machine.
+What Dotfiles Manager allows you to do is compile a single `.bashrc`file from separate source files: one containing your global configurations, and another containing the local (possibly sensitive) bits. This can be done by putting the common bits in a file called `bashrc` (which would be part of your dotfiles repo), and the bits that vary from machine to machine in a second file, for example called `bashrc_local` (which would be git-ignored). Because Dotfiles Manager is able to infer the name of the dotfile being compiled from the names of [input files](#input-files), the contents of `bashrc` and `bashrc_local` will be compiled into to a single `.bashrc` file on each machine.
 
-When you push new bashrc changes to your dotfiles repo, you can keep everything up-to-date by doing a `git pull` to get your latest source files and then running `dfm.py ${INPUT_DIR}`.
+When you push new `bashrc` changes to your dotfiles repo, you can keep everything up-to-date by doing a `git pull` to get your latest source files and then running `dfm.py ${INPUT_DIR}` to compile a `.bashrc` from the contents of your `bashrc` and `bashrc_local`.
 
 ## Input Files
 ### Symlinks
