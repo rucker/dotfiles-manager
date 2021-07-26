@@ -242,7 +242,7 @@ class TestDotfilesManager(unittest.TestCase):
 
 
     @mock.patch('os.path.isdir', return_value=True)
-    @mock.patch('ioutils.ioutils.exists', return_value=True)
+    @mock.patch('ioutils.ioutils.lexists', return_value=True)
     @mock.patch('dfm._set_args')
     @mock.patch('ioutils.ioutils.os.readlink', return_value='vimrc')
     @mock.patch('dfm.ioutils._back_up_file')
@@ -250,7 +250,7 @@ class TestDotfilesManager(unittest.TestCase):
     @mock.patch('dfm.ioutils.isfile', return_value=True)
     @mock.patch('dfm.ioutils.os.symlink')
     @mock.patch('dfm._get_dotfiles_dict', return_value={'.fooconfig' : ['fooconfig']})
-    def test_existing_dotfile_replaced_with_symlink_when_single_input_file(self, get_dotfiles_dict, symlink, isfile, islink, back_up_file, readlink, set_args, exists, isdir):
+    def test_existing_dotfile_replaced_with_symlink_when_single_input_file(self, get_dotfiles_dict, symlink, isfile, islink, back_up_file, readlink, set_args, lexists, isdir):
         env.ARGS = env.parser.parse_args(['some_dir'])
 
         dfm.main()

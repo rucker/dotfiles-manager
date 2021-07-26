@@ -1,7 +1,7 @@
 import glob
 import io
 import os
-from os.path import join, isfile, islink, exists
+from os.path import join, isfile, islink, exists, lexists
 import shutil
 import sys
 import time
@@ -101,12 +101,12 @@ def revert_dotfile(dotfile):
 
 
 def create_symlink(target, source):
-    if exists(source):
+    if lexists(source):
         if isfile(source):
             _back_up_file(source)
         else:
             existing_target = os.readlink(source)
-            if not isfile(existing_target):
+            if not exists(existing_target):
                 sprint("\tExisting symlink {0} -> {1} is broken"\
                         .format(source, existing_target))
                 _remove_symlink(source)
