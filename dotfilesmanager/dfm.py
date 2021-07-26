@@ -74,15 +74,15 @@ def _set_env():
     if os.path.isdir(input_dir):
         env.INPUT_DIR = input_dir
     else:
-        eprint("Specified input directory {0} does not exist." \
-                .format(input_dir))
-        exit(1)
+        eprint("Specified input directory {0} does not exist."
+               .format(input_dir))
+        sys.exit(1)
     if env.ARGS.output_dir:
         env.OUTPUT_DIR = env.ARGS.output_dir[0]
     if env.INPUT_DIR == env.OUTPUT_DIR:
-        eprint("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}" \
-                .format(env.INPUT_DIR, env.OUTPUT_DIR))
-        exit(1)
+        eprint("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}"
+               .format(env.INPUT_DIR, env.OUTPUT_DIR))
+        sys.exit(1)
     env.BACKUPS_DIR = join(env.INPUT_DIR, 'backups')
 
     if env.ARGS.dry_run:
@@ -98,8 +98,8 @@ def _set_env():
 
 def _print_completion_message(processed_dotfiles):
     pretty_list = ', '.join(processed_dotfiles)
-    sprint("Processed the following dotfiles: {0}" \
-            .format(pretty_list))
+    sprint("Processed the following dotfiles: {0}"
+           .format(pretty_list))
 
 
 def _sort_input_file_list(input_files):
@@ -148,8 +148,8 @@ def _add_input_file_to_dict(dotfiles_dict, input_file):
 
 def _get_dotfiles_dict(input_dir):
     dotfiles = {}
-    all_input_files = [item for item in os.listdir(input_dir) \
-            if os.path.isfile(join(input_dir, item))]
+    all_input_files = [item for item in os.listdir(input_dir)
+                       if os.path.isfile(join(input_dir, item))]
     for input_file in all_input_files:
         _add_input_file_to_dict(dotfiles, input_file)
     for dotfile in dotfiles:
@@ -162,8 +162,8 @@ def _process_dotfile(dotfile, input_files):
     if env.ARGS.no_symlinks or len(input_files) > 1:
         ioutils.compile_dotfile(dotfile, input_files)
     else:
-        ioutils.create_symlink(join(env.INPUT_DIR, input_files[0]), \
-                join(env.OUTPUT_DIR, dotfile))
+        ioutils.create_symlink(join(env.INPUT_DIR, input_files[0]),
+                               join(env.OUTPUT_DIR, dotfile))
     sprint("Done with {0}\n".format(dotfile))
 
 
@@ -194,12 +194,12 @@ def main():
                 processed_dotfiles.append(dotfile)
             else:
                 eprint(
-                    "No input files found for {0}. Please double-check " \
-                     "the file name(s) and try again."
+                    "No input files found for {0}. Please double-check "
+                    "the file name(s) and try again."
                     .format(dotfile))
-                exit(1)
+                sys.exit(1)
     else:
-        all_dotfiles = [df for df in all_dotfiles_dict]
+        all_dotfiles = list(all_dotfiles_dict)
         if env.ARGS.revert:
             _revert_dotfiles(all_dotfiles)
         else:
