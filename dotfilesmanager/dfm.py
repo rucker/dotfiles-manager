@@ -7,6 +7,9 @@ import sys
 import os
 from os.path import join
 
+# Workaround - issue #55
+if os.path.islink(__file__):
+    sys.path[0] = os.path.dirname(os.readlink(__file__))
 from env import env
 from ioutils import ioutils
 from ioutils.ioutils import sprint, eprint
