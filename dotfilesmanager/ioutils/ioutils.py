@@ -102,18 +102,16 @@ def revert_dotfile(dotfile):
 
 def create_symlink(target, source):
     if lexists(source):
-        if exists(source):
-            _back_up(source)
-        else:
-            existing_target = normpath(os.readlink(source))
-            if not exists(existing_target):
-                sprint("\tExisting symlink {0} -> {1} is broken"\
-                        .format(source, existing_target))
-                _remove_symlink(source)
-            if target == existing_target:
-                sprint("\tSymlink {0} -> {1} already in place"\
-                        .format(source, target))
-                return
+        existing_target = normpath(os.readlink(source))
+        if not exists(existing_target):
+            sprint("\tExisting symlink {0} -> {1} is broken"\
+                    .format(source, existing_target))
+            _remove_symlink(source)
+        if target == existing_target:
+            sprint("\tSymlink {0} -> {1} already in place"\
+                    .format(source, target))
+            return
+    _back_up(source)
     sprint("\tSymlinking {0} -> {1}".format(source, target))
     if not env.ARGS.dry_run:
         os.symlink(target, source)

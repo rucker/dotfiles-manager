@@ -154,12 +154,13 @@ class TestIOUtils(unittest.TestCase):
 
 
     @mock.patch('os.symlink')
+    @mock.patch('shutil.move')
     @mock.patch('ioutils.ioutils._remove_symlink')
     @mock.patch('os.readlink', return_value='some_nonexistent_file')
-    @mock.patch('ioutils.ioutils.exists', return_value=False)
+    @mock.patch('ioutils.ioutils.exists', side_effect=[False, True])
     @mock.patch('ioutils.ioutils.isfile', return_value=False)
     @mock.patch('ioutils.ioutils.lexists', return_value=True)
-    def test_existing_broken_symlink_is_removed(self, lexists, isfile, exists, readlink, remove_symlink, symlink):
+    def test_existing_broken_symlink_is_removed(self, lexists, isfile, exists, readlink, remove_symlink, move, symlink):
         link_target = join(env.INPUT_DIR, 'vimrc')
         link_source = join(env.OUTPUT_DIR, '.vimrc')
 
@@ -172,7 +173,7 @@ class TestIOUtils(unittest.TestCase):
     @mock.patch('ioutils.ioutils.os.symlink')
     @mock.patch('ioutils.ioutils._remove_symlink')
     @mock.patch('ioutils.ioutils.os.readlink', return_value='vimrc')
-    @mock.patch('ioutils.ioutils.exists', side_effect=[False, True])
+    @mock.patch('ioutils.ioutils.exists', return_value=True)
     @mock.patch('ioutils.ioutils.isfile', return_value=False)
     @mock.patch('ioutils.ioutils.lexists', return_value=True)
     def test_dont_try_to_recreate_existing_valid_symlinked_file(self, lexists, isfile, exists, readlink, remove_symlink, symlink):
@@ -188,7 +189,7 @@ class TestIOUtils(unittest.TestCase):
     @mock.patch('ioutils.ioutils.os.symlink')
     @mock.patch('ioutils.ioutils._remove_symlink')
     @mock.patch('ioutils.ioutils.os.readlink', return_value='doom.d/')
-    @mock.patch('ioutils.ioutils.exists', side_effect=[False, True])
+    @mock.patch('ioutils.ioutils.exists', return_value=True)
     @mock.patch('ioutils.ioutils.isfile', return_value=False)
     @mock.patch('ioutils.ioutils.lexists', return_value=True)
     def test_dont_try_to_recreate_existing_valid_symlinked_dir(self, lexists, isfile, exists, readlink, remove_symlink, symlink):
@@ -202,9 +203,10 @@ class TestIOUtils(unittest.TestCase):
 
 
     @mock.patch('ioutils.ioutils.os.symlink')
+    @mock.patch('shutil.move')
     @mock.patch('ioutils.ioutils._remove_symlink')
-    @mock.patch('ioutils.ioutils.exists', return_value=False)
-    def test_create_symlink_when_no_existing_symlink_source(self, exists, remove_symlink, symlink):
+    @mock.patch('ioutils.ioutils.exists', return_value=True)
+    def test_create_symlink_when_no_existing_symlink_source(self, exists, remove_symlink, move, symlink):
         link_target = 'vimrc'
         link_source = join(env.OUTPUT_DIR, '.vimrc')
 
