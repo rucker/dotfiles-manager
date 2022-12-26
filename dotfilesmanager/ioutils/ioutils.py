@@ -1,7 +1,7 @@
 import glob
 import io
 import os
-from os.path import join, isfile, islink, exists, lexists
+from os.path import join, isfile, islink, exists, lexists, normpath
 import shutil
 import sys
 import time
@@ -25,7 +25,7 @@ def _create_file(file_name, contents):
             file.write(contents)
 
 
-def _back_up_file(file_name):
+def _back_up(file_name):
     timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
     bak_file = join(
         env.BACKUPS_DIR,
@@ -67,7 +67,7 @@ def _write_output_file(file_path, contents):
     if islink(file_path):
         _remove_symlink(file_path)
     if not env.ARGS.clobber and isfile(file_path):
-        _back_up_file(file_path)
+        _back_up(file_path)
     sprint("\tWriting input file contents to output file " + file_path)
     if not env.ARGS.dry_run:
         with open(file_path, 'w') as output_file:
@@ -102,10 +102,10 @@ def revert_dotfile(dotfile):
 
 def create_symlink(target, source):
     if lexists(source):
-        if isfile(source):
-            _back_up_file(source)
+        if exists(source):
+            _back_up(source)
         else:
-            existing_target = os.readlink(source)
+            existing_target = normpath(os.readlink(source))
             if not exists(existing_target):
                 sprint("\tExisting symlink {0} -> {1} is broken"\
                         .format(source, existing_target))

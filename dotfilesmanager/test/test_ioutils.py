@@ -54,14 +54,14 @@ class TestIOUtils(unittest.TestCase):
         sys.stdout = stdout
 
 
-    @mock.patch('ioutils.ioutils._back_up_file')
+    @mock.patch('ioutils.ioutils._back_up')
     @mock.patch('ioutils.ioutils.isfile', return_value=True)
     @mock.patch('builtins.open')
-    def test_existing_dotfile_file_backed_up_when_not_arg_c(self, m_open, isfile, _back_up_file):
+    def test_existing_dotfile_file_backed_up_when_not_arg_c(self, m_open, isfile, _back_up):
         with io.StringIO() as buf:
             ioutils._write_output_file(join(env.OUTPUT_DIR, '.bashrc'), buf)
 
-        _back_up_file.assert_called_once()
+        _back_up.assert_called_once()
 
 
     @mock.patch('dfm._get_dotfiles_dict', \
@@ -94,7 +94,7 @@ class TestIOUtils(unittest.TestCase):
     def test_file_not_backed_up_when_arg_dry_run(self, move, mkdir, path_exists):
         env.ARGS.dry_run = True
 
-        ioutils._back_up_file('foorc')
+        ioutils._back_up('foorc')
 
         mkdir.assert_not_called()
         move.assert_not_called()
@@ -136,10 +136,10 @@ class TestIOUtils(unittest.TestCase):
         sys.stdout = stdout
 
 
-    @mock.patch('ioutils.ioutils._back_up_file')
+    @mock.patch('ioutils.ioutils._back_up')
     @mock.patch('os.path.isfile', return_value=True)
     @mock.patch('os.symlink')
-    def test_symlink_not_created_when_arg_dry_run(self, symlink, isfile, back_up_file):
+    def test_symlink_not_created_when_arg_dry_run(self, symlink, isfile, back_up):
         stdout = sys.stdout
         out = io.StringIO()
         sys.stdout = out
@@ -172,12 +172,28 @@ class TestIOUtils(unittest.TestCase):
     @mock.patch('ioutils.ioutils.os.symlink')
     @mock.patch('ioutils.ioutils._remove_symlink')
     @mock.patch('ioutils.ioutils.os.readlink', return_value='vimrc')
-    @mock.patch('ioutils.ioutils.exists', return_value=True)
-    @mock.patch('ioutils.ioutils.isfile', side_effect=[False, True])
+    @mock.patch('ioutils.ioutils.exists', side_effect=[False, True])
+    @mock.patch('ioutils.ioutils.isfile', return_value=False)
     @mock.patch('ioutils.ioutils.lexists', return_value=True)
-    def test_dont_try_to_recreate_existing_valid_symlink(self, lexists, isfile, exists, readlink, remove_symlink, symlink):
+    def test_dont_try_to_recreate_existing_valid_symlinked_file(self, lexists, isfile, exists, readlink, remove_symlink, symlink):
         link_target = 'vimrc'
         link_source = join(env.OUTPUT_DIR, '.vimrc')
+
+        ioutils.create_symlink(link_target, link_source)
+
+        remove_symlink.assert_not_called()
+        symlink.assert_not_called()
+
+
+    @mock.patch('ioutils.ioutils.os.symlink')
+    @mock.patch('ioutils.ioutils._remove_symlink')
+    @mock.patch('ioutils.ioutils.os.readlink', return_value='doom.d/')
+    @mock.patch('ioutils.ioutils.exists', side_effect=[False, True])
+    @mock.patch('ioutils.ioutils.isfile', return_value=False)
+    @mock.patch('ioutils.ioutils.lexists', return_value=True)
+    def test_dont_try_to_recreate_existing_valid_symlinked_dir(self, lexists, isfile, exists, readlink, remove_symlink, symlink):
+        link_target = 'doom.d'
+        link_source = join(env.OUTPUT_DIR, '.doom.d')
 
         ioutils.create_symlink(link_target, link_source)
 
@@ -196,6 +212,17 @@ class TestIOUtils(unittest.TestCase):
 
         remove_symlink.assert_not_called()
         symlink.assert_called_once()
+
+
+    @mock.patch('ioutils.ioutils.os.path.exists', return_value=True)
+    @mock.patch('ioutils.ioutils.os.mkdir')
+    @mock.patch('ioutils.ioutils.shutil.move')
+    def test_back_up_creates_backup(self, move, mkdir, exists):
+        dotfile = '.vimrc'
+
+        ioutils._back_up(dotfile)
+
+        move.assert_called_once_with(dotfile, ANY)
 
 
 if __name__ == '__main__':

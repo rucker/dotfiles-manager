@@ -151,8 +151,7 @@ def _add_input_file_to_dict(dotfiles_dict, input_file):
 
 def _get_dotfiles_dict(input_dir):
     dotfiles = {}
-    all_input_files = [item for item in os.listdir(input_dir)
-                       if os.path.isfile(join(input_dir, item))]
+    all_input_files = [item for item in os.listdir(input_dir)]
     for input_file in all_input_files:
         _add_input_file_to_dict(dotfiles, input_file)
     for dotfile in dotfiles:
