@@ -11,7 +11,6 @@ sys.path.insert(0, TEST_DIR)
 
 from test.env import env
 import dfm
-from ioutils import ioutils
 
 
 class TestDotfilesManager(unittest.TestCase):
@@ -66,8 +65,8 @@ class TestDotfilesManager(unittest.TestCase):
 
         dfm.main()
 
-        ioutils.compile_dotfile.assert_called_once()
-        ioutils.compile_dotfile.assert_called_with(dotfile, input_files)
+        compile_dotfile.assert_called_once()
+        compile_dotfile.assert_called_with(dotfile, input_files)
 
 
     @mock.patch('dfm._set_args')
@@ -115,7 +114,7 @@ class TestDotfilesManager(unittest.TestCase):
             dfm._set_env()
 
         self.assertEqual(se.exception.code, 1)
-        self.assertTrue("Specified input directory {0} does not exist.".format(input_dir) in err.getvalue())
+        self.assertTrue(f"Specified input directory {input_dir} does not exist." in err.getvalue())
 
         sys.stderr = stderr
 
@@ -132,7 +131,7 @@ class TestDotfilesManager(unittest.TestCase):
 
         dfm.main()
 
-        ioutils.compile_dotfile.assert_has_calls(expected_calls)
+        compile_dotfile.assert_has_calls(expected_calls)
 
 
     @mock.patch('ioutils.ioutils.os.listdir', return_value=['99-gitconfig', '98-gitconfig_local', 'vimrc', '99-bashrc', 'bashrc_local'])
@@ -189,8 +188,7 @@ class TestDotfilesManager(unittest.TestCase):
         with self.assertRaises(SystemExit) as sys_exit:
             dfm._set_env()
         self.assertEqual(sys_exit.exception.code, 1)
-        self.assertTrue("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}" \
-                .format(user_home_dir, user_home_dir) in err.getvalue())
+        self.assertTrue(f"INPUT_DIR {user_home_dir} cannot be the same as OUTPUT_DIR {user_home_dir}")
 
         sys.stderr = stderr
 
@@ -287,8 +285,6 @@ class TestDotfilesManager(unittest.TestCase):
         env.ARGS = env.parser.parse_args(['some_dir'])
 
         dfm.main()
-
-        dotfile_dir = 'foo.d'
 
         create_symlink.assert_called_once_with(join(env.INPUT_DIR, 'foo.d'), \
                 join(env.OUTPUT_DIR, '.foo.d'))

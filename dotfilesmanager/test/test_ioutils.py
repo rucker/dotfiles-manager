@@ -36,7 +36,7 @@ class TestIOUtils(unittest.TestCase):
         sys.stdout = out
         env.ARGS = env.parser.parse_args(['some_dir', '-v'])
 
-        ioutils.sprint("Compiling dotfiles!")
+        ioutils.prints("Compiling dotfiles!")
 
         self.assertTrue("Compiling dotfiles!" in out.getvalue())
 
@@ -47,7 +47,7 @@ class TestIOUtils(unittest.TestCase):
         out = io.StringIO()
         sys.stdout = out
 
-        ioutils.sprint("Compiling dotfiles!")
+        ioutils.prints("Compiling dotfiles!")
 
         self.assertFalse("Compiling dotfiles!" in out.getvalue())
 

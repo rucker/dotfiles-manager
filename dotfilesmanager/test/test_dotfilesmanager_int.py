@@ -63,7 +63,7 @@ class TestDotfilesManagerInt(unittest.TestCase):
         with mock.patch('builtins.input', return_value='y'):
             dfm._revert_dotfiles([self.DOTFILE_NAME])
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME)) as bashrc:
+        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as bashrc:
             contents = bashrc.read()
             self.assertTrue("some_newer_value" in contents)
 
@@ -78,7 +78,7 @@ class TestDotfilesManagerInt(unittest.TestCase):
         with mock.patch('builtins.input', return_value='n'):
             dfm._revert_dotfiles([self.DOTFILE_NAME])
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME)) as bashrc:
+        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as bashrc:
             self.assertTrue("some_newer_value" not in bashrc.read())
 
         self.clean_up_backups()
