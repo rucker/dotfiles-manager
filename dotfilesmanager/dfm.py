@@ -90,10 +90,10 @@ def _set_env():
         env.ARGS.verbose = True
 
     prints("Environment:"
-    f"\tinput_dir: {env.INPUT_DIR}"
-    f"\tbackups_dir: {env.BACKUPS_DIR}"
-    f"\toutput_dir: {env.OUTPUT_DIR}"
-    f"\targs: {str(env.ARGS)}\n")
+    f"\n\tinput_dir: {env.INPUT_DIR}"
+    f"\n\tbackups_dir: {env.BACKUPS_DIR}"
+    f"\n\toutput_dir: {env.OUTPUT_DIR}"
+    f"\n\targs: {str(env.ARGS)}\n")
 
 
 def _print_completion_message(processed_dotfiles):
@@ -133,7 +133,8 @@ def _is_input_file_excluded(file_name):
     if not env.ARGS.exclude:
         return False
     all_excludes = list(itertools.chain.from_iterable(env.ARGS.exclude))
-    return file_name in all_excludes
+    normalized_excludes = [os.path.normpath(item) for item in all_excludes]
+    return file_name in normalized_excludes
 
 
 def _add_input_file_to_dict(dotfiles_dict, input_file):
@@ -180,7 +181,7 @@ def main():
     processed_dotfiles = []
     all_dotfiles_dict = _get_dotfiles_dict(env.INPUT_DIR)
     if env.ARGS.file:
-        dotfile = env.ARGS.file[0]
+        dotfile = os.path.normpath(env.ARGS.file[0])
         if not dotfile.startswith("."):
             dotfile = "." + dotfile
         if env.ARGS.revert:

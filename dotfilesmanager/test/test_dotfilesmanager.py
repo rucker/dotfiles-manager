@@ -1,5 +1,5 @@
 import io
-from os.path import join, realpath, dirname
+from os.path import join, realpath, dirname, normpath
 from pathlib import Path
 import sys
 import unittest
@@ -65,8 +65,21 @@ class TestDotfilesManager(unittest.TestCase):
 
         dfm.main()
 
-        compile_dotfile.assert_called_once()
-        compile_dotfile.assert_called_with(dotfile, input_files)
+        compile_dotfile.assert_called_once_with(dotfile, input_files)
+
+
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils.create_symlink')
+    @mock.patch('os.path.isdir', return_value=True)
+    @mock.patch('dfm._get_dotfiles_dict', return_value={'.foo.d' : ['foo.d']})
+    def test_only_specified_dotfile_dir_handled_and_path_normalized_when_arg_f(self, _get_dotfiles_dict, isdir, create_symlink, _set_args):
+        dotfile = '.foo.d/'
+        env.ARGS = env.parser.parse_args(['some_dir', '-f', dotfile])
+
+        dfm.main()
+
+        create_symlink.assert_called_once_with(join(env.INPUT_DIR, 'foo.d'), \
+                normpath(join(env.OUTPUT_DIR, dotfile)))
 
 
     @mock.patch('dfm._set_args')
@@ -97,6 +110,19 @@ class TestDotfilesManager(unittest.TestCase):
         dfm.main()
 
         ioutils.revert_dotfile.assert_called_with('.bashrc')
+        ioutils.compile_dotfile.assert_not_called()
+
+
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.ioutils')
+    @mock.patch('dfm._get_dotfiles_dict', return_value={})
+    @mock.patch('os.path.isdir', return_value=True)
+    def test_only_specified_dir_reverted_when_args_rf(self, isdir, _get_dotfiles_dict, ioutils, _set_args):
+        env.ARGS = env.parser.parse_args(['some_dir', '-r', '-f', '.foo.d/'])
+
+        dfm.main()
+
+        ioutils.revert_dotfile.assert_called_with('.foo.d')
         ioutils.compile_dotfile.assert_not_called()
 
 
@@ -289,6 +315,13 @@ class TestDotfilesManager(unittest.TestCase):
         create_symlink.assert_called_once_with(join(env.INPUT_DIR, 'foo.d'), \
                 join(env.OUTPUT_DIR, '.foo.d'))
 
+
+    def test_excluded_dir_name_args_are_normalized(self):
+        env.ARGS = env.parser.parse_args(['some_dir', '-e', 'foo.d/'])
+
+        is_excluded = dfm._is_input_file_excluded('foo.d')
+
+        self.assertTrue(is_excluded)
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)

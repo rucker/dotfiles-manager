@@ -75,17 +75,11 @@ class TestIOUtils(unittest.TestCase):
 
     @mock.patch('builtins.open')
     def test_file_not_created_when_arg_dry_run(self, m_open):
-        stdout = sys.stdout
-        out = io.StringIO()
-        sys.stdout = out
         env.ARGS.dry_run = True
-        env.ARGS.verbose = True
 
         ioutils._create_file('foorc', 'some_token=some_value')
 
         m_open.assert_not_called()
-
-        sys.stdout = stdout
 
 
     @mock.patch('ioutils.ioutils.os.path.exists', return_value=False)
@@ -104,53 +98,66 @@ class TestIOUtils(unittest.TestCase):
     @mock.patch('ioutils.ioutils.os.remove')
     @mock.patch('ioutils.ioutils.shutil.copy')
     def test_file_not_reverted_when_arg_dry_run(self, copy, remove, glob):
-        stdout = sys.stdout
-        out = io.StringIO()
-        sys.stdout = out
-
         env.ARGS.dry_run = True
-        env.ARGS.verbose = True
 
         with mock.patch('builtins.input', return_value='y'):
             ioutils.revert_dotfile('foorc')
 
         copy.assert_not_called()
         remove.assert_not_called()
-        self.assertTrue("foorc and replacing" in out.getvalue())
 
-        sys.stdout = stdout
+
+    @mock.patch('ioutils.ioutils.glob.glob', return_value=['backup_file'])
+    @mock.patch('ioutils.ioutils.os.remove')
+    @mock.patch('ioutils.ioutils.shutil.copy')
+    @mock.patch('ioutils.ioutils.shutil.rmtree')
+    @mock.patch('ioutils.ioutils.shutil.copytree')
+    @mock.patch('ioutils.ioutils.isfile', return_value=True)
+    def test_file_reverted_when_arg_r_and_choice_y(self, isfile, copytree, rmtree, copy, remove, glob):
+        with mock.patch('builtins.input', return_value='y'):
+            ioutils.revert_dotfile('foorc')
+
+        copy.assert_called_once()
+        remove.assert_called_once()
+        copytree.assert_not_called()
+        rmtree.assert_not_called()
+
+
+    @mock.patch('ioutils.ioutils.glob.glob', return_value=['backup_file'])
+    @mock.patch('ioutils.ioutils.os.remove')
+    @mock.patch('ioutils.ioutils.shutil.copy')
+    @mock.patch('ioutils.ioutils.shutil.rmtree')
+    @mock.patch('ioutils.ioutils.shutil.copytree')
+    @mock.patch('ioutils.ioutils.isfile', return_value=False)
+    @mock.patch('ioutils.ioutils.isdir', return_value=True)
+    def test_dir_reverted_when_arg_r_and_choice_y(self, isdir, isfile, copytree, rmtree, copy, remove, glob):
+        with mock.patch('builtins.input', return_value='y'):
+            ioutils.revert_dotfile('foo.d/')
+
+        copy.assert_not_called()
+        remove.assert_not_called()
+        copytree.assert_called_once()
+        rmtree.assert_called_once()
 
 
     @mock.patch('builtins.open')
     def test_output_file_not_written_when_arg_dry_run(self, m_open):
-        stdout = sys.stdout
-        out = io.StringIO()
-        sys.stdout = out
         env.ARGS.dry_run = True
-        env.ARGS.verbose = True
 
         ioutils._write_output_file('foorc', io.StringIO())
 
         m_open.assert_not_called()
-
-        sys.stdout = stdout
 
 
     @mock.patch('ioutils.ioutils._back_up')
     @mock.patch('os.path.isfile', return_value=True)
     @mock.patch('os.symlink')
     def test_symlink_not_created_when_arg_dry_run(self, symlink, isfile, back_up):
-        stdout = sys.stdout
-        out = io.StringIO()
-        sys.stdout = out
         env.ARGS.dry_run = True
-        env.ARGS.verbose = True
 
         ioutils.create_symlink('99-foorc', 'foorc')
 
         symlink.assert_not_called()
-
-        sys.stdout = stdout
 
 
     @mock.patch('os.symlink')

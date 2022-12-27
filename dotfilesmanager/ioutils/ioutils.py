@@ -1,7 +1,7 @@
 import glob
 import io
 import os
-from os.path import join, isfile, islink, exists, lexists, normpath
+from os.path import join, isfile, islink, isdir, exists, lexists, normpath
 import shutil
 import sys
 import time
@@ -86,14 +86,19 @@ def revert_dotfile(dotfile):
         choice = ''
         while choice not in (['Y', 'N']):
             choice = input(
-                f"Revert {dotfile} to backup located at {bak_file}? (Y/N): ").upper()
+                f"Revert {join(env.OUTPUT_DIR, dotfile)}"
+                f"to backup located at {bak_file}? (Y/N): ").upper()
             if choice == 'Y':
                 existing_dotfile = join(env.OUTPUT_DIR, dotfile)
-                prints(f"Removing dotfile {existing_dotfile}"
-                        f" and replacing with backup named {bak_file}")
                 if not env.ARGS.dry_run:
-                    os.remove(existing_dotfile)
-                    shutil.copy(bak_file, join(env.OUTPUT_DIR, dotfile))
+                    if isfile(existing_dotfile):
+                        os.remove(existing_dotfile)
+                        shutil.copy(bak_file, join(env.OUTPUT_DIR, dotfile))
+                    elif isdir(existing_dotfile):
+                        shutil.rmtree(existing_dotfile)
+                        shutil.copytree(bak_file, join(env.OUTPUT_DIR, dotfile))
+                print("Reverted.")
+            else: print("Revert canceled.")
     else:
         printe(f"No backup files found matching {dotfile}")
 
