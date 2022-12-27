@@ -89,12 +89,11 @@ def _set_env():
     if env.ARGS.dry_run:
         env.ARGS.verbose = True
 
-    prints("Environment:")
-    prints("\tinput_dir: " + env.INPUT_DIR)
-    prints("\tbackups_dir: " + env.BACKUPS_DIR)
-    prints("\toutput_dir: " + env.OUTPUT_DIR)
-    prints("\targs: " + str(env.ARGS))
-    prints("")
+    prints("Environment:"
+    f"\tinput_dir: {env.INPUT_DIR}"
+    f"\tbackups_dir: {env.BACKUPS_DIR}"
+    f"\toutput_dir: {env.OUTPUT_DIR}"
+    f"\targs: {str(env.ARGS)}\n")
 
 
 def _print_completion_message(processed_dotfiles):

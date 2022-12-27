@@ -89,8 +89,8 @@ def revert_dotfile(dotfile):
                 f"Revert {dotfile} to backup located at {bak_file}? (Y/N): ").upper()
             if choice == 'Y':
                 existing_dotfile = join(env.OUTPUT_DIR, dotfile)
-                prints((f"Removing dotfile {existing_dotfile}"
-                        f" and replacing with backup named {bak_file}"))
+                prints(f"Removing dotfile {existing_dotfile}"
+                        f" and replacing with backup named {bak_file}")
                 if not env.ARGS.dry_run:
                     os.remove(existing_dotfile)
                     shutil.copy(bak_file, join(env.OUTPUT_DIR, dotfile))
