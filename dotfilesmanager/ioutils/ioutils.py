@@ -107,7 +107,7 @@ def create_symlink(target, source):
         if target == existing_target:
             prints(f"\tSymlink {source} -> {target} already in place")
             return
-    _back_up(source)
+        _back_up(source)
     prints(f"\tSymlinking {source} -> {target}")
     if not env.ARGS.dry_run:
         os.symlink(target, source)
