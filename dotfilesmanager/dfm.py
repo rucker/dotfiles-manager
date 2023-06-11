@@ -148,8 +148,8 @@ def _add_input_file_to_dict(dotfiles_dict, input_file):
 
 def _get_dotfiles_dict(input_dir):
     dotfiles = {}
-    all_input_files = os.listdir(input_dir)
-    for input_file in all_input_files:
+
+    for input_file in os.listdir(input_dir):
         _add_input_file_to_dict(dotfiles, input_file)
     for dotfile in dotfiles:
         dotfiles[dotfile] = _sort_input_file_list(dotfiles[dotfile])
@@ -182,20 +182,23 @@ def main():
     all_dotfiles_dict = _get_dotfiles_dict(env.INPUT_DIR)
     if env.ARGS.file:
         dotfile = os.path.normpath(env.ARGS.file[0])
-        if not dotfile.startswith("."):
-            dotfile = "." + dotfile
-        if env.ARGS.revert:
-            ioutils.revert_dotfile(dotfile)
-            processed_dotfiles.append(dotfile)
+        if _is_input_file_excluded(env.ARGS.file[0]):
+            prints(f"Warning: Received -f/--file {dotfile} but it was excluded.")
         else:
-            if dotfile in all_dotfiles_dict:
-                _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
+            if not dotfile.startswith("."):
+                dotfile = "." + dotfile
+            if env.ARGS.revert:
+                ioutils.revert_dotfile(dotfile)
                 processed_dotfiles.append(dotfile)
             else:
-                printe(
-                    f"No input files found for {dotfile}. Please double-check "
-                    "the file name(s) and try again.")
-                sys.exit(1)
+                if dotfile in all_dotfiles_dict:
+                    _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
+                    processed_dotfiles.append(dotfile)
+                else:
+                    printe(
+                        f"No input files found for {dotfile}. Please double-check "
+                        "the file name(s) and try again.")
+                    sys.exit(1)
     else:
         all_dotfiles = list(all_dotfiles_dict)
         if env.ARGS.revert:

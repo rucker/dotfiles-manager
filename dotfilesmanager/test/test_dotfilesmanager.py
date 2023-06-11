@@ -178,7 +178,7 @@ class TestDotfilesManager(unittest.TestCase):
     @mock.patch('dfm.ioutils.os.path.isdir', return_value=True)
     @mock.patch('dfm.ioutils.os.path.isfile', return_value=True)
     @mock.patch('ioutils.ioutils._write_input_file_contents')
-    def test_when_arg_e_then_specified_files_are_excluded(self, _write_input_file_contents, isfile, isdir, listdir, _set_args):
+    def test_when_arg_e_then_specified_files_are_not_mapped_for_processing(self, _write_input_file_contents, isfile, isdir, listdir, _set_args):
         env.ARGS = env.parser.parse_args([
             'some_dir',
             '-e', 'gitconfig_local',
@@ -189,6 +189,25 @@ class TestDotfilesManager(unittest.TestCase):
 
         self.assertTrue('gitconfig_local' not in actual_dict['.gitconfig'])
         self.assertTrue('bashrc_local' not in actual_dict['.bashrc'])
+
+
+    @mock.patch('dfm._set_args')
+    @mock.patch('dfm.os.listdir', \
+        return_value=['bashrc', 'bashrc_local'])
+    @mock.patch('dfm.ioutils.os.path.isdir', return_value=True)
+    @mock.patch('dfm.ioutils.os.path.isfile', return_value=True)
+    @mock.patch('dfm._process_dotfile')
+    @mock.patch('ioutils.ioutils._write_input_file_contents')
+    def test_when_arg_e_and_arg_f_then_specified_file_is_not_processed(self, _write_input_file_contents, _process_dotfile, isfile, isdir, listdir, _set_args):
+        env.ARGS = env.parser.parse_args([
+            'some_dir',
+            '-e', 'bashrc',
+            '-f', 'bashrc'
+        ])
+
+        dfm.main()
+
+        self.assertEqual(_process_dotfile.call_count, 0)
 
 
     @mock.patch('os.path.isfile', return_value=True)
