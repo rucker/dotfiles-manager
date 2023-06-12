@@ -61,9 +61,9 @@ class TestIOUtilsInt(unittest.TestCase):
             buf.write(str("some_bash_token=some_newer_value"))
             ioutils._write_output_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME), buf)
         backup_files = os.listdir(env.BACKUPS_DIR)
-        self.assertTrue(len(backup_files) is 1)
+        self.assertTrue(len(backup_files) == 1)
 
-        with open(join(env.BACKUPS_DIR, backup_files[0])) as bak_file:
+        with open(join(env.BACKUPS_DIR, backup_files[0]), encoding='utf-8') as bak_file:
             self.assertTrue("some_value" in bak_file.read())
 
         self.clean_up_backups()
@@ -79,7 +79,7 @@ class TestIOUtilsInt(unittest.TestCase):
 
         dfm._process_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME)) as fooconfig:
+        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as fooconfig:
             file_contents = fooconfig.readlines()
             self.assertEqual(file_contents[0], line_1)
 
@@ -95,9 +95,9 @@ class TestIOUtilsInt(unittest.TestCase):
 
         dfm._process_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME)) as output_file:
-            with open(join(env.INPUT_DIR, self.FIRST_INPUT_FILE)) as input_file:
-                with open(join(env.INPUT_DIR, self.SECOND_INPUT_FILE)) as \
+        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as output_file:
+            with open(join(env.INPUT_DIR, self.FIRST_INPUT_FILE), encoding='utf-8') as input_file:
+                with open(join(env.INPUT_DIR, self.SECOND_INPUT_FILE), encoding='utf-8') as \
                 local_input_file:
                     contents = output_file.read()
                     self.assertTrue(input_file.read() in contents)
@@ -107,9 +107,10 @@ class TestIOUtilsInt(unittest.TestCase):
     def test_backing_up_file_removes_original(self):
         ioutils._create_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME), "some_token=some_value")
 
-        ioutils._back_up_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME))
+        ioutils._back_up(join(env.OUTPUT_DIR, self.DOTFILE_NAME))
 
         self.assertFalse(os.path.isfile(join(env.OUTPUT_DIR, self.DOTFILE_NAME)))
+
 
 if __name__ == '__main__':
     unittest.main(module=__name__, buffer=True, exit=False)

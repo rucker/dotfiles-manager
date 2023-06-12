@@ -1,7 +1,7 @@
 import glob
 import io
 import os
-from os.path import join, isfile, islink, exists, lexists
+from os.path import join, isfile, islink, isdir, exists, lexists, normpath
 import shutil
 import sys
 import time
@@ -9,23 +9,23 @@ import time
 from env import env
 
 
-def sprint(message):
+def prints(message):
     if env.ARGS.verbose:
         print(message)
 
 
-def eprint(*args, **kwargs):
+def printe(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
 def _create_file(file_name, contents):
-    sprint("Writing to file: {0}".format(file_name))
+    prints(f"Writing to file: {file_name}")
     if not env.ARGS.dry_run:
-        with open(file_name, 'w') as file:
+        with open(file_name, 'w', encoding='utf-8') as file:
             file.write(contents)
 
 
-def _back_up_file(file_name):
+def _back_up(file_name):
     timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
     bak_file = join(
         env.BACKUPS_DIR,
@@ -33,10 +33,10 @@ def _back_up_file(file_name):
         .replace('.', '') + '_' +
         timestamp + '.bak')
     if not exists(env.BACKUPS_DIR):
-        sprint("Creating backups dir {0}".format(env.BACKUPS_DIR))
+        prints(f"Creating backups dir {env.BACKUPS_DIR}")
         if not env.ARGS.dry_run:
             os.mkdir(env.BACKUPS_DIR)
-    sprint("\tBacking up {0} to {1}".format(file_name, bak_file))
+    prints(f"\tBacking up {file_name} to {bak_file}")
     if not env.ARGS.dry_run:
         shutil.move(file_name, bak_file)
 
@@ -51,26 +51,25 @@ def compile_dotfile(file_name, input_files):
 def _write_input_file_contents(file_name, out_buffer):
     file_name_with_path = join(env.INPUT_DIR, file_name)
     if not isfile(file_name_with_path):
-        sprint("{0} is not present. Skipping...".format(file_name_with_path))
+        prints(f"{file_name_with_path} is not present. Skipping...")
         return
-    with open(file_name_with_path) as input_file:
-        sprint("\tReading input file " + file_name)
+    with open(file_name_with_path, encoding='utf-8') as input_file:
+        prints("\tReading input file " + file_name)
         try:
             for line in input_file:
                 _write_to_output_buffer(line, out_buffer)
         except UnicodeDecodeError:
-            sprint("Input file {0} is not a valid UTF-8 file. Skipping..." \
-                .format(input_file))
+            prints(f"Input file {input_file} is not a valid UTF-8 file. Skipping...")
 
 
 def _write_output_file(file_path, contents):
     if islink(file_path):
         _remove_symlink(file_path)
     if not env.ARGS.clobber and isfile(file_path):
-        _back_up_file(file_path)
-    sprint("\tWriting input file contents to output file " + file_path)
+        _back_up(file_path)
+    prints("\tWriting input file contents to output file " + file_path)
     if not env.ARGS.dry_run:
-        with open(file_path, 'w') as output_file:
+        with open(file_path, 'w', encoding='utf-8') as output_file:
             output_file.write(contents.getvalue())
 
 
@@ -79,7 +78,7 @@ def _write_to_output_buffer(output, file_buffer):
 
 
 def revert_dotfile(dotfile):
-    name = '*{0}*'.format(dotfile).replace('.', '')
+    name = f'*{dotfile}*'.replace('.', '')
     search_pattern = join(env.BACKUPS_DIR, name)
     results = sorted(glob.glob(search_pattern), reverse=True)
     if results:
@@ -87,39 +86,39 @@ def revert_dotfile(dotfile):
         choice = ''
         while choice not in (['Y', 'N']):
             choice = input(
-                "Revert {0} to backup located at {1}? (Y/N): " \
-                        .format(dotfile, bak_file)).upper()
+                f"Revert {join(env.OUTPUT_DIR, dotfile)}"
+                f"to backup located at {bak_file}? (Y/N): ").upper()
             if choice == 'Y':
                 existing_dotfile = join(env.OUTPUT_DIR, dotfile)
-                sprint("Removing dotfile {0} and replacing with backup named {1}" \
-                        .format(existing_dotfile, bak_file))
                 if not env.ARGS.dry_run:
-                    os.remove(existing_dotfile)
-                    shutil.copy(bak_file, join(env.OUTPUT_DIR, dotfile))
+                    if isfile(existing_dotfile):
+                        os.remove(existing_dotfile)
+                        shutil.copy(bak_file, join(env.OUTPUT_DIR, dotfile))
+                    elif isdir(existing_dotfile):
+                        shutil.rmtree(existing_dotfile)
+                        shutil.copytree(bak_file, join(env.OUTPUT_DIR, dotfile))
+                print("Reverted.")
+            else: print("Revert canceled.")
     else:
-        eprint("No backup files found matching {0}".format(dotfile))
+        printe(f"No backup files found matching {dotfile}")
 
 
 def create_symlink(target, source):
     if lexists(source):
-        if isfile(source):
-            _back_up_file(source)
-        else:
-            existing_target = os.readlink(source)
-            if not exists(existing_target):
-                sprint("\tExisting symlink {0} -> {1} is broken"\
-                        .format(source, existing_target))
-                _remove_symlink(source)
-            if target == existing_target:
-                sprint("\tSymlink {0} -> {1} already in place"\
-                        .format(source, target))
-                return
-    sprint("\tSymlinking {0} -> {1}".format(source, target))
+        existing_target = normpath(os.readlink(source))
+        if not exists(existing_target):
+            prints(f"\tExisting symlink {source} -> {existing_target} is broken")
+            _remove_symlink(source)
+        if target == existing_target:
+            prints(f"\tSymlink {source} -> {target} already in place")
+            return
+        _back_up(source)
+    prints(f"\tSymlinking {source} -> {target}")
     if not env.ARGS.dry_run:
         os.symlink(target, source)
 
 
 def _remove_symlink(link):
-    sprint("\tRemoving symlink " + link)
+    prints("\tRemoving symlink " + link)
     if not env.ARGS.dry_run:
         os.unlink(link)
