@@ -12,7 +12,7 @@ if os.path.islink(__file__):
     sys.path[0] = os.path.dirname(os.readlink(__file__))
 from env import env
 from ioutils import ioutils
-from ioutils.ioutils import sprint, eprint
+from ioutils.ioutils import prints, printe
 
 
 def _init():
@@ -69,7 +69,7 @@ def _set_args():
         action='store_true',
         help="Don't symlink output dotfiles (compile a new file instead)")
     env.ARGS = env.parser.parse_args()
-    sprint("\nPreparing dotfiles with args: " + " ".join(sys.argv[1:]) + "\n")
+    prints("\nPreparing dotfiles with args: " + " ".join(sys.argv[1:]) + "\n")
 
 
 def _set_env():
@@ -77,32 +77,28 @@ def _set_env():
     if os.path.isdir(input_dir):
         env.INPUT_DIR = input_dir
     else:
-        eprint("Specified input directory {0} does not exist."
-               .format(input_dir))
+        printe(f"Specified input directory {input_dir} does not exist.")
         sys.exit(1)
     if env.ARGS.output_dir:
         env.OUTPUT_DIR = env.ARGS.output_dir[0]
     if env.INPUT_DIR == env.OUTPUT_DIR:
-        eprint("INPUT_DIR {0} cannot be the same as OUTPUT_DIR {1}"
-               .format(env.INPUT_DIR, env.OUTPUT_DIR))
+        printe(f"INPUT_DIR {env.INPUT_DIR} cannot be the same as OUTPUT_DIR {env.OUTPUT_DIR}")
         sys.exit(1)
     env.BACKUPS_DIR = join(env.INPUT_DIR, 'backups')
 
     if env.ARGS.dry_run:
         env.ARGS.verbose = True
 
-    sprint("Environment:")
-    sprint("\tinput_dir: " + env.INPUT_DIR)
-    sprint("\tbackups_dir: " + env.BACKUPS_DIR)
-    sprint("\toutput_dir: " + env.OUTPUT_DIR)
-    sprint("\targs: " + str(env.ARGS))
-    sprint("")
+    prints("Environment:"
+    f"\n\tinput_dir: {env.INPUT_DIR}"
+    f"\n\tbackups_dir: {env.BACKUPS_DIR}"
+    f"\n\toutput_dir: {env.OUTPUT_DIR}"
+    f"\n\targs: {str(env.ARGS)}\n")
 
 
 def _print_completion_message(processed_dotfiles):
     pretty_list = ', '.join(processed_dotfiles)
-    sprint("Processed the following dotfiles: {0}"
-           .format(pretty_list))
+    prints(f"Processed the following dotfiles: {pretty_list}")
 
 
 def _sort_input_file_list(input_files):
@@ -137,7 +133,8 @@ def _is_input_file_excluded(file_name):
     if not env.ARGS.exclude:
         return False
     all_excludes = list(itertools.chain.from_iterable(env.ARGS.exclude))
-    return file_name in all_excludes
+    normalized_excludes = [os.path.normpath(item) for item in all_excludes]
+    return file_name in normalized_excludes
 
 
 def _add_input_file_to_dict(dotfiles_dict, input_file):
@@ -151,9 +148,8 @@ def _add_input_file_to_dict(dotfiles_dict, input_file):
 
 def _get_dotfiles_dict(input_dir):
     dotfiles = {}
-    all_input_files = [item for item in os.listdir(input_dir)
-                       if os.path.isfile(join(input_dir, item))]
-    for input_file in all_input_files:
+
+    for input_file in os.listdir(input_dir):
         _add_input_file_to_dict(dotfiles, input_file)
     for dotfile in dotfiles:
         dotfiles[dotfile] = _sort_input_file_list(dotfiles[dotfile])
@@ -161,13 +157,13 @@ def _get_dotfiles_dict(input_dir):
 
 
 def _process_dotfile(dotfile, input_files):
-    sprint("Processing file: " + dotfile)
+    prints("Processing file: " + dotfile)
     if env.ARGS.no_symlinks or len(input_files) > 1:
         ioutils.compile_dotfile(dotfile, input_files)
     else:
         ioutils.create_symlink(join(env.INPUT_DIR, input_files[0]),
                                join(env.OUTPUT_DIR, dotfile))
-    sprint("Done with {0}\n".format(dotfile))
+    prints(f"Done with {dotfile}\n")
 
 
 def _process_dotfiles(all_dotfiles_dict):
@@ -185,22 +181,24 @@ def main():
     processed_dotfiles = []
     all_dotfiles_dict = _get_dotfiles_dict(env.INPUT_DIR)
     if env.ARGS.file:
-        dotfile = env.ARGS.file[0]
-        if not dotfile.startswith("."):
-            dotfile = "." + dotfile
-        if env.ARGS.revert:
-            ioutils.revert_dotfile(dotfile)
-            processed_dotfiles.append(dotfile)
+        dotfile = os.path.normpath(env.ARGS.file[0])
+        if _is_input_file_excluded(env.ARGS.file[0]):
+            prints(f"Warning: Received -f/--file {dotfile} but it was excluded.")
         else:
-            if dotfile in all_dotfiles_dict:
-                _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
+            if not dotfile.startswith("."):
+                dotfile = "." + dotfile
+            if env.ARGS.revert:
+                ioutils.revert_dotfile(dotfile)
                 processed_dotfiles.append(dotfile)
             else:
-                eprint(
-                    "No input files found for {0}. Please double-check "
-                    "the file name(s) and try again."
-                    .format(dotfile))
-                sys.exit(1)
+                if dotfile in all_dotfiles_dict:
+                    _process_dotfile(dotfile, all_dotfiles_dict[dotfile])
+                    processed_dotfiles.append(dotfile)
+                else:
+                    printe(
+                        f"No input files found for {dotfile}. Please double-check "
+                        "the file name(s) and try again.")
+                    sys.exit(1)
     else:
         all_dotfiles = list(all_dotfiles_dict)
         if env.ARGS.revert:
