@@ -38,7 +38,7 @@ def _back_up(file_path):
             os.mkdir(env.BACKUPS_DIR)
     prints(f"\tBacking up {file_path} to {bak_file}")
     if not env.ARGS.dry_run:
-        shutil.move(file_path, bak_file)
+        shutil.move(os.readlink(file_path) if islink(file_path) else file_path, bak_file)
 
 
 def compile_dotfile(file_name, input_files):

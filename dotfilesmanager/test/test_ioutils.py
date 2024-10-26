@@ -94,6 +94,19 @@ class TestIOUtils(unittest.TestCase):
         move.assert_not_called()
 
 
+    @mock.patch('ioutils.ioutils.islink', return_value=True)
+    @mock.patch('ioutils.ioutils.os.readlink', return_value='/path/to/foorc')
+    @mock.patch('ioutils.ioutils.os.path.exists', return_value=True)
+    @mock.patch('ioutils.ioutils.os.mkdir')
+    @mock.patch('ioutils.ioutils.shutil.move')
+    def test_file_backed_up_when_path_is_symlink(self, move, mkdir, path_exists, readlink, islink):
+        ioutils._back_up('/link/to/foorc')
+
+        islink.assert_called_with('/link/to/foorc')
+        readlink.assert_called_with('/link/to/foorc')
+        move.assert_called_with('/path/to/foorc', ANY)
+
+
     @mock.patch('ioutils.ioutils.glob.glob', return_value=['backup_file'])
     @mock.patch('ioutils.ioutils.os.remove')
     @mock.patch('ioutils.ioutils.shutil.copy')
