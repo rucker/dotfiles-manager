@@ -1,7 +1,7 @@
 import glob
 import io
 import os
-from os.path import join, isfile, islink, isdir, exists, lexists, normpath
+from os.path import join, isfile, islink, isdir, exists, lexists, normpath, basename
 import shutil
 import sys
 import time
@@ -25,20 +25,20 @@ def _create_file(file_name, contents):
             file.write(contents)
 
 
-def _back_up(file_name):
+def _back_up(file_path):
     timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
+    filename = basename(file_path)
     bak_file = join(
         env.BACKUPS_DIR,
-        file_name[file_name.rfind(os.sep) + 1:]
-        .replace('.', '') + '_' +
-        timestamp + '.bak')
+        filename.replace('.', '', 1) if filename.startswith('.') else filename
+        + '_' + timestamp + '.bak')
     if not exists(env.BACKUPS_DIR):
         prints(f"Creating backups dir {env.BACKUPS_DIR}")
         if not env.ARGS.dry_run:
             os.mkdir(env.BACKUPS_DIR)
-    prints(f"\tBacking up {file_name} to {bak_file}")
+    prints(f"\tBacking up {file_path} to {bak_file}")
     if not env.ARGS.dry_run:
-        shutil.move(file_name, bak_file)
+        shutil.move(file_path, bak_file)
 
 
 def compile_dotfile(file_name, input_files):
