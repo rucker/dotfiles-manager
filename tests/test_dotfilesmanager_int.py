@@ -1,88 +1,92 @@
+"""Integration tests for dotfilesmanager.dfm module."""
+
 import os
-from os.path import join, realpath, dirname
 from pathlib import Path
-import shutil
-import sys
-import unittest
 from unittest import mock
 
-TEST_DIR = str(Path(dirname(realpath(__file__))).parent)
-sys.path.insert(0, TEST_DIR)
+import pytest
 
-from test.env import env
-import dfm
-from ioutils import ioutils
+from dotfilesmanager import dfm
+from dotfilesmanager.ioutils import ioutils
 
 
-class TestDotfilesManagerInt(unittest.TestCase):
+class TestDotfilesManagerInt:
+    """Integration tests for dotfiles manager."""
 
-    FIRST_INPUT_FILE = '99-fooconfig'
-    SECOND_INPUT_FILE = '98-fooconfig_local'
+    FIRST_INPUT_FILE = "99-fooconfig"
+    SECOND_INPUT_FILE = "98-fooconfig_local"
+    DOTFILE_NAME = ".fooconfig"
+    BACKUP_FILE_NAME = "fooconfig"
 
-    DOTFILE_NAME = '.fooconfig'
-    BACKUP_FILE_NAME = DOTFILE_NAME[DOTFILE_NAME.rfind(os.sep) + 1 :].replace('.', '')
-
-
-    @classmethod
-    def setUpClass(cls):
-        dfm.env = env
-        dfm.ioutils.env = env
-        env.set_up()
-        dfm._set_args()
-
-
-    def setUp(self):
-        env.set_up()
-        dfm._set_args()
+    @pytest.fixture(autouse=True)
+    def setup(self, test_config):
+        """Set up test environment for each test."""
+        self.config = test_config
         self.create_input_files()
 
-
-    def tearDown(self):
-        env.tear_down()
-
-
     def create_dotfile(self):
-        ioutils._create_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME), "some_bash_token=some_value")
-
+        """Create a test dotfile in output directory."""
+        dotfile_path = self.config.output_dir / self.DOTFILE_NAME
+        dotfile_path.write_text("some_bash_token=some_value", encoding="utf-8")
 
     def clean_up_backups(self):
-        shutil.rmtree(env.BACKUPS_DIR)
-        os.mkdir(env.BACKUPS_DIR)
+        """Clean up backup directory."""
+        if self.config.backups_dir.exists():
+            import shutil
 
+            shutil.rmtree(self.config.backups_dir)
+        self.config.backups_dir.mkdir(parents=True, exist_ok=True)
 
     def create_input_files(self):
-        ioutils._create_file(join(env.INPUT_DIR, self.FIRST_INPUT_FILE), 'some_config_token=some_config_value')
-        ioutils._create_file(join(env.INPUT_DIR, self.SECOND_INPUT_FILE), 'some_config_local_token=some_local_value')
+        """Create test input files."""
+        first_file = self.config.input_dir / self.FIRST_INPUT_FILE
+        second_file = self.config.input_dir / self.SECOND_INPUT_FILE
 
+        first_file.write_text("some_config_token=some_config_value", encoding="utf-8")
+        second_file.write_text("some_config_local_token=some_local_value", encoding="utf-8")
 
     def test_dotfiles_reverted_when_arg_r_and_choice_y(self):
+        """Test that dotfiles are reverted when user chooses 'y'."""
+        # Create a dotfile and backups
         self.create_dotfile()
-        ioutils._create_file(join(env.BACKUPS_DIR, self.BACKUP_FILE_NAME + '_2016-07-07_14-40-00.bak'), "some_bash_token=some_value")
-        ioutils._create_file(join(env.BACKUPS_DIR, self.BACKUP_FILE_NAME + '_2016-07-07_14-43-00.bak'), "some_bash_token=some_newer_value")
+        self.config.backups_dir.mkdir(parents=True, exist_ok=True)
 
-        with mock.patch('builtins.input', return_value='y'):
-            dfm._revert_dotfiles([self.DOTFILE_NAME])
+        backup1 = self.config.backups_dir / f"{self.BACKUP_FILE_NAME}_2016-07-07_14-40-00.bak"
+        backup2 = self.config.backups_dir / f"{self.BACKUP_FILE_NAME}_2016-07-07_14-43-00.bak"
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as bashrc:
-            contents = bashrc.read()
-            self.assertTrue("some_newer_value" in contents)
+        backup1.write_text("some_bash_token=some_value", encoding="utf-8")
+        backup2.write_text("some_bash_token=some_newer_value", encoding="utf-8")
+
+        # Mock user input to choose 'y'
+        with mock.patch("builtins.input", return_value="y"):
+            dfm._revert_dotfiles(self.config, [self.DOTFILE_NAME])
+
+        # Verify the newest backup was restored
+        dotfile_path = self.config.output_dir / self.DOTFILE_NAME
+        contents = dotfile_path.read_text(encoding="utf-8")
+        assert "some_newer_value" in contents
 
         self.clean_up_backups()
-
 
     def test_dotfiles_not_reverted_when_arg_r_and_choice_n(self):
+        """Test that dotfiles are not reverted when user chooses 'n'."""
+        # Create a dotfile and backups
         self.create_dotfile()
-        ioutils._create_file(join(env.BACKUPS_DIR, self.BACKUP_FILE_NAME + '_2016-07-07_14-40-00.bak'), "some_bash_token=some_value")
-        ioutils._create_file(join(env.BACKUPS_DIR, self.BACKUP_FILE_NAME + '_2016-07-07_14-43-00.bak'), "some_bash_token=some_newer_value")
+        self.config.backups_dir.mkdir(parents=True, exist_ok=True)
 
-        with mock.patch('builtins.input', return_value='n'):
-            dfm._revert_dotfiles([self.DOTFILE_NAME])
+        backup1 = self.config.backups_dir / f"{self.BACKUP_FILE_NAME}_2016-07-07_14-40-00.bak"
+        backup2 = self.config.backups_dir / f"{self.BACKUP_FILE_NAME}_2016-07-07_14-43-00.bak"
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as bashrc:
-            self.assertTrue("some_newer_value" not in bashrc.read())
+        backup1.write_text("some_bash_token=some_value", encoding="utf-8")
+        backup2.write_text("some_bash_token=some_newer_value", encoding="utf-8")
+
+        # Mock user input to choose 'n'
+        with mock.patch("builtins.input", return_value="n"):
+            dfm._revert_dotfiles(self.config, [self.DOTFILE_NAME])
+
+        # Verify the original dotfile was not changed
+        dotfile_path = self.config.output_dir / self.DOTFILE_NAME
+        contents = dotfile_path.read_text(encoding="utf-8")
+        assert "some_newer_value" not in contents
 
         self.clean_up_backups()
-
-
-if __name__ == '__main__':
-    unittest.main(module=__name__, buffer=True, exit=False)

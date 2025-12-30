@@ -1,116 +1,123 @@
+"""Integration tests for dotfilesmanager.ioutils.ioutils module."""
+
 import io
 import os
-from os.path import join, realpath, dirname
 from pathlib import Path
-import shutil
-import sys
-import unittest
 
-TEST_DIR = str(Path(dirname(realpath(__file__))).parent)
-sys.path.insert(0, TEST_DIR)
+import pytest
 
-from test.env import env
-import dfm
-from ioutils import ioutils
+from dotfilesmanager import dfm
+from dotfilesmanager.ioutils import ioutils
 
 
-class TestIOUtilsInt(unittest.TestCase):
+class TestIOUtilsInt:
+    """Integration tests for I/O utility functions."""
 
-    FIRST_INPUT_FILE = '99-fooconfig'
-    SECOND_INPUT_FILE = '98-fooconfig_local'
+    FIRST_INPUT_FILE = "99-fooconfig"
+    SECOND_INPUT_FILE = "98-fooconfig_local"
+    DOTFILE_NAME = ".fooconfig"
+    BACKUP_FILE_NAME = "fooconfig"
 
-    DOTFILE_NAME = '.fooconfig'
-    BACKUP_FILE_NAME = DOTFILE_NAME[DOTFILE_NAME.rfind(os.sep) + 1 :].replace('.', '')
-
-
-    @classmethod
-    def setUpClass(cls):
-        dfm.env = env
-        dfm.ioutils.env = env
-        env.set_up()
-        dfm._set_args()
-
-
-    def setUp(self):
-        env.set_up()
-        dfm._set_args()
+    @pytest.fixture(autouse=True)
+    def setup(self, test_config):
+        """Set up test environment for each test."""
+        self.config = test_config
         self.create_input_files()
 
-
-    def tearDown(self):
-        env.tear_down()
-
-
     def create_dotfile(self):
-        ioutils._create_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME), "some_bash_token=some_value")
-
+        """Create a test dotfile in output directory."""
+        dotfile_path = self.config.output_dir / self.DOTFILE_NAME
+        dotfile_path.write_text("some_bash_token=some_value", encoding="utf-8")
 
     def clean_up_backups(self):
-        shutil.rmtree(env.BACKUPS_DIR)
-        os.mkdir(env.BACKUPS_DIR)
+        """Clean up backup directory."""
+        if self.config.backups_dir.exists():
+            import shutil
 
+            shutil.rmtree(self.config.backups_dir)
+        self.config.backups_dir.mkdir(parents=True, exist_ok=True)
 
     def create_input_files(self):
-        ioutils._create_file(join(env.INPUT_DIR, self.FIRST_INPUT_FILE), 'some_config_token=some_config_value')
-        ioutils._create_file(join(env.INPUT_DIR, self.SECOND_INPUT_FILE), 'some_config_local_token=some_local_value')
+        """Create test input files."""
+        first_file = self.config.input_dir / self.FIRST_INPUT_FILE
+        second_file = self.config.input_dir / self.SECOND_INPUT_FILE
 
+        first_file.write_text("some_config_token=some_config_value", encoding="utf-8")
+        second_file.write_text("some_config_local_token=some_local_value", encoding="utf-8")
 
     def test_existing_dotfile_backed_up_when_not_arg_c(self):
+        """Test that existing dotfiles are backed up when overwritten."""
         self.create_dotfile()
-        with io.StringIO() as buf:
-            buf.write(str("some_bash_token=some_newer_value"))
-            ioutils._write_output_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME), buf)
-        backup_files = os.listdir(env.BACKUPS_DIR)
-        self.assertTrue(len(backup_files) == 1)
+        self.config.backups_dir.mkdir(parents=True, exist_ok=True)
 
-        with open(join(env.BACKUPS_DIR, backup_files[0]), encoding='utf-8') as bak_file:
-            self.assertTrue("some_value" in bak_file.read())
+        with io.StringIO() as buf:
+            buf.write("some_bash_token=some_newer_value")
+            ioutils._write_output_file(
+                self.config, str(self.config.output_dir / self.DOTFILE_NAME), buf
+            )
+
+        backup_files = list(self.config.backups_dir.glob("*.bak"))
+        assert len(backup_files) == 1
+
+        backup_content = backup_files[0].read_text(encoding="utf-8")
+        assert "some_value" in backup_content
 
         self.clean_up_backups()
-
 
     def test_output_file_contains_all_input_files_in_correct_order(self):
-        line_1 = 'first-token\n'
-        line_2 = 'second-token\n'
-        line_3 = 'third-token\n'
-        ioutils._create_file(join(env.INPUT_DIR, self.FIRST_INPUT_FILE), line_1)
-        ioutils._create_file(join(env.INPUT_DIR, self.SECOND_INPUT_FILE), line_2)
-        ioutils._create_file(join(env.INPUT_DIR, 'fooconfig'), line_3)
+        """Test that compiled dotfile contains all input files in priority order."""
+        line_1 = "first-token\n"
+        line_2 = "second-token\n"
+        line_3 = "third-token\n"
 
-        dfm._process_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
+        (self.config.input_dir / self.FIRST_INPUT_FILE).write_text(line_1, encoding="utf-8")
+        (self.config.input_dir / self.SECOND_INPUT_FILE).write_text(line_2, encoding="utf-8")
+        (self.config.input_dir / "fooconfig").write_text(line_3, encoding="utf-8")
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as fooconfig:
-            file_contents = fooconfig.readlines()
-            self.assertEqual(file_contents[0], line_1)
+        dotfiles_dict = dfm._get_dotfiles_dict(self.config)
+        dfm._process_dotfiles(self.config, dotfiles_dict)
+
+        output_file = self.config.output_dir / self.DOTFILE_NAME
+        file_contents = output_file.read_text(encoding="utf-8").splitlines(keepends=True)
+        assert file_contents[0] == line_1
 
         self.clean_up_backups()
-        os.remove(join(env.INPUT_DIR, 'fooconfig'))
-
+        (self.config.input_dir / "fooconfig").unlink()
 
     def test_when_arg_e_then_specified_file_is_excluded(self):
-        env.ARGS = env.parser.parse_args(['some_dir', '-e', self.SECOND_INPUT_FILE])
-        ioutils._create_file(join(env.INPUT_DIR, self.FIRST_INPUT_FILE), "some_token=some_value")
-        ioutils._create_file(join(env.INPUT_DIR, self.SECOND_INPUT_FILE), "some_local_token=some_value")
-        ioutils._create_file(join(env.INPUT_DIR, 'fooconfig'), "some_additional_token=some_value")
+        """Test that files specified with -e are excluded from compilation."""
+        self.config.args.exclude = [[self.SECOND_INPUT_FILE]]
 
-        dfm._process_dotfiles(dfm._get_dotfiles_dict(env.INPUT_DIR))
+        (self.config.input_dir / self.FIRST_INPUT_FILE).write_text(
+            "some_token=some_value", encoding="utf-8"
+        )
+        (self.config.input_dir / self.SECOND_INPUT_FILE).write_text(
+            "some_local_token=some_value", encoding="utf-8"
+        )
+        (self.config.input_dir / "fooconfig").write_text(
+            "some_additional_token=some_value", encoding="utf-8"
+        )
 
-        with open(join(env.OUTPUT_DIR, self.DOTFILE_NAME), encoding='utf-8') as output_file:
-            with open(join(env.INPUT_DIR, self.FIRST_INPUT_FILE), encoding='utf-8') as input_file:
-                with open(join(env.INPUT_DIR, self.SECOND_INPUT_FILE), encoding='utf-8') as \
-                local_input_file:
-                    contents = output_file.read()
-                    self.assertTrue(input_file.read() in contents)
-                    self.assertTrue(local_input_file.read() not in contents)
+        dotfiles_dict = dfm._get_dotfiles_dict(self.config)
+        dfm._process_dotfiles(self.config, dotfiles_dict)
 
+        output_content = (self.config.output_dir / self.DOTFILE_NAME).read_text(encoding="utf-8")
+        first_input_content = (self.config.input_dir / self.FIRST_INPUT_FILE).read_text(
+            encoding="utf-8"
+        )
+        second_input_content = (self.config.input_dir / self.SECOND_INPUT_FILE).read_text(
+            encoding="utf-8"
+        )
+
+        assert first_input_content in output_content
+        assert second_input_content not in output_content
 
     def test_backing_up_file_removes_original(self):
-        ioutils._create_file(join(env.OUTPUT_DIR, self.DOTFILE_NAME), "some_token=some_value")
+        """Test that backing up a file removes the original."""
+        dotfile_path = self.config.output_dir / self.DOTFILE_NAME
+        dotfile_path.write_text("some_token=some_value", encoding="utf-8")
 
-        ioutils._back_up(join(env.OUTPUT_DIR, self.DOTFILE_NAME))
+        self.config.backups_dir.mkdir(parents=True, exist_ok=True)
+        ioutils._back_up(self.config, str(dotfile_path))
 
-        self.assertFalse(os.path.isfile(join(env.OUTPUT_DIR, self.DOTFILE_NAME)))
-
-
-if __name__ == '__main__':
-    unittest.main(module=__name__, buffer=True, exit=False)
+        assert not dotfile_path.exists()
