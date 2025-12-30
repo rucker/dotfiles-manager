@@ -6,7 +6,6 @@ import os
 import re
 import sys
 from argparse import Namespace
-from pathlib import Path
 
 from dotfilesmanager.config import Config
 from dotfilesmanager.ioutils import ioutils

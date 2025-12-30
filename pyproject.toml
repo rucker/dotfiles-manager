@@ -50,7 +50,7 @@ Issues = "https://github.com/rucker/dotfiles-manager/issues"
 dfm = "dotfilesmanager.dfm:main"
 
 [tool.setuptools]
-packages = ["dotfilesmanager", "dotfilesmanager.env", "dotfilesmanager.ioutils"]
+packages = ["dotfilesmanager", "dotfilesmanager.ioutils"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
