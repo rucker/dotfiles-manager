@@ -1,11 +1,7 @@
 """Tests for dotfilesmanager.ioutils.ioutils module."""
 
 import io
-from pathlib import Path
 from unittest import mock
-from unittest.mock import ANY
-
-import pytest
 
 from dotfilesmanager.ioutils import ioutils
 

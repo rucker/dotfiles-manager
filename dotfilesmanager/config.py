@@ -1,6 +1,5 @@
 """Configuration management for dotfiles manager."""
 
-import os
 import sys
 from argparse import Namespace
 from dataclasses import dataclass
@@ -52,14 +51,14 @@ class Config:
     @property
     def verbose(self) -> bool:
         """Check if verbose mode is enabled."""
-        return self.args.verbose or self.args.dry_run
+        return bool(self.args.verbose or self.args.dry_run)
 
     @property
     def dry_run(self) -> bool:
         """Check if dry-run mode is enabled."""
-        return self.args.dry_run
+        return bool(self.args.dry_run)
 
     @property
     def clobber(self) -> bool:
         """Check if clobber mode is enabled."""
-        return self.args.clobber
+        return bool(self.args.clobber)

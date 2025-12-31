@@ -5,7 +5,7 @@ import shutil
 import sys
 import time
 from os.path import basename, exists, isdir, isfile, islink, join, lexists, normpath
-from typing import TextIO
+from typing import Any, TextIO
 
 from dotfilesmanager.config import Config
 
@@ -16,7 +16,7 @@ def prints(config: Config, message: str) -> None:
         print(message)
 
 
-def printe(*args: object, **kwargs: object) -> None:
+def printe(*args: object, **kwargs: Any) -> None:
     """Print to stderr."""
     print(*args, file=sys.stderr, **kwargs)
 

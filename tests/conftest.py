@@ -1,12 +1,10 @@
 """Pytest configuration and fixtures for dotfiles-manager tests."""
 
-import argparse
-import os
 import shutil
 import tempfile
 from argparse import Namespace
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 

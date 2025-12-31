@@ -1,8 +1,6 @@
 """Tests for dotfilesmanager.dfm module."""
 
 import io
-import os
-import sys
 from argparse import Namespace
 from pathlib import Path
 from unittest import mock
@@ -75,9 +73,7 @@ class TestDotfilesManager:
 
                 mock_compile.assert_called_once_with(test_config, dotfile, input_files)
 
-    def test_only_specified_dotfile_dir_handled_and_path_normalized_when_arg_f(
-        self, test_config
-    ):
+    def test_only_specified_dotfile_dir_handled_and_path_normalized_when_arg_f(self, test_config):
         """Test that directory dotfiles are normalized and symlinked."""
         dotfile = ".foo.d"
         test_config.args.file = [dotfile + "/"]

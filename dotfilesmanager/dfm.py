@@ -29,18 +29,14 @@ def _parse_args() -> Namespace:
         action="store_true",
         help="Revert dotfiles to most recent backup.",
     )
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Enable verbose output."
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
     parser.add_argument(
         "-o",
         "--output-dir",
         nargs=1,
         help="Specify output directory (default value is $HOME).",
     )
-    parser.add_argument(
-        "-f", "--file", nargs=1, help="Process only the specified dotfile."
-    )
+    parser.add_argument("-f", "--file", nargs=1, help="Process only the specified dotfile.")
     parser.add_argument(
         "-e",
         "--exclude",

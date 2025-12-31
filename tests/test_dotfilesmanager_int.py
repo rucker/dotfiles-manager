@@ -1,13 +1,10 @@
 """Integration tests for dotfilesmanager.dfm module."""
 
-import os
-from pathlib import Path
 from unittest import mock
 
 import pytest
 
 from dotfilesmanager import dfm
-from dotfilesmanager.ioutils import ioutils
 
 
 class TestDotfilesManagerInt:
