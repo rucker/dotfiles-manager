@@ -1,11 +1,52 @@
 # Dotfiles Manager
 Dotfiles Manager allows for the compilation of dotfiles using a convention of [named input files](#input-files). A simple use-case might be:
 
-`dfm.py ${INPUT_DIR}`
+`dfm ${INPUT_DIR}`
 
 Where `${INPUT_DIR}` is the location of your input files.
 
-See `dfm.py --help` for usage.
+See `dfm --help` for usage.
+
+## Installation
+
+### From Source
+
+Clone and install using pip:
+
+```bash
+git clone https://github.com/rucker/dotfiles-manager.git
+cd dotfiles-manager
+pip install .
+```
+
+After installation, use the `dfm` command:
+
+```bash
+dfm ${INPUT_DIR} [options]
+```
+
+### Development Installation
+
+For development, install with dev dependencies:
+
+```bash
+pip install -e .[dev]
+```
+
+### Running Tests
+
+```bash
+pytest
+```
+
+For coverage report:
+
+```bash
+pytest --cov=dotfilesmanager --cov-report=html
+open htmlcov/index.html
+```
+
+## Usage
 
 Existing dotfiles are backed up automatically before new ones are compiled and placed in `${INPUT_DIR}/backups`.
 
@@ -14,7 +55,7 @@ You have a personal dotfiles repository containing your `.bashrc` and you want t
 
 What Dotfiles Manager allows you to do is compile a single `.bashrc`file from separate source files: one containing your global configurations, and another containing the local (possibly sensitive) bits. This can be done by putting the common bits in a file called `bashrc` (which would be part of your dotfiles repo), and the bits that vary from machine to machine in a second file, for example called `bashrc_local` (which would be git-ignored). Because Dotfiles Manager is able to infer the name of the dotfile being compiled from the names of [input files](#input-files), the contents of `bashrc` and `bashrc_local` will be compiled into to a single `.bashrc` file on each machine.
 
-When you push new `bashrc` changes to your dotfiles repo, you can keep everything up-to-date by doing a `git pull` to get your latest source files and then running `dfm.py ${INPUT_DIR}` to compile a `.bashrc` from the contents of your `bashrc` and `bashrc_local`.
+When you push new `bashrc` changes to your dotfiles repo, you can keep everything up-to-date by doing a `git pull` to get your latest source files and then running `dfm ${INPUT_DIR}` to compile a `.bashrc` from the contents of your `bashrc` and `bashrc_local`.
 
 ## Input Files
 ### Symlinks
