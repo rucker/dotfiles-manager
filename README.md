@@ -3,6 +3,8 @@
 [![Tests](https://github.com/rucker/dotfiles-manager/workflows/Tests/badge.svg)](https://github.com/rucker/dotfiles-manager/actions/workflows/test.yml)
 [![Code Quality](https://github.com/rucker/dotfiles-manager/workflows/Code%20Quality/badge.svg)](https://github.com/rucker/dotfiles-manager/actions/workflows/quality.yml)
 
+> 📋 **CI/CD:** See [GitHub Actions Workflow Guide](.github/WORKFLOWS.md) for details on automated testing and quality checks.
+
 Dotfiles Manager allows for the compilation of dotfiles using a convention of [named input files](#input-files). A simple use-case might be:
 
 `dfm ${INPUT_DIR}`
