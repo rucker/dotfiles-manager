@@ -133,7 +133,7 @@ If tests fail on a specific Python version:
    # Use pyenv or similar to test specific version
    pyenv install 3.10.0
    pyenv local 3.10.0
-   pip install -e .[dev]
+   python -m pip install -e .[dev]
    pytest
    ```
 
@@ -254,10 +254,10 @@ Our workflows use ~5 minutes total per run, so you'd get ~400 runs/month free.
 
 ### Dependency Installation Fails
 
-**Problem:** `pip install -e .[dev]` fails in workflow
+**Problem:** `python -m pip install -e .[dev]` fails in workflow
 
 **Solutions:**
-- Test locally: `pip install -e .[dev]`
+- Test locally: `python -m pip install -e .[dev]`
 - Check `pyproject.toml` for syntax errors
 - Verify all dependencies are available on PyPI
 - Check for Python version incompatibilities

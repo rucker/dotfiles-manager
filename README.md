@@ -22,7 +22,7 @@ Clone and install using pip:
 ```bash
 git clone https://github.com/rucker/dotfiles-manager.git
 cd dotfiles-manager
-pip install .
+python -m pip install .
 ```
 
 After installation, use the `dfm` command:
@@ -36,7 +36,7 @@ dfm ${INPUT_DIR} [options]
 For development, install with dev dependencies:
 
 ```bash
-pip install -e .[dev]
+python -m pip install -e .[dev]
 ```
 
 ### Running Tests
