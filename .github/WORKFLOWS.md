@@ -179,6 +179,11 @@ If quality checks fail:
 Always run checks locally before pushing:
 
 ```bash
+# First-time setup: Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+python -m pip install -e .[dev]
+
 # Run all tests
 pytest
 

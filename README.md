@@ -22,10 +22,16 @@ Clone and install using pip:
 ```bash
 git clone https://github.com/rucker/dotfiles-manager.git
 cd dotfiles-manager
+
+# Create and activate virtual environment (recommended)
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install
 python -m pip install .
 ```
 
-After installation, use the `dfm` command:
+After installation, use the `dfm` command (with venv activated):
 
 ```bash
 dfm ${INPUT_DIR} [options]
@@ -36,6 +42,11 @@ dfm ${INPUT_DIR} [options]
 For development, install with dev dependencies:
 
 ```bash
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in editable mode
 python -m pip install -e .[dev]
 ```
 
