@@ -15,15 +15,35 @@ See `dfm --help` for usage.
 
 ## Installation
 
-### From Source
+### Using pipx (Recommended)
 
-Clone and install using pip:
+[pipx](https://pipx.pypa.io/) installs the tool in an isolated environment while making it available globally:
+
+```bash
+# Install pipx if needed (macOS)
+brew install pipx
+pipx ensurepath
+
+# Install from cloned repo
+git clone https://github.com/rucker/dotfiles-manager.git
+pipx install ./dotfiles-manager
+```
+
+After installation, `dfm` is available in any shell:
+
+```bash
+dfm ${INPUT_DIR} [options]
+```
+
+### Using venv
+
+Alternatively, install in a virtual environment:
 
 ```bash
 git clone https://github.com/rucker/dotfiles-manager.git
 cd dotfiles-manager
 
-# Create and activate virtual environment (recommended)
+# Create and activate virtual environment (required on modern Python)
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
@@ -42,7 +62,7 @@ dfm ${INPUT_DIR} [options]
 For development, install with dev dependencies:
 
 ```bash
-# Create and activate virtual environment
+# Create and activate virtual environment (required on modern Python)
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
