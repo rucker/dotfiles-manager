@@ -137,6 +137,24 @@ class TestDotfilesManager:
         assert dfm._is_input_file_excluded(test_config, "vimrc_work")
         assert not dfm._is_input_file_excluded(test_config, "bashrc")
 
+    def test_is_binary_file_detects_binary_content(self, test_config):
+        """Test that binary files are detected by null bytes."""
+        binary_file = test_config.input_dir / "test.swp"
+        binary_file.write_bytes(b"\x00\x01\x02binary content")
+
+        assert dfm._is_binary_file(test_config, "test.swp")
+
+    def test_is_binary_file_allows_text_content(self, test_config):
+        """Test that text files are not detected as binary."""
+        text_file = test_config.input_dir / "bashrc"
+        text_file.write_text("# This is a text file\nalias foo='bar'\n")
+
+        assert not dfm._is_binary_file(test_config, "bashrc")
+
+    def test_is_binary_file_handles_nonexistent_file(self, test_config):
+        """Test that nonexistent files return False."""
+        assert not dfm._is_binary_file(test_config, "nonexistent.file")
+
     def test_add_input_file_to_dict_not_excluded(self, test_config):
         """Test adding non-excluded file to dotfiles dict."""
         test_config.args.exclude = None
@@ -155,6 +173,18 @@ class TestDotfilesManager:
         dfm._add_input_file_to_dict(test_config, dotfiles_dict, "bashrc")
 
         assert ".bashrc" not in dotfiles_dict
+
+    def test_add_input_file_to_dict_skips_binary(self, test_config):
+        """Test that binary files are not added to dict."""
+        binary_file = test_config.input_dir / ".bashrc.swp"
+        binary_file.write_bytes(b"\x00\x01\x02binary swap file")
+
+        test_config.args.exclude = None
+        dotfiles_dict = {}
+
+        dfm._add_input_file_to_dict(test_config, dotfiles_dict, ".bashrc.swp")
+
+        assert "..bashrc.swp" not in dotfiles_dict
 
     def test_get_dotfiles_dict(self, test_config, temp_dirs):
         """Test building dotfiles dictionary from input directory."""

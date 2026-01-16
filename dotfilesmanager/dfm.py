@@ -132,16 +132,42 @@ def _is_input_file_excluded(config: Config, file_name: str) -> bool:
     return file_name in normalized_excludes
 
 
+def _is_binary_file(config: Config, file_name: str) -> bool:
+    """Check if a file is binary by looking for null bytes in its content."""
+    file_path = os.path.join(str(config.input_dir), file_name)
+
+    # Skip if not a regular file
+    if not os.path.isfile(file_path):
+        return False
+
+    try:
+        # Read first 8KB to detect binary content
+        with open(file_path, "rb") as f:
+            chunk = f.read(8192)
+            # Check for null byte, a strong indicator of binary content
+            return b"\x00" in chunk
+    except OSError:
+        # If we can't read it, treat it as binary to be safe
+        return True
+
+
 def _add_input_file_to_dict(
     config: Config, dotfiles_dict: dict[str, list[str]], input_file: str
 ) -> None:
-    """Add input file to dotfiles dictionary if not excluded."""
-    if not _is_input_file_excluded(config, input_file):
-        file_key = _get_dotfile_name(input_file)
-        if file_key in dotfiles_dict:
-            dotfiles_dict[file_key].append(input_file)
-        else:
-            dotfiles_dict[file_key] = [input_file]
+    """Add input file to dotfiles dictionary if not excluded or binary."""
+    if _is_input_file_excluded(config, input_file):
+        return
+
+    if _is_binary_file(config, input_file):
+        if config.verbose:
+            print(f"Skipping binary file: {input_file}")
+        return
+
+    file_key = _get_dotfile_name(input_file)
+    if file_key in dotfiles_dict:
+        dotfiles_dict[file_key].append(input_file)
+    else:
+        dotfiles_dict[file_key] = [input_file]
 
 
 def _get_dotfiles_dict(config: Config) -> dict[str, list[str]]:
