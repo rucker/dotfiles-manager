@@ -6,9 +6,18 @@ import os
 import re
 import sys
 from argparse import Namespace
+from importlib.metadata import version
 
 from dotfilesmanager.config import Config
 from dotfilesmanager.ioutils import ioutils
+
+
+def _get_version() -> str:
+    """Get package version from metadata."""
+    try:
+        return version("dotfiles-manager")
+    except Exception:
+        return "unknown"
 
 
 def _parse_args() -> Namespace:
@@ -30,6 +39,7 @@ def _parse_args() -> Namespace:
         help="Revert dotfiles to most recent backup.",
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output.")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {_get_version()}")
     parser.add_argument(
         "-o",
         "--output-dir",

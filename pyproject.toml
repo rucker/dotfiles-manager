@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dotfiles-manager"
-version = "1.0.0"
+version = "5.0.0"
 description = "Compile dotfiles from multiple source files with priority-based merging"
 readme = "README.md"
 authors = [
