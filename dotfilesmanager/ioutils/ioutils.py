@@ -21,6 +21,15 @@ def printe(*args: object, **kwargs: Any) -> None:
     print(*args, file=sys.stderr, **kwargs)
 
 
+def _ensure_parent_dirs(config: Config, file_path: str) -> None:
+    """Create parent directories for a file path if needed."""
+    parent_dir = os.path.dirname(file_path)
+    if parent_dir and not os.path.exists(parent_dir):
+        prints(config, f"\tCreating directory: {parent_dir}")
+        if not config.dry_run:
+            os.makedirs(parent_dir, exist_ok=True)
+
+
 def _create_file(config: Config, file_name: str, contents: str) -> None:
     """Create a file with given contents."""
     prints(config, f"Writing to file: {file_name}")
@@ -30,21 +39,34 @@ def _create_file(config: Config, file_name: str, contents: str) -> None:
 
 
 def _back_up(config: Config, file_path: str) -> None:
-    """Back up a file to the backups directory with timestamp."""
+    """Back up a file to the backups directory with timestamp, preserving nested structure."""
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = basename(file_path)
-    bak_file = join(
-        str(config.backups_dir),
-        (filename.replace(".", "", 1) if filename.startswith(".") else filename)
-        + "_"
-        + timestamp
-        + ".bak",
-    )
 
-    if not exists(str(config.backups_dir)):
+    # Get relative path from output_dir to preserve nested structure
+    try:
+        rel_path = os.path.relpath(file_path, str(config.output_dir))
+    except ValueError:
+        # If paths are on different drives (Windows), fall back to basename
+        rel_path = basename(file_path)
+
+    # Remove leading dot from dotfile name for backup
+    if rel_path.startswith("."):
+        rel_path = rel_path[1:]
+
+    # Construct backup path preserving directory structure
+    backup_name = f"{rel_path}_{timestamp}.bak"
+    bak_file = join(str(config.backups_dir), backup_name)
+
+    # Create parent directories if needed
+    bak_parent = os.path.dirname(bak_file)
+    if bak_parent and not exists(bak_parent):
+        prints(config, f"\tCreating backup directory: {bak_parent}")
+        if not config.dry_run:
+            os.makedirs(bak_parent, exist_ok=True)
+    elif not exists(str(config.backups_dir)):
         prints(config, f"Creating backups dir {config.backups_dir}")
         if not config.dry_run:
-            os.mkdir(str(config.backups_dir))
+            os.makedirs(str(config.backups_dir), exist_ok=True)
 
     prints(config, f"\tBacking up {file_path} to {bak_file}")
     if not config.dry_run:
@@ -76,6 +98,7 @@ def _write_input_file_contents(config: Config, file_name: str, out_buffer: TextI
 
 def _write_output_file(config: Config, file_path: str, contents: io.StringIO) -> None:
     """Write the compiled contents to the output file."""
+    _ensure_parent_dirs(config, file_path)
     if islink(file_path):
         _remove_symlink(config, file_path)
     if not config.clobber and isfile(file_path):
@@ -93,26 +116,38 @@ def _write_to_output_buffer(output: str, file_buffer: TextIO) -> None:
 
 def revert_dotfile(config: Config, dotfile: str) -> None:
     """Revert a dotfile to its most recent backup."""
-    name = f"*{dotfile}*".replace(".", "")
-    search_pattern = join(str(config.backups_dir), name)
+    # Remove leading dot from dotfile name to match backup naming
+    if dotfile.startswith("."):
+        name = dotfile[1:]
+    else:
+        name = dotfile
+
+    # For nested paths, search in the nested backup directory
+    search_pattern = join(str(config.backups_dir), f"{name}_*.bak")
     results = sorted(glob.glob(search_pattern), reverse=True)
+
     if results:
         bak_file = results[0]
         choice = ""
         while choice not in (["Y", "N"]):
             choice = input(
-                f"Revert {join(str(config.output_dir), dotfile)}"
+                f"Revert {join(str(config.output_dir), dotfile)} "
                 f"to backup located at {bak_file}? (Y/N): "
             ).upper()
             if choice == "Y":
                 existing_dotfile = join(str(config.output_dir), dotfile)
                 if not config.dry_run:
+                    # Ensure parent directories exist
+                    _ensure_parent_dirs(config, existing_dotfile)
                     if isfile(existing_dotfile):
                         os.remove(existing_dotfile)
                         shutil.copy(bak_file, join(str(config.output_dir), dotfile))
                     elif isdir(existing_dotfile):
                         shutil.rmtree(existing_dotfile)
                         shutil.copytree(bak_file, join(str(config.output_dir), dotfile))
+                    else:
+                        # File doesn't exist yet, just copy
+                        shutil.copy(bak_file, join(str(config.output_dir), dotfile))
                 print("Reverted.")
             else:
                 print("Revert canceled.")
@@ -122,6 +157,7 @@ def revert_dotfile(config: Config, dotfile: str) -> None:
 
 def create_symlink(config: Config, target: str, source: str) -> None:
     """Create a symlink from source to target."""
+    _ensure_parent_dirs(config, source)
     if lexists(source):
         existing_target = normpath(os.readlink(source))
         if not exists(existing_target):

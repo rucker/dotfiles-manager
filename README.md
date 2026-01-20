@@ -20,8 +20,6 @@ See `dfm --help` for usage.
 [pipx](https://pipx.pypa.io/) installs the tool in an isolated environment while making it available globally:
 
 ```bash
-# Install pipx if needed (macOS)
-brew install pipx
 pipx ensurepath
 
 # Install from cloned repo
@@ -103,15 +101,32 @@ Each dotfile is compiled from its input files to an output file of the correspon
 
 That naming scheme is:
 
-*xx-dotfile.ext_suffix*  
-WHERE:  
-*xx-* = input file priority (optional: the contents of highest-numbered input files will be placed in the output dotfile first, and other files matching *dotfile* will be inserted in lexographical order)  
-*dotfile* = output dotfile name  
-*.ext* = output dotfile extension (if applicable, e.g. tmux.conf)  
-*_suffix* = input filename suffix (optional, ignored) 
+*xx-dotfile.ext_suffix*
+
+WHERE:
+
+*xx-* = input file priority (optional: the contents of highest-numbered input files will be placed in the output dotfile first, and other files matching *dotfile* will be inserted in lexographical order)
+
+*dotfile* = output dotfile name
+
+*.ext* = output dotfile extension (if applicable, e.g. tmux.conf)
+
+*_suffix* = input filename suffix (optional, ignored)
 
 Note: Any *.ext* occurring after an underscore ( _ ) will be considered part of the input file suffix and ignored.
 
 For example: input files named `99-bashrc`, `98-bashrc_linux`, `bashrc_local.myaliases` will be compiled into a single `bashrc` output file (and in that order).
+
+### Nested Dotfiles
+Dotfiles Manager supports nested directory structures for organizing configuration files. Files in subdirectories of the input directory (except the `backups/` directory) are processed recursively and output to the corresponding nested location in the output directory.
+
+The naming convention applies only to the filename component, while the directory path is preserved as-is.
+
+Examples:
+- `.config/nvim/init.vim` → `$HOME/.config/nvim/init.vim`
+- `.config/nvim/99-init.vim` + `.config/nvim/init.vim_local` → `$HOME/.config/nvim/init.vim` (merged with priority)
+- `.docker/config.json` → `$HOME/.docker/config.json`
+
+Parent directories are created automatically when processing nested files. The backup system also preserves the nested structure, storing backups in `backups/.config/nvim/init.vim_timestamp.bak` for example.
 
 For further illustration, my input files can be found [here](https://github.com/rucker/dotfiles/tree/master/src).

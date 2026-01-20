@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from argparse import Namespace
+from collections.abc import Iterator
 from importlib.metadata import version
 
 from dotfilesmanager.config import Config
@@ -108,18 +109,45 @@ def _sort_input_file_list(input_files: list[str]) -> list[str]:
 
 
 def _get_dotfile_name(file_name: str) -> str:
-    """Extract dotfile name from input filename using naming convention."""
-    if "-" in file_name:
-        sidx = file_name.index("-") + 1
+    """Extract dotfile name from input filename using naming convention.
+
+    For nested paths (containing '/'), the naming convention is applied only to
+    the filename component, while the directory path is preserved as-is.
+
+    Examples:
+        'bashrc' -> '.bashrc'
+        '99-bashrc_local' -> '.bashrc'
+        '.config/nvim/init.vim' -> '.config/nvim/init.vim'
+        '.config/nvim/99-init.vim_local' -> '.config/nvim/init.vim'
+    """
+    # Split into directory and filename components
+    if "/" in file_name:
+        dir_part, base_name = file_name.rsplit("/", 1)
+    else:
+        dir_part = ""
+        base_name = file_name
+
+    # Apply naming convention to base filename
+    if "-" in base_name:
+        sidx = base_name.index("-") + 1
     else:
         sidx = 0
-    if "_" in file_name:
-        eidx = file_name.index("_")
+    if "_" in base_name:
+        eidx = base_name.index("_")
     else:
-        eidx = len(file_name)
+        eidx = len(base_name)
     if eidx < sidx:
         sidx = 0
-    dotfile_name = "." + file_name[sidx:eidx]
+
+    processed_name = base_name[sidx:eidx]
+
+    # For nested paths, preserve directory path as-is
+    # For top-level files, add leading dot
+    if dir_part:
+        dotfile_name = f"{dir_part}/{processed_name}"
+    else:
+        dotfile_name = "." + processed_name
+
     return dotfile_name
 
 
@@ -170,11 +198,23 @@ def _add_input_file_to_dict(
         dotfiles_dict[file_key] = [input_file]
 
 
+def _walk_input_dir(config: Config) -> Iterator[str]:
+    """Walk input directory recursively, yielding relative file paths."""
+    for root, dirs, files in os.walk(config.input_dir):
+        # Skip the backups directory
+        if "backups" in dirs:
+            dirs.remove("backups")
+        for file_name in files:
+            full_path = os.path.join(root, file_name)
+            rel_path = os.path.relpath(full_path, config.input_dir)
+            yield rel_path
+
+
 def _get_dotfiles_dict(config: Config) -> dict[str, list[str]]:
     """Build dictionary of dotfiles and their input files."""
     dotfiles: dict[str, list[str]] = {}
 
-    for input_file in os.listdir(config.input_dir):
+    for input_file in _walk_input_dir(config):
         _add_input_file_to_dict(config, dotfiles, input_file)
     for dotfile in dotfiles:
         dotfiles[dotfile] = _sort_input_file_list(dotfiles[dotfile])

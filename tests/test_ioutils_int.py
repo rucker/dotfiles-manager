@@ -119,3 +119,81 @@ class TestIOUtilsInt:
         ioutils._back_up(self.config, str(dotfile_path))
 
         assert not dotfile_path.exists()
+
+    def test_compile_nested_dotfile_creates_parent_dirs(self):
+        """Test that compiling a nested dotfile creates parent directories."""
+        # Create nested input file
+        nested_input_dir = self.config.input_dir / ".config" / "nvim"
+        nested_input_dir.mkdir(parents=True, exist_ok=True)
+        (nested_input_dir / "init.vim").write_text("set number\n", encoding="utf-8")
+
+        # Compile the nested dotfile
+        output_path = str(self.config.output_dir / ".config/nvim/init.vim")
+
+        with io.StringIO() as buf:
+            buf.write("set number\n")
+            ioutils._write_output_file(self.config, output_path, buf)
+
+        # Check that the output file exists
+        output_file = self.config.output_dir / ".config" / "nvim" / "init.vim"
+        assert output_file.exists()
+        assert output_file.read_text(encoding="utf-8") == "set number\n"
+
+    def test_symlink_nested_file_creates_parent_dirs(self):
+        """Test that creating a symlink for nested file creates parent directories."""
+        # Create nested input file
+        nested_input_dir = self.config.input_dir / ".config" / "nvim"
+        nested_input_dir.mkdir(parents=True, exist_ok=True)
+        input_file = nested_input_dir / "init.vim"
+        input_file.write_text("set number\n", encoding="utf-8")
+
+        # Create symlink
+        target = str(input_file)
+        source = str(self.config.output_dir / ".config" / "nvim" / "init.vim")
+
+        ioutils.create_symlink(self.config, target, source)
+
+        # Check that parent directories were created
+        assert (self.config.output_dir / ".config" / "nvim").exists()
+        assert (self.config.output_dir / ".config" / "nvim" / "init.vim").is_symlink()
+
+    def test_backup_nested_file_preserves_structure(self):
+        """Test that backing up a nested file preserves directory structure."""
+        # Create nested dotfile in output directory
+        nested_output = self.config.output_dir / ".config" / "nvim"
+        nested_output.mkdir(parents=True, exist_ok=True)
+        dotfile_path = nested_output / "init.vim"
+        dotfile_path.write_text("old config\n", encoding="utf-8")
+
+        # Back up the file
+        self.config.backups_dir.mkdir(parents=True, exist_ok=True)
+        ioutils._back_up(self.config, str(dotfile_path))
+
+        # Check that backup preserves structure
+        backup_files = list(self.config.backups_dir.glob("config/nvim/init.vim_*.bak"))
+        assert len(backup_files) == 1
+        assert backup_files[0].read_text(encoding="utf-8") == "old config\n"
+        assert not dotfile_path.exists()
+
+        self.clean_up_backups()
+
+    def test_revert_nested_file(self):
+        """Test that reverting a nested file works correctly."""
+        # Create nested backup
+        backup_dir = self.config.backups_dir / "config" / "nvim"
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        backup_file = backup_dir / "init.vim_2024-01-01_12-00-00.bak"
+        backup_file.write_text("backup content\n", encoding="utf-8")
+
+        # Revert the file (simulating user input "Y")
+        import unittest.mock as mock
+
+        with mock.patch("builtins.input", return_value="Y"):
+            ioutils.revert_dotfile(self.config, ".config/nvim/init.vim")
+
+        # Check that the file was restored
+        restored_file = self.config.output_dir / ".config" / "nvim" / "init.vim"
+        assert restored_file.exists()
+        assert restored_file.read_text(encoding="utf-8") == "backup content\n"
+
+        self.clean_up_backups()

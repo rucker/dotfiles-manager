@@ -118,6 +118,21 @@ class TestDotfilesManager:
         assert dfm._get_dotfile_name("tmux.conf") == ".tmux.conf"
         assert dfm._get_dotfile_name("99-tmux.conf_local") == ".tmux.conf"
 
+    def test_get_dotfile_name_nested_path(self):
+        """Test dotfile name extraction for nested paths."""
+        assert dfm._get_dotfile_name(".config/nvim/init.vim") == ".config/nvim/init.vim"
+        assert dfm._get_dotfile_name(".docker/config.json") == ".docker/config.json"
+
+    def test_get_dotfile_name_nested_with_priority(self):
+        """Test nested path with priority number in filename."""
+        assert dfm._get_dotfile_name(".config/nvim/99-init.vim") == ".config/nvim/init.vim"
+        assert dfm._get_dotfile_name(".config/git/50-config") == ".config/git/config"
+
+    def test_get_dotfile_name_nested_with_suffix(self):
+        """Test nested path with suffix in filename."""
+        assert dfm._get_dotfile_name(".config/nvim/init.vim_local") == ".config/nvim/init.vim"
+        assert dfm._get_dotfile_name(".config/nvim/99-init.vim_work") == ".config/nvim/init.vim"
+
     def test_sort_input_file_list_priority_first(self):
         """Test that priority-numbered files are sorted reverse numerically."""
         input_files = ["bashrc", "99-bashrc", "50-bashrc", "bashrc_local"]
@@ -229,3 +244,51 @@ class TestDotfilesManager:
             dfm._process_dotfile(test_config, ".bashrc", input_files)
 
             mock_compile.assert_called_once_with(test_config, ".bashrc", input_files)
+
+    def test_walk_input_dir_skips_backups(self, test_config, temp_dirs):
+        """Test that _walk_input_dir skips the backups directory."""
+        # Create files in different directories
+        (temp_dirs["input"] / "bashrc").touch()
+        (temp_dirs["input"] / "backups").mkdir()
+        (temp_dirs["input"] / "backups" / "bashrc_backup.bak").touch()
+
+        # Walk the directory
+        files = list(dfm._walk_input_dir(test_config))
+
+        # Should only contain bashrc, not the backup file
+        assert "bashrc" in files
+        assert len([f for f in files if "backup" in f]) == 0
+
+    def test_walk_input_dir_finds_nested_files(self, test_config, temp_dirs):
+        """Test that _walk_input_dir finds nested files."""
+        # Create nested directory structure
+        (temp_dirs["input"] / ".config").mkdir()
+        (temp_dirs["input"] / ".config" / "nvim").mkdir()
+        (temp_dirs["input"] / ".config" / "nvim" / "init.vim").touch()
+        (temp_dirs["input"] / "bashrc").touch()
+
+        # Walk the directory
+        files = list(dfm._walk_input_dir(test_config))
+
+        # Should contain both flat and nested files
+        assert "bashrc" in files
+        assert ".config/nvim/init.vim" in files
+
+    def test_get_dotfiles_dict_with_nested_files(self, test_config, temp_dirs):
+        """Test that _get_dotfiles_dict correctly handles nested files."""
+        # Create nested structure with priority files
+        (temp_dirs["input"] / ".config").mkdir()
+        (temp_dirs["input"] / ".config" / "nvim").mkdir()
+        (temp_dirs["input"] / ".config" / "nvim" / "init.vim").touch()
+        (temp_dirs["input"] / ".config" / "nvim" / "99-init.vim").touch()
+        (temp_dirs["input"] / "bashrc").touch()
+
+        dotfiles_dict = dfm._get_dotfiles_dict(test_config)
+
+        # Should have both nested and flat dotfiles
+        assert ".bashrc" in dotfiles_dict
+        assert ".config/nvim/init.vim" in dotfiles_dict
+
+        # Nested dotfile should have both input files, with priority first
+        assert len(dotfiles_dict[".config/nvim/init.vim"]) == 2
+        assert dotfiles_dict[".config/nvim/init.vim"][0] == ".config/nvim/99-init.vim"
