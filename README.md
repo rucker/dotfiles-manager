@@ -1,11 +1,87 @@
 # Dotfiles Manager
+
+[![Tests](https://github.com/rucker/dotfiles-manager/workflows/Tests/badge.svg)](https://github.com/rucker/dotfiles-manager/actions/workflows/test.yml)
+[![Code Quality](https://github.com/rucker/dotfiles-manager/workflows/Code%20Quality/badge.svg)](https://github.com/rucker/dotfiles-manager/actions/workflows/quality.yml)
+
+> 📋 **CI/CD:** See [GitHub Actions Workflow Guide](.github/WORKFLOWS.md) for details on automated testing and quality checks.
+
 Dotfiles Manager allows for the compilation of dotfiles using a convention of [named input files](#input-files). A simple use-case might be:
 
-`dfm.py ${INPUT_DIR}`
+`dfm ${INPUT_DIR}`
 
 Where `${INPUT_DIR}` is the location of your input files.
 
-See `dfm.py --help` for usage.
+See `dfm --help` for usage.
+
+## Installation
+
+### Using pipx (Recommended)
+
+[pipx](https://pipx.pypa.io/) installs the tool in an isolated environment while making it available globally:
+
+```bash
+pipx ensurepath
+
+# Install from cloned repo
+git clone https://github.com/rucker/dotfiles-manager.git
+pipx install ./dotfiles-manager
+```
+
+After installation, `dfm` is available in any shell:
+
+```bash
+dfm ${INPUT_DIR} [options]
+```
+
+### Using venv
+
+Alternatively, install in a virtual environment:
+
+```bash
+git clone https://github.com/rucker/dotfiles-manager.git
+cd dotfiles-manager
+
+# Create and activate virtual environment (required on modern Python)
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install
+python -m pip install .
+```
+
+After installation, use the `dfm` command (with venv activated):
+
+```bash
+dfm ${INPUT_DIR} [options]
+```
+
+### Development Installation
+
+For development, install with dev dependencies:
+
+```bash
+# Create and activate virtual environment (required on modern Python)
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in editable mode
+python -m pip install -e .[dev]
+```
+
+### Running Tests
+
+```bash
+pytest
+```
+
+For coverage report:
+
+```bash
+pytest --cov=dotfilesmanager --cov-report=html
+open htmlcov/index.html
+```
+
+## Usage
 
 Existing dotfiles are backed up automatically before new ones are compiled and placed in `${INPUT_DIR}/backups`.
 
@@ -14,7 +90,7 @@ You have a personal dotfiles repository containing your `.bashrc` and you want t
 
 What Dotfiles Manager allows you to do is compile a single `.bashrc`file from separate source files: one containing your global configurations, and another containing the local (possibly sensitive) bits. This can be done by putting the common bits in a file called `bashrc` (which would be part of your dotfiles repo), and the bits that vary from machine to machine in a second file, for example called `bashrc_local` (which would be git-ignored). Because Dotfiles Manager is able to infer the name of the dotfile being compiled from the names of [input files](#input-files), the contents of `bashrc` and `bashrc_local` will be compiled into to a single `.bashrc` file on each machine.
 
-When you push new `bashrc` changes to your dotfiles repo, you can keep everything up-to-date by doing a `git pull` to get your latest source files and then running `dfm.py ${INPUT_DIR}` to compile a `.bashrc` from the contents of your `bashrc` and `bashrc_local`.
+When you push new `bashrc` changes to your dotfiles repo, you can keep everything up-to-date by doing a `git pull` to get your latest source files and then running `dfm ${INPUT_DIR}` to compile a `.bashrc` from the contents of your `bashrc` and `bashrc_local`.
 
 ## Input Files
 ### Symlinks
@@ -25,15 +101,32 @@ Each dotfile is compiled from its input files to an output file of the correspon
 
 That naming scheme is:
 
-*xx-dotfile.ext_suffix*  
-WHERE:  
-*xx-* = input file priority (optional: the contents of highest-numbered input files will be placed in the output dotfile first, and other files matching *dotfile* will be inserted in lexographical order)  
-*dotfile* = output dotfile name  
-*.ext* = output dotfile extension (if applicable, e.g. tmux.conf)  
-*_suffix* = input filename suffix (optional, ignored) 
+*xx-dotfile.ext_suffix*
+
+WHERE:
+
+*xx-* = input file priority (optional: the contents of highest-numbered input files will be placed in the output dotfile first, and other files matching *dotfile* will be inserted in lexographical order)
+
+*dotfile* = output dotfile name
+
+*.ext* = output dotfile extension (if applicable, e.g. tmux.conf)
+
+*_suffix* = input filename suffix (optional, ignored)
 
 Note: Any *.ext* occurring after an underscore ( _ ) will be considered part of the input file suffix and ignored.
 
 For example: input files named `99-bashrc`, `98-bashrc_linux`, `bashrc_local.myaliases` will be compiled into a single `bashrc` output file (and in that order).
+
+### Nested Dotfiles
+Dotfiles Manager supports nested directory structures for organizing configuration files. Files in subdirectories of the input directory (except the `backups/` directory) are processed recursively and output to the corresponding nested location in the output directory.
+
+The naming convention applies only to the filename component, while the directory path is preserved as-is.
+
+Examples:
+- `.config/nvim/init.vim` → `$HOME/.config/nvim/init.vim`
+- `.config/nvim/99-init.vim` + `.config/nvim/init.vim_local` → `$HOME/.config/nvim/init.vim` (merged with priority)
+- `.docker/config.json` → `$HOME/.docker/config.json`
+
+Parent directories are created automatically when processing nested files. The backup system also preserves the nested structure, storing backups in `backups/.config/nvim/init.vim_timestamp.bak` for example.
 
 For further illustration, my input files can be found [here](https://github.com/rucker/dotfiles/tree/master/src).
