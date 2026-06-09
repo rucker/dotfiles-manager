@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dotfiles-manager"
-version = "5.0.0"
+version = "5.0.1"
 description = "Compile dotfiles from multiple source files with priority-based merging"
 readme = "README.md"
 authors = [
-    {name = "Rick Rucker", email = "rucker@users.noreply.github.com"}
+    {name = "Rick Ucker", email = "rucker@users.noreply.github.com"}
 ]
 license = {text = "MIT"}
 requires-python = ">=3.10"
