@@ -157,7 +157,9 @@ def _is_input_file_excluded(config: Config, file_name: str) -> bool:
         return False
     all_excludes = list(itertools.chain.from_iterable(config.args.exclude))
     normalized_excludes = [os.path.normpath(item) for item in all_excludes]
-    return file_name in normalized_excludes
+    return file_name in normalized_excludes or any(
+        file_name.startswith(excl + os.sep) for excl in normalized_excludes
+    )
 
 
 def _is_binary_file(config: Config, file_name: str) -> bool:

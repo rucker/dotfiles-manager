@@ -152,6 +152,13 @@ class TestDotfilesManager:
         assert dfm._is_input_file_excluded(test_config, "vimrc_work")
         assert not dfm._is_input_file_excluded(test_config, "bashrc")
 
+    def test_is_input_file_excluded_when_excluded_dir(self, test_config):
+        """Test that files inside an excluded directory are also excluded."""
+        test_config.args.exclude = [["doom.d"]]
+        assert dfm._is_input_file_excluded(test_config, "doom.d/config.el")
+        assert dfm._is_input_file_excluded(test_config, "doom.d/init.el")
+        assert not dfm._is_input_file_excluded(test_config, "bashrc")
+
     def test_is_binary_file_detects_binary_content(self, test_config):
         """Test that binary files are detected by null bytes."""
         binary_file = test_config.input_dir / "test.swp"
