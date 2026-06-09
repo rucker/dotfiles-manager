@@ -65,6 +65,31 @@ Typically completes in 1-2 minutes.
 - ❌ Type checking errors detected
 - ❌ Linting issues found
 
+### 3. Release Version Check Workflow (`release-version-check.yml`)
+
+**Triggers:** Push of any tag matching `v*` (e.g. `v5.0.1`)
+
+**What it does:**
+- Compares the pushed tag (with the leading `v` stripped) against the `version` field in `pyproject.toml`
+- Fails the run if they don't match
+
+**When it passes:**
+- ✅ Tag `vX.Y.Z` was pushed and `pyproject.toml` also says `X.Y.Z`
+
+**When it fails:**
+- ❌ `pyproject.toml` wasn't bumped before tagging the release (this is the failure mode `dotfiles.sh`'s pipx-reinstall check depends on — a mismatched version there means downstream consumers won't detect the update)
+
+**Fixing a failure:**
+```bash
+# Update the version in pyproject.toml to match, then re-tag
+git tag -d vX.Y.Z
+git push origin :refs/tags/vX.Y.Z
+git add pyproject.toml
+git commit -m "Bump version to X.Y.Z"
+git tag vX.Y.Z
+git push origin main --tags
+```
+
 ## Viewing Workflow Results
 
 ### In the GitHub UI
