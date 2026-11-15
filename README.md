@@ -107,6 +107,8 @@ WHERE:
 
 *xx-* = input file priority (optional: the contents of highest-numbered input files will be placed in the output dotfile first, and other files matching *dotfile* will be inserted in lexographical order)
 
+Only a leading two-digit priority prefix (e.g. `99-`) is stripped. Other hyphens are part of the name: `git-prompt.sh` stays `git-prompt.sh`.
+
 *dotfile* = output dotfile name
 
 *.ext* = output dotfile extension (if applicable, e.g. tmux.conf)
@@ -120,10 +122,12 @@ For example: input files named `99-bashrc`, `98-bashrc_linux`, `bashrc_local.mya
 ### Nested Dotfiles
 Dotfiles Manager supports nested directory structures for organizing configuration files. Files in subdirectories of the input directory (except the `backups/` directory) are processed recursively and output to the corresponding nested location in the output directory.
 
-The naming convention applies only to the filename component, while the directory path is preserved as-is.
+The naming convention applies only to the filename component. Like top-level files, nested output is hidden: the top-level input directory gets a leading dot if it doesn't already have one, so input files don't need to live in hidden directories. Deeper directories are preserved as-is.
 
 Examples:
-- `.config/nvim/init.vim` → `$HOME/.config/nvim/init.vim`
+- `config/git/ignore` → `$HOME/.config/git/ignore`
+- `doom.d/init.el` → `$HOME/.doom.d/init.el`
+- `.config/nvim/init.vim` → `$HOME/.config/nvim/init.vim` (already-hidden input directories work too)
 - `.config/nvim/99-init.vim` + `.config/nvim/init.vim_local` → `$HOME/.config/nvim/init.vim` (merged with priority)
 - `.docker/config.json` → `$HOME/.docker/config.json`
 

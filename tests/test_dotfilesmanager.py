@@ -133,12 +133,41 @@ class TestDotfilesManager:
         assert dfm._get_dotfile_name(".config/nvim/init.vim_local") == ".config/nvim/init.vim"
         assert dfm._get_dotfile_name(".config/nvim/99-init.vim_work") == ".config/nvim/init.vim"
 
+    def test_get_dotfile_name_nested_top_level_dir_hidden(self):
+        """Test that an unhidden top-level input dir becomes hidden in output."""
+        assert dfm._get_dotfile_name("config/git/ignore") == ".config/git/ignore"
+        assert dfm._get_dotfile_name("doom.d/init.el") == ".doom.d/init.el"
+        assert dfm._get_dotfile_name("config/nvim/99-init.vim_local") == ".config/nvim/init.vim"
+        # Only the top-level dir gets a dot; deeper dirs are preserved
+        assert dfm._get_dotfile_name("scripts/sourced/extract.sh") == ".scripts/sourced/extract.sh"
+
+    def test_get_dotfile_name_hyphen_not_priority_preserved(self):
+        """Test that only an 'NN-' priority prefix is stripped, not any hyphenated prefix."""
+        assert dfm._get_dotfile_name("git-foo") == ".git-foo"
+        assert (
+            dfm._get_dotfile_name("scripts/sourced/git-prompt.sh")
+            == ".scripts/sourced/git-prompt.sh"
+        )
+        assert dfm._get_dotfile_name("snippets/ssh-agent-setup") == ".snippets/ssh-agent-setup"
+        assert dfm._get_dotfile_name("99-git-foo_local") == ".git-foo"
+        assert dfm._get_dotfile_name("1-bashrc") == ".1-bashrc"
+
     def test_sort_input_file_list_priority_first(self):
         """Test that priority-numbered files are sorted reverse numerically."""
         input_files = ["bashrc", "99-bashrc", "50-bashrc", "bashrc_local"]
         sorted_files = dfm._sort_input_file_list(input_files)
 
         assert sorted_files == ["99-bashrc", "50-bashrc", "bashrc", "bashrc_local"]
+
+    def test_sort_input_file_list_nested_and_hyphenated(self):
+        """Test that priority is read from the filename, and plain hyphens aren't priority."""
+        input_files = ["config/nvim/init.vim_local", "config/nvim/99-init.vim"]
+        assert dfm._sort_input_file_list(input_files) == [
+            "config/nvim/99-init.vim",
+            "config/nvim/init.vim_local",
+        ]
+        input_files = ["git-foo_local", "99-git-foo", "git-foo"]
+        assert dfm._sort_input_file_list(input_files) == ["99-git-foo", "git-foo_local", "git-foo"]
 
     def test_is_input_file_excluded_when_not_excluded(self, test_config):
         """Test that non-excluded files are not filtered."""

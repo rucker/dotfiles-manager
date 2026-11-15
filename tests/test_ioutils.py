@@ -63,6 +63,60 @@ class TestIOUtils:
 
         mock_symlink.assert_called_once_with(target, source)
 
+    def test_symlink_skipped_when_source_resolves_to_target(self, test_config):
+        """Test that an output path resolving to its own input file is left alone."""
+        input_dir = test_config.input_dir / "doom.d"
+        input_dir.mkdir()
+        target = input_dir / "init.el"
+        target.write_text("contents\n")
+        # Output's parent dir is a (legacy) symlink to the input dir
+        (test_config.output_dir / ".doom.d").symlink_to(input_dir)
+        source = test_config.output_dir / ".doom.d" / "init.el"
+
+        ioutils.create_symlink(test_config, str(target), str(source))
+
+        assert not target.is_symlink()
+        assert target.read_text() == "contents\n"
+        assert not test_config.backups_dir.exists()
+
+    def test_symlink_replaces_regular_file_and_backs_it_up(self, test_config):
+        """Test that a regular file in the symlink's place is backed up, then linked."""
+        target = test_config.input_dir / "ignore"
+        target.write_text("new\n")
+        source = test_config.output_dir / ".ignore"
+        source.write_text("old\n")
+
+        ioutils.create_symlink(test_config, str(target), str(source))
+
+        assert source.is_symlink() and source.resolve() == target.resolve()
+        backups = list(test_config.backups_dir.glob("ignore_*.bak"))
+        assert len(backups) == 1 and backups[0].read_text() == "old\n"
+
+    def test_symlink_replaces_broken_symlink_without_backup(self, test_config):
+        """Test that a broken symlink is replaced and nothing is backed up."""
+        target = test_config.input_dir / "vimrc"
+        target.write_text("x\n")
+        source = test_config.output_dir / ".vimrc"
+        source.symlink_to(test_config.input_dir / "missing")
+
+        ioutils.create_symlink(test_config, str(target), str(source))
+
+        assert source.is_symlink() and source.resolve() == target.resolve()
+        assert not test_config.backups_dir.exists()
+
+    def test_symlink_already_in_place_is_noop(self, test_config):
+        """Test that a correct existing symlink is left alone."""
+        target = test_config.input_dir / "vimrc"
+        target.write_text("x\n")
+        source = test_config.output_dir / ".vimrc"
+        source.symlink_to(target)
+
+        with mock.patch("os.symlink") as mock_symlink:
+            ioutils.create_symlink(test_config, str(target), str(source))
+
+        mock_symlink.assert_not_called()
+        assert not test_config.backups_dir.exists()
+
     @mock.patch("os.symlink")
     def test_symlink_not_created_when_dry_run(self, mock_symlink, test_config):
         """Test that symlinks are not created in dry-run mode."""

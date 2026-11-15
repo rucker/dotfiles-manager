@@ -125,6 +125,8 @@ Input files follow the pattern: `[XX-]dotfile[.ext][_suffix]`
 - `99-bashrc`, `bashrc_local` → `.bashrc` (merged with 99-bashrc content first)
 - `gitconfig` → `.gitconfig`
 - `98-bashrc_linux`, `bashrc_local.myaliases` → `.bashrc`
+- `git-prompt.sh` → `.git-prompt.sh` (only a leading `NN-` is a priority prefix; other hyphens are kept)
+- `config/git/ignore` → `.config/git/ignore` (nested: the top-level dir gets a leading dot unless it already has one; deeper dirs are kept as-is)
 
 **Important:** Any extension appearing after an underscore is considered part of the suffix and ignored.
 
