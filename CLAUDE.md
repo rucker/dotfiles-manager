@@ -24,7 +24,7 @@ python -m pip install -e .[dev]
 ### Running Tests
 
 ```bash
-# Run all tests with coverage
+# Run all tests (no coverage; see "Generate coverage report" below)
 pytest
 
 # Run specific test file
