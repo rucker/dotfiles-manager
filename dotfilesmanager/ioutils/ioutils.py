@@ -158,14 +158,23 @@ def revert_dotfile(config: Config, dotfile: str) -> None:
 def create_symlink(config: Config, target: str, source: str) -> None:
     """Create a symlink from source to target."""
     _ensure_parent_dirs(config, source)
-    if lexists(source):
+    if islink(source) and normpath(os.readlink(source)) == target:
+        prints(config, f"\tSymlink {source} -> {target} already in place")
+        return
+    if os.path.realpath(source) == os.path.realpath(target):
+        # e.g. a parent dir of source is itself a symlink into the input dir.
+        # Linking (or backing up) here would clobber the input file.
+        prints(config, f"\t{source} resolves to input file {target}. Skipping")
+        return
+    if islink(source):
         existing_target = normpath(os.readlink(source))
         if not exists(existing_target):
             prints(config, f"\tExisting symlink {source} -> {existing_target} is broken")
             _remove_symlink(config, source)
-        if target == existing_target:
-            prints(config, f"\tSymlink {source} -> {target} already in place")
-            return
+        else:
+            _back_up(config, source)
+    elif lexists(source):
+        # A regular file (not a symlink) is in the way
         _back_up(config, source)
     prints(config, f"\tSymlinking {source} -> {target}")
     if not config.dry_run:

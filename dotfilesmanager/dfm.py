@@ -94,15 +94,18 @@ def _print_completion_message(config: Config, processed_dotfiles: list[str]) -> 
         print(f"Processed the following dotfiles: {pretty_list}")
 
 
+PRIORITY_PREFIX = re.compile(r"^[0-9]{2}-")
+
+
 def _sort_input_file_list(input_files: list[str]) -> list[str]:
     """Sort input files by priority number (99- prefix) then alphabetically."""
     to_sort = []
     not_to_sort = []
     for file_name in input_files:
-        if not re.search(r"[0-9]{2}\-", file_name):
-            not_to_sort.append(file_name)
-        else:
+        if PRIORITY_PREFIX.match(os.path.basename(file_name)):
             to_sort.append(file_name)
+        else:
+            not_to_sort.append(file_name)
     result = sorted(to_sort, reverse=True)
     result.extend(not_to_sort)
     return result
@@ -111,12 +114,18 @@ def _sort_input_file_list(input_files: list[str]) -> list[str]:
 def _get_dotfile_name(file_name: str) -> str:
     """Extract dotfile name from input filename using naming convention.
 
-    For nested paths (containing '/'), the naming convention is applied only to
-    the filename component, while the directory path is preserved as-is.
+    The naming convention (an optional 'NN-' priority prefix and an optional
+    '_suffix') applies to the filename component. The output is hidden: a
+    top-level file gets a leading dot, and for nested paths the top-level
+    directory gets one (unless it already has one). Deeper directories are
+    preserved as-is.
 
     Examples:
         'bashrc' -> '.bashrc'
         '99-bashrc_local' -> '.bashrc'
+        'git-foo' -> '.git-foo'
+        'config/git/ignore' -> '.config/git/ignore'
+        'scripts/sourced/git-prompt.sh' -> '.scripts/sourced/git-prompt.sh'
         '.config/nvim/init.vim' -> '.config/nvim/init.vim'
         '.config/nvim/99-init.vim_local' -> '.config/nvim/init.vim'
     """
@@ -128,27 +137,14 @@ def _get_dotfile_name(file_name: str) -> str:
         base_name = file_name
 
     # Apply naming convention to base filename
-    if "-" in base_name:
-        sidx = base_name.index("-") + 1
-    else:
-        sidx = 0
-    if "_" in base_name:
-        eidx = base_name.index("_")
-    else:
-        eidx = len(base_name)
-    if eidx < sidx:
-        sidx = 0
+    processed_name = PRIORITY_PREFIX.sub("", base_name, count=1)
+    processed_name = processed_name.split("_", 1)[0]
 
-    processed_name = base_name[sidx:eidx]
-
-    # For nested paths, preserve directory path as-is
-    # For top-level files, add leading dot
     if dir_part:
-        dotfile_name = f"{dir_part}/{processed_name}"
-    else:
-        dotfile_name = "." + processed_name
-
-    return dotfile_name
+        if not dir_part.startswith("."):
+            dir_part = "." + dir_part
+        return f"{dir_part}/{processed_name}"
+    return "." + processed_name
 
 
 def _is_input_file_excluded(config: Config, file_name: str) -> bool:
